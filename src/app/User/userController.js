@@ -20,5 +20,5 @@ export const postUser = async (req, res) => {
 
   const signUpResponse = await createUser(id, password, image, nickname, intro);
 
-  return res.send(signUpResponse);
+  return res.send(response(signUpResponse));
 };
