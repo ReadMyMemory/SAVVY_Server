@@ -2,6 +2,8 @@ import express from 'express';
 import compression from 'compression';
 import methodOverride from 'method-override';
 import cors from 'cors';
+import passport from 'passport';
+const session = require('express-session');
 import userRouter from '../src/app/User/userRoute';
 import authRouter from '../src/app/Auth/authRoute';
 
@@ -15,6 +17,21 @@ app.use(express.json()); // json 파일 바디를 파싱 -> 클라이언트가 j
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride()); // 웹브라우저가 지원하지 않는 PUT/DELETE 처리를 수행하기 위함
 app.use(cors()); // 보안상의 이유로 API 요청을 차단하는 것을 해결
+
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.COOKIE_SECRET,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+    },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/src/app/User', userRouter);
 app.use('/auth', authRouter);

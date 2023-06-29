@@ -8,7 +8,7 @@ export const selectUserbyId = async (connetion, id) => {
 
 export const insertUserInfo = async (connection, insertUserInfoParams) => {
   const insertUserInfoQuery = `
-  INSERT INTO users (user_email, user_nickname, user_login_id) 
+  INSERT INTO user (user_email, user_nickname, user_login_id) 
   VALUES (?, ?, ?)`;
 
   const insertUserInfoRow = await connection.query(
