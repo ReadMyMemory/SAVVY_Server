@@ -115,6 +115,30 @@ const baseResponse = {
     message: '회원 상태값을 입력해주세요',
   },
 
+  PLANNER_PLANNERID_EMPTY: {
+    isSuccess: false,
+    code: 2019,
+    message: 'plannerId를 입력해주세요.',
+  },
+
+  PLANNER_TYPE_WRONG: {
+    isSuccess: false,
+    code: 2020,
+    message: 'type값이 올바르지 않습니다.',
+  },
+
+  PLANNER_PLANNER_TITLE_LENGTH: {
+    isSuccess: false,
+    code: 2021,
+    message: '제목은 15자리 미만으로 입력해주세요.',
+  },
+
+  PLANNER_PLANNER_TIMETABLE_EMPTY: {
+    isSuccess: false,
+    code: 2022,
+    message: '시간표를 입력해주세요.',
+  },
+
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
     isSuccess: false,
@@ -146,6 +170,16 @@ const baseResponse = {
     isSuccess: false,
     code: 3006,
     message: '탈퇴 된 계정입니다. 고객센터에 문의해주세요.',
+  },
+  PLANNER_PLANNERID_NOT_EXIST: {
+    isSuccess: false,
+    code: 3007,
+    message: '해당 여행계획서가 존재하지 않습니다.',
+  },
+  PLANNER_SCRAP_NOT_EXIST: {
+    isSuccess: false,
+    code: 3008,
+    message: '해당 스크랩이 존재하지 않습니다.',
   },
 
   //Connection, Transaction 등의 서버 오류

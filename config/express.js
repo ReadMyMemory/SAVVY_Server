@@ -6,6 +6,7 @@ import passport from 'passport';
 const session = require('express-session');
 import userRouter from '../src/app/User/userRoute';
 import authRouter from '../src/app/Auth/authRoute';
+import plannerRouter from '../src/app/Planner/plannerRoute';
 
 const app = express();
 
@@ -33,7 +34,8 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/src/app/User', userRouter);
-app.use('/auth', authRouter);
+app.use('/api/user', userRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/planner', plannerRouter);
 
 export default app;
