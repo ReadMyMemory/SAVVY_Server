@@ -7,6 +7,7 @@ import {
   selectPlannerbyId,
   selectScrapbyId,
   selectPlannerId,
+  selectTimetableId,
 } from './plannerDao';
 
 export const userIdCheck = async (user_id) => {
@@ -69,16 +70,21 @@ export const retrievePlannerId = async (user_id) => {
   return retrievePlannerIdResult;
 };
 
-export const retrieveTimetableId = async (user_id) => {
-  // 방금 만든 planner의 id를 받아오기 위함
-  const plannerOwner = await userIdCheck(user_id);
-  if (!plannerOwner[0][0]) {
-    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+export const retrieveTimetableId = async (planner_id, date, start, finish) => {
+  // 방금 만든 timetable의 id를 받아오기 위함
+  const timetableOwner = await plannerIdCheck(planner_id);
+  if (!timetableOwner[0][0]) {
+    return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
   }
 
   const connection = await pool.getConnection(async (conn) => conn);
-  const retrievePlannerIdResult = await selectPlannerId(connection, user_id);
+  const retrieveTimetableIdResult = await selectTimetableId(connection, [
+    planner_id,
+    date,
+    start,
+    finish,
+  ]);
 
   connection.release();
-  return retrievePlannerIdResult;
+  return retrieveTimetableIdResult;
 };

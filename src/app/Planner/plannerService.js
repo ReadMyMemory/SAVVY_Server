@@ -6,12 +6,14 @@ import {
   scrapIdCheck,
   userIdCheck,
   retrievePlannerId,
+  retrieveTimetableId,
 } from './plannerProvider';
 import {
   deletePlannerbyId,
   deleteScrapbyId,
   insertPlanner,
   insertTimetable,
+  insertChecklist,
 } from './plannerDao';
 
 export const deletePlannerCheck = async (user_id, planner_id, type) => {
@@ -58,28 +60,37 @@ export const createPlanner = async (defaultInfo, timetableInfo) => {
     return errResponse(baseResponse.USER_USERID_NOT_EXIST);
   }
   const connection = await pool.getConnection(async (conn) => conn);
-  const insertPlannerResult = insertPlanner(connection, [
+  const plannerId = await insertPlanner(connection, [
     defaultInfo.title,
     defaultInfo.user_id,
     defaultInfo.memo,
   ]);
-  const plannerId = await retrievePlannerId(defaultInfo.user_id);
+
   // planner 생성중 에러 검증
-  if (!plannerId[0][0]) {
+  if (!plannerId[0].insertId) {
     return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
   }
   // 시간표 저장
   for (let i = 0; i < timetableInfo.length; i++) {
-    await insertTimetable(connection, [
-      plannerId,
+    const timetableId = await insertTimetable(connection, [
+      plannerId[0].insertId,
       timetableInfo[i].place_name,
       timetableInfo[i].date,
       timetableInfo[i].started_at,
       timetableInfo[i].finished_at,
     ]);
-    // 시간표 id
+    console.log(timetableId[0].insertId);
+
     // 체크리스트 저장
+    if (!timetableInfo[i].checklist) continue;
+    for (let j = 0; j < timetableInfo[i].checklist.length; j++) {
+      await insertChecklist(connection, [
+        timetableId[0].insertId,
+        timetableInfo[i].checklist[j].contents,
+        timetableInfo[i].checklist[j].is_checked,
+      ]);
+    }
   }
   connection.release();
-  return response(baseResponse.SUCCESS, insertPlannerResult[0]);
+  return response(baseResponse.SUCCESS);
 };

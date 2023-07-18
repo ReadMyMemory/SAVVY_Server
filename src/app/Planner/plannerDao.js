@@ -75,7 +75,6 @@ export const insertPlanner = async (connection, params) => {
   VALUES (?, ?, ?);`;
 
   const insertPlannerRows = await connection.query(insertPlannerQuery, params);
-  console.log(result.insertID);
   return insertPlannerRows;
 };
 
@@ -92,6 +91,19 @@ export const selectPlannerId = async (connection, user_id) => {
   return selectPlannerIdRow;
 };
 
+export const selectTimetableId = async (connection, params) => {
+  const selectTimetableIdQuery = `
+  SELECT id FROM planner_timetable 
+  WHERE planner_id = ? AND date = ? 
+  AND started_at = ? AND finished_at = ?`;
+
+  const selectTimetableIdRow = await connection.query(
+    selectTimetableIdQuery,
+    params
+  );
+  return selectTimetableIdRow;
+};
+
 export const insertTimetable = async (connection, params) => {
   const insertTimetableQuery = `
   INSERT INTO planner_timetable 
@@ -103,4 +115,17 @@ export const insertTimetable = async (connection, params) => {
     params
   );
   return insertTimetableRows;
+};
+
+export const insertChecklist = async (connection, params) => {
+  const insertChecklistQuery = `
+  INSERT INTO planner_checklist 
+  (timetable_id, contents, is_checked)
+  VALUES (?, ?, ?);`;
+
+  const insertChecklistRows = await connection.query(
+    insertChecklistQuery,
+    params
+  );
+  return insertChecklistRows;
 };

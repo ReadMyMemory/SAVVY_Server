@@ -139,6 +139,18 @@ const baseResponse = {
     message: '시간표를 입력해주세요.',
   },
 
+  PLANNER_PLANNER_SEARCHWORD_EMPTY: {
+    isSuccess: false,
+    code: 2023,
+    message: '검색어를 입력해주세요.',
+  },
+
+  PLANNER_PLANNER_SEARCHWORD_LENGTH: {
+    isSuccess: false,
+    code: 2024,
+    message: '검색어는 15자리 미만으로 입력해주세요.',
+  },
+
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
     isSuccess: false,

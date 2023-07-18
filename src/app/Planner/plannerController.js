@@ -83,3 +83,15 @@ export const postPlanner = async (req, res) => {
   const postPlannerResponse = await createPlanner(defaultInfo, timetableInfo);
   return res.send(postPlannerResponse);
 };
+
+export const getPlannerSearch = async (req, res) => {
+  const { search_word } = req.params;
+  // 빈 검색어 체크
+  if (!search_word)
+    return res.send(errResponse(baseResponse.PLANNER_PLANNER_SEARCHWORD_EMPTY));
+  // 검색어 길이 체크
+  if (search_word.length > 45)
+    return res.send(
+      errResponse(baseResponse.PLANNER_PLANNER_SEARCHWORD_LENGTH)
+    );
+};
