@@ -193,6 +193,11 @@ const baseResponse = {
     code: 3008,
     message: '해당 스크랩이 존재하지 않습니다.',
   },
+  DAIRY_DIARYID_NOT_EXIST: {
+    isSuccess: false,
+    code: 3009,
+    message: '해당 다이어리가 존재하지 않습니다.',
+  },
 
   //Connection, Transaction 등의 서버 오류
   DB_ERROR: { isSuccess: false, code: 4000, message: '데이터 베이스 에러' },
