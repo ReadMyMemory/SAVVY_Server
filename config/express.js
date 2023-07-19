@@ -3,6 +3,8 @@ import compression from 'compression';
 import methodOverride from 'method-override';
 import cors from 'cors';
 import userRouter from '../src/app/User/userRoute';
+import diaryRouter from "../src/app/Diary/diaryRoute";
+
 
 const app = express();
 
@@ -16,5 +18,5 @@ app.use(methodOverride()); // 웹브라우저가 지원하지 않는 PUT/DELETE 
 app.use(cors()); // 보안상의 이유로 API 요청을 차단하는 것을 해결
 
 app.use('/src/app/User', userRouter);
-
+app.use('/api/diary', diaryRouter);
 export default app;
