@@ -83,7 +83,6 @@ export const createPlanner = async (defaultInfo, timetableInfo) => {
 
       // 체크리스트 저장
       if (!timetableInfo[i].schedule[j].checklist) continue;
-      console.log(timetableInfo[i].schedule[j].checklist);
       for (let k = 0; k < timetableInfo[i].schedule[j].checklist.length; k++) {
         await insertChecklist(connection, [
           timetableId[0].insertId,
