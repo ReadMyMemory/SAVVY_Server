@@ -72,23 +72,25 @@ export const createPlanner = async (defaultInfo, timetableInfo) => {
   }
   // 시간표 저장
   for (let i = 0; i < timetableInfo.length; i++) {
-    const timetableId = await insertTimetable(connection, [
-      plannerId[0].insertId,
-      timetableInfo[i].place_name,
-      timetableInfo[i].date,
-      timetableInfo[i].started_at,
-      timetableInfo[i].finished_at,
-    ]);
-    console.log(timetableId[0].insertId);
-
-    // 체크리스트 저장
-    if (!timetableInfo[i].checklist) continue;
-    for (let j = 0; j < timetableInfo[i].checklist.length; j++) {
-      await insertChecklist(connection, [
-        timetableId[0].insertId,
-        timetableInfo[i].checklist[j].contents,
-        timetableInfo[i].checklist[j].is_checked,
+    for (let j = 0; j < timetableInfo[i].schedule.length; j++) {
+      const timetableId = await insertTimetable(connection, [
+        plannerId[0].insertId,
+        timetableInfo[i].schedule[j].place_name,
+        timetableInfo[i].date,
+        timetableInfo[i].schedule[j].started_at,
+        timetableInfo[i].schedule[j].finished_at,
       ]);
+
+      // 체크리스트 저장
+      if (!timetableInfo[i].schedule[j].checklist) continue;
+      console.log(timetableInfo[i].schedule[j].checklist);
+      for (let k = 0; k < timetableInfo[i].schedule[j].checklist.length; k++) {
+        await insertChecklist(connection, [
+          timetableId[0].insertId,
+          timetableInfo[i].schedule[j].checklist[k].contents,
+          timetableInfo[i].schedule[j].checklist[k].is_checked,
+        ]);
+      }
     }
   }
   connection.release();
