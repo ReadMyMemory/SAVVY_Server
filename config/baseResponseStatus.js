@@ -151,6 +151,18 @@ const baseResponse = {
     message: '검색어는 15자리 미만으로 입력해주세요.',
   },
 
+  DIARY_DIARY_TITLE_LENGTH: {
+    isSuccess: false,
+    code: 2101,
+    message: '제목은 25자리 미만으로 입력해주세요.',
+  },
+
+  DIARY_DIARYID_EMPTY: {
+    isSuccess: false,
+    code: 2102,
+    message: 'diaryId를 입력해주세요.',
+  },
+
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
     isSuccess: false,
@@ -195,7 +207,7 @@ const baseResponse = {
   },
   DAIRY_DIARYID_NOT_EXIST: {
     isSuccess: false,
-    code: 3009,
+    code: 3101,
     message: '해당 다이어리가 존재하지 않습니다.',
   },
 
