@@ -8,6 +8,7 @@ import {
   selectScrapbyId,
   selectPlannerId,
   selectTimetableId,
+  selectPlannerSearch,
 } from './plannerDao';
 
 export const userIdCheck = async (user_id) => {
@@ -87,4 +88,19 @@ export const retrieveTimetableId = async (planner_id, date, start, finish) => {
 
   connection.release();
   return retrieveTimetableIdResult;
+};
+
+export const retrievePlannerSearch = async (user_id, search_word) => {
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+  const retrievePlannerSearchResult = await selectPlannerSearch(connection, [
+    user_id,
+    search_word,
+  ]);
+  connection.release();
+  if (!retrievePlannerSearchResult[0][0])
+    return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
+  return response(baseResponse.SUCCESS, retrievePlannerSearchResult[0]);
 };
