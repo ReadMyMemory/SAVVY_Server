@@ -15,12 +15,12 @@ export const selectPlannerListById = async (connection, user_id, type) => {
       return plannerListRow;
     case 2:
       const selectPlannerListScrapByIdQuery = `
-      SELECT planner.id, title, scrapped_at, nickname
+      SELECT planner.id, title, updated_at, nickname
       FROM planner_scrap JOIN planner 
       ON planner_scrap.planner_id = planner.id
       JOIN user ON planner.user_id = user.id
       WHERE planner_scrap.user_id = ?
-      ORDER BY scrapped_at DESC;
+      ORDER BY updated_at DESC;
       `;
       const plannerListScrapRow = await connection.query(
         selectPlannerListScrapByIdQuery,
@@ -128,4 +128,31 @@ export const insertChecklist = async (connection, params) => {
     params
   );
   return insertChecklistRows;
+};
+
+export const selectPlannerSearch = async (connection, params) => {
+  const search_word = '%' + params[1] + '%';
+  const new_params = [
+    params[0],
+    search_word,
+    params[0],
+    search_word,
+    search_word,
+  ];
+  const selectPlannerSearchQuery = `
+  (SELECT planner.id, title, planner.updated_at, nickname FROM planner JOIN user ON planner.user_id = user.id
+    WHERE user_id = ? AND title LIKE ?)
+    UNION ALL
+    (SELECT planner.id, title, planner_scrap.updated_at, nickname
+    FROM planner_scrap JOIN planner
+    ON planner_scrap.planner_id = planner.id
+    JOIN user ON planner.user_id = user.id
+    WHERE planner_scrap.user_id = ? AND (title LIKE ? OR nickname LIKE ?))
+    ORDER BY updated_at DESC;`;
+
+  const selectPlannerSearchRows = await connection.query(
+    selectPlannerSearchQuery,
+    new_params
+  );
+  return selectPlannerSearchRows;
 };

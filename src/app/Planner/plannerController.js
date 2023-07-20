@@ -1,6 +1,6 @@
 import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
-import { retrievePlannerList } from './plannerProvider';
+import { retrievePlannerList, retrievePlannerSearch } from './plannerProvider';
 import { deletePlannerCheck, createPlanner } from './plannerService';
 
 export const getPlannerListAll = async (req, res) => {
@@ -85,13 +85,20 @@ export const postPlanner = async (req, res) => {
 };
 
 export const getPlannerSearch = async (req, res) => {
-  const { search_word } = req.params;
+  const { userId, searchWord } = req.query;
+  // 아이디 체크
+  if (!userId) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
   // 빈 검색어 체크
-  if (!search_word)
+  if (!searchWord)
     return res.send(errResponse(baseResponse.PLANNER_PLANNER_SEARCHWORD_EMPTY));
   // 검색어 길이 체크
-  if (search_word.length > 45)
+  if (searchWord.length > 45)
     return res.send(
       errResponse(baseResponse.PLANNER_PLANNER_SEARCHWORD_LENGTH)
     );
+  const getPlannerSearchResponse = await retrievePlannerSearch(
+    userId,
+    searchWord
+  );
+  return res.send(getPlannerSearchResponse);
 };
