@@ -12,14 +12,12 @@ export const getDiaryListAll = async (req, res) => {
     return res.send(getDiaryListResponse);
 };
 
-
 export const getDiaryList = async (req, res) => {
     const { user_id } = req.params;
 
     // 빈 아이디 체크
     if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
 
-    const getDiaryListResponse = await retrieveDiaryList(user_id);
-    return res.send(getDiaryListResponse);
+    const getListResponse = await retrieveDiaryList(user_id);
+    return res.send(getListResponse);
 };
-

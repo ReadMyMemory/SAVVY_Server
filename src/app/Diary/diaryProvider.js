@@ -2,6 +2,7 @@ import pool from '../../../config/database';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import { selectUserbyId } from '../User/userDao';
+import { selectDiaryListById } from "./diaryDao";
 
 export const userIdCheck = async (user_id) => {
     const connection = await pool.getConnection(async (conn) => conn);
@@ -10,6 +11,7 @@ export const userIdCheck = async (user_id) => {
     connection.release();
     return userIdCheckResult;
 };
+
 
 export const retrieveDiaryList = async (user_id) => {
     // user_id 존재 체크
@@ -28,3 +30,4 @@ export const retrieveDiaryList = async (user_id) => {
         return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
     }
 };
+
