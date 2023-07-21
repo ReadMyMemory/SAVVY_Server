@@ -13,7 +13,7 @@ export const createUser = async (id, password, image, nickname, intro) => {
     if (loginIdRows.length > 0)
       return errResponse(baseResponse.SIGNUP_REDUNDANT_EMAIL);
 
-    const hashedPassword = await crypto
+    const hashedPassword = crypto
       .createHash('sha512')
       .update(password)
       .digest('hex');
@@ -25,7 +25,7 @@ export const createUser = async (id, password, image, nickname, intro) => {
     const userIdResult = await insertUserInfo(connection, insertUserInfoParams);
     console.log(`추가된 회원 : ${userIdResult[0].insertId}`);
     connection.release();
-    return response(baseResponse.SUCCESS);
+    return baseResponse.SUCCESS;
   } catch (err) {
     return errResponse(baseResponse.DB_ERROR);
   }

@@ -1,10 +1,16 @@
 import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
+import { retrieveKakaoLogin } from './userProvider';
 import { createUser } from './userService';
 
-// 0. 테스트 API
-export const getTest = async (req, res) => {
-  return res.send(response(baseResponse.SUCCESS));
+export const loginUser = async (req, res) => {
+  const { accessToken } = req.body;
+  // 빈 토큰 체크
+  if (!accessToken)
+    return res.send(errResponse(baseResponse.TOKEN_KAKAO_EMPTY));
+
+  const loginUserResponse = await retrieveKakaoLogin(accessToken);
+  return res.send(loginUserResponse);
 };
 
 // 1. 회원가입
@@ -20,5 +26,5 @@ export const postUser = async (req, res) => {
 
   const signUpResponse = await createUser(id, password, image, nickname, intro);
 
-  return res.send(signUpResponse);
+  return res.send(response(signUpResponse));
 };

@@ -18,6 +18,11 @@ const baseResponse = {
     code: 1001,
     message: 'JWT 토큰 검증 성공',
   }, // ?
+  TOKEN_KAKAO_EMPTY: {
+    isSuccess: false,
+    code: 2200,
+    message: 'KAKAO 토큰을 입력해주세요.',
+  },
 
   //Request error
   SIGNUP_EMAIL_EMPTY: {
@@ -115,6 +120,42 @@ const baseResponse = {
     message: '회원 상태값을 입력해주세요',
   },
 
+  PLANNER_PLANNERID_EMPTY: {
+    isSuccess: false,
+    code: 2019,
+    message: 'plannerId를 입력해주세요.',
+  },
+
+  PLANNER_TYPE_WRONG: {
+    isSuccess: false,
+    code: 2020,
+    message: 'type값이 올바르지 않습니다.',
+  },
+
+  PLANNER_PLANNER_TITLE_LENGTH: {
+    isSuccess: false,
+    code: 2021,
+    message: '제목은 15자리 미만으로 입력해주세요.',
+  },
+
+  PLANNER_PLANNER_TIMETABLE_EMPTY: {
+    isSuccess: false,
+    code: 2022,
+    message: '시간표를 입력해주세요.',
+  },
+
+  PLANNER_PLANNER_SEARCHWORD_EMPTY: {
+    isSuccess: false,
+    code: 2023,
+    message: '검색어를 입력해주세요.',
+  },
+
+  PLANNER_PLANNER_SEARCHWORD_LENGTH: {
+    isSuccess: false,
+    code: 2024,
+    message: '검색어는 15자리 미만으로 입력해주세요.',
+  },
+
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
     isSuccess: false,
@@ -147,10 +188,31 @@ const baseResponse = {
     code: 3006,
     message: '탈퇴 된 계정입니다. 고객센터에 문의해주세요.',
   },
+  PLANNER_PLANNERID_NOT_EXIST: {
+    isSuccess: false,
+    code: 3007,
+    message: '해당 여행계획서가 존재하지 않습니다.',
+  },
+  PLANNER_SCRAP_NOT_EXIST: {
+    isSuccess: false,
+    code: 3008,
+    message: '해당 스크랩이 존재하지 않습니다.',
+  },
+  DAIRY_DIARYID_NOT_EXIST: {
+    isSuccess: false,
+    code: 3009,
+    message: '해당 다이어리가 존재하지 않습니다.',
+  },
+  USER_NEED_SIGNUP: {
+    isSuccess: false,
+    code: 3200,
+    message: '회원가입이 필요한 사용자입니다.',
+  },
 
   //Connection, Transaction 등의 서버 오류
   DB_ERROR: { isSuccess: false, code: 4000, message: '데이터 베이스 에러' },
   SERVER_ERROR: { isSuccess: false, code: 4001, message: '서버 에러' },
+  AXIOS_ERROR: { isSuccess: false, code: 4002, message: 'AXIOS 에러' },
 };
 
 export default baseResponse;
