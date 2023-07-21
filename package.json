@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon",
-    "server": "babel-node index.js"
+    "dev": "nodemon"
   },
   "author": "Team SAVVY",
   "license": "ISC",
@@ -15,18 +14,13 @@
     "@babel/core": "^7.22.5",
     "@babel/node": "^7.22.5",
     "@babel/preset-env": "^7.22.5",
-    "axios": "^1.4.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "express-session": "^1.17.3",
     "method-override": "^3.0.0",
     "mysql2": "^3.4.2",
-    "nodemon": "^2.0.22",
-    "passport": "^0.6.0",
-    "passport-kakao": "^1.0.1",
-    "pm2": "^5.3.0"
+    "nodemon": "^2.0.22"
   }
 }
