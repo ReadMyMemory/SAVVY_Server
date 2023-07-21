@@ -2,13 +2,7 @@ import express from 'express';
 import compression from 'compression';
 import methodOverride from 'method-override';
 import cors from 'cors';
-import passport from 'passport';
-const session = require('express-session');
 import userRouter from '../src/app/User/userRoute';
-import authRouter from '../src/app/Auth/authRoute';
-import plannerRouter from '../src/app/Planner/plannerRoute';
-import diaryRouter from '../src/app/Diary/diaryRoute';
-
 
 const app = express();
 
@@ -21,25 +15,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride()); // 웹브라우저가 지원하지 않는 PUT/DELETE 처리를 수행하기 위함
 app.use(cors()); // 보안상의 이유로 API 요청을 차단하는 것을 해결
 
-app.use(
-  session({
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.COOKIE_SECRET,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-    },
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use('/api/user', userRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/planner', plannerRouter);
 app.use('/src/app/User', userRouter);
-app.use('/api/diary', diaryRouter);
 
 export default app;

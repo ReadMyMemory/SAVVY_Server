@@ -1,9 +1,12 @@
 import express from 'express';
-import { loginUser, postUser } from './userController';
+import { getTest, postUser } from './userController';
 
 const userRouter = express.Router();
 
-userRouter.post('/login', loginUser);
+// 0. 테스트 API
+userRouter.get('/test', getTest);
+
+// 1. 회원가입
 userRouter.post('/sign_up', postUser);
 
 export default userRouter;
