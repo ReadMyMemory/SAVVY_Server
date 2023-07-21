@@ -5,3 +5,11 @@ export const selectUserbyId = async (connetion, id) => {
   const userRows = await connetion.query(selectUserbyIdQuery, id);
   return userRows;
 };
+
+export const selectUserKakaoId = async (connetion, kakao_id) => {
+  const selectUserKakaoIdQuery = `
+  SELECT * FROM user WHERE kakao_id = ?;`;
+
+  const kakaoIdRow = await connetion.query(selectUserKakaoIdQuery, kakao_id);
+  return kakaoIdRow;
+};
