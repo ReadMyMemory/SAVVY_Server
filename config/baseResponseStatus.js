@@ -203,6 +203,11 @@ const baseResponse = {
     code: 3009,
     message: '해당 다이어리가 존재하지 않습니다.',
   },
+  USER_NEED_SIGNUP: {
+    isSuccess: false,
+    code: 3200,
+    message: '회원가입이 필요한 사용자입니다.',
+  },
 
   //Connection, Transaction 등의 서버 오류
   DB_ERROR: { isSuccess: false, code: 4000, message: '데이터 베이스 에러' },

@@ -1,11 +1,11 @@
 import pool from '../../../config/database';
 import axios from 'axios';
-import { selectUserLoginId } from './userDao';
+import { selectUserKakaoId } from './userDao';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 
 export const retrieveKakaoLogin = async (accessToken) => {
-  axios({
+  const kakaoData = await axios({
     method: 'get',
     url: 'https://kapi.kakao.com/v2/user/me',
     headers: {
@@ -14,19 +14,22 @@ export const retrieveKakaoLogin = async (accessToken) => {
     },
   })
     .then(function (response) {
-      const kakaoData = response.data;
-      console.log(kakaoData);
+      return response.data;
     })
     .catch(() => {
-      return errResponse(baseResponse.AXIOS_ERROR);
+      return 'error';
     });
-
-  return response(baseResponse.SUCCESS, kakaoData);
+  // 예외처리
+  if (kakaoData === 'error') return errResponse(baseResponse.AXIOS_ERROR);
+  // 회원정보 있는지 검증
+  const userKakaoCheck = await loginIdCheck(kakaoData.id);
+  if (!userKakaoCheck[0][0]) return errResponse(baseResponse.USER_NEED_SIGNUP);
+  return response(baseResponse.SUCCESS, userKakaoCheck[0][0]);
 };
 
-export const loginIdCheck = async (id) => {
+export const loginIdCheck = async (kakao_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
-  const loginIdCheckResult = selectUserLoginId(connection, id);
+  const loginIdCheckResult = selectUserKakaoId(connection, kakao_id);
 
   connection.release();
 
