@@ -13,18 +13,25 @@ export const loginUser = async (req, res) => {
   return res.send(loginUserResponse);
 };
 
-// 1. 회원가입
 export const postUser = async (req, res) => {
-  const { id, password, image, nickname, intro } = req.body;
+  const { accessToken, img_url, nickname, intro } = req.body;
 
-  // 빈 아이디 체크
-  if (!id) return res.send(response(baseResponse.SIGNIN_EMAIL_EMPTY));
+  // 빈 토큰 체크
+  if (!accessToken)
+    return res.send(errResponse(baseResponse.TOKEN_KAKAO_EMPTY));
+  // 빈 닉네임 체크
+  if (!nickname)
+    return res.send(errResponse(baseResponse.SIGNUP_NICKNAME_EMPTY));
+  // 소개글 길이 체크
+  if (intro.length > 300)
+    return res.send(response(baseResponse.SIGNUP_INTRO_LENGTH));
 
-  // 길이 체크
-  if (id.length > 45)
-    return res.send(response(baseResponse.SIGNIN_EMAIL_LENGTH));
+  const signUpResponse = await createUser(
+    accessToken,
+    img_url,
+    nickname,
+    intro
+  );
 
-  const signUpResponse = await createUser(id, password, image, nickname, intro);
-
-  return res.send(response(signUpResponse));
+  return res.send(signUpResponse);
 };

@@ -9,7 +9,6 @@ import authRouter from '../src/app/Auth/authRoute';
 import plannerRouter from '../src/app/Planner/plannerRoute';
 import diaryRouter from '../src/app/Diary/diaryRoute';
 
-
 const app = express();
 
 // app.use(미들웨어) -> 미들웨어를 사용하기 위한 메서드
