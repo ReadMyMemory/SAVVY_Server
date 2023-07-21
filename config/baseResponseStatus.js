@@ -23,6 +23,11 @@ const baseResponse = {
     code: 2200,
     message: 'KAKAO 토큰을 입력해주세요.',
   },
+  TOKEN_GENERATE_ERROR: {
+    isSuccess: false,
+    code: 4003,
+    message: 'JWT 토큰 생성 실패',
+  },
 
   //Request error
   SIGNUP_EMAIL_EMPTY: {
@@ -61,10 +66,10 @@ const baseResponse = {
     message: '닉네임은 최대 20자리를 입력해주세요.',
   },
 
-  SIGNIN_EMAIL_EMPTY: {
+  SIGNUP_INTRO_LENGTH: {
     isSuccess: false,
     code: 2008,
-    message: '이메일을 입력해주세요',
+    message: '소개글은 100자 이하로 입력해주세요.',
   },
   SIGNIN_EMAIL_LENGTH: {
     isSuccess: false,
@@ -207,6 +212,11 @@ const baseResponse = {
     isSuccess: false,
     code: 3200,
     message: '회원가입이 필요한 사용자입니다.',
+  },
+  USER_USERID_ALREADY_EXIST: {
+    isSuccess: false,
+    code: 3201,
+    message: '이미 존재하는 사용자입니다.',
   },
 
   //Connection, Transaction 등의 서버 오류

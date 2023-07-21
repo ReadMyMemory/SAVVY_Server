@@ -1,5 +1,6 @@
 import pool from '../../../config/database';
 import axios from 'axios';
+import { generateToken } from '../../../config/jwtMiddleware';
 import { selectUserKakaoId } from './userDao';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
@@ -24,7 +25,20 @@ export const retrieveKakaoLogin = async (accessToken) => {
   // 회원정보 있는지 검증
   const userKakaoCheck = await loginIdCheck(kakaoData.id);
   if (!userKakaoCheck[0][0]) return errResponse(baseResponse.USER_NEED_SIGNUP);
-  return response(baseResponse.SUCCESS, userKakaoCheck[0][0]);
+  const generateTokenResult = await generateToken({
+    id: userKakaoCheck[0][0].id,
+  })
+    .then((token) => {
+      console.log(token);
+      return { token: token };
+    })
+    .catch((err) => {
+      return 'error';
+    });
+  console.log(generateTokenResult);
+  if (generateTokenResult === 'error')
+    return errResponse(baseResponse.TOKEN_GENERATE_ERROR);
+  return response(baseResponse.SUCCESS, generateTokenResult);
 };
 
 export const loginIdCheck = async (kakao_id) => {

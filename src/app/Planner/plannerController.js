@@ -15,6 +15,7 @@ export const getPlannerListAll = async (req, res) => {
 
 export const getPlannerList = async (req, res) => {
   const { user_id } = req.params;
+  // const user_id = req.verifiedToken.id;
 
   // 빈 아이디 체크
   if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
