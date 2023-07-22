@@ -3,6 +3,23 @@ import { errResponse } from '../../../config/response';
 
 export const selectPlannerListById = async (connection, user_id, type) => {
   switch (type) {
+    case 0:
+      const selectPlannerListAllByIdQuery = `
+      (SELECT planner.id, title, planner.updated_at, nickname 
+        FROM planner JOIN user ON planner.user_id = user.id
+        WHERE user_id = ?)
+        UNION ALL
+        (SELECT planner.id, title, planner_scrap.updated_at, nickname
+        FROM planner_scrap JOIN planner
+        ON planner_scrap.planner_id = planner.id
+        JOIN user ON planner.user_id = user.id
+        WHERE planner_scrap.user_id = ?)
+        ORDER BY updated_at DESC;`;
+      const plannerListAllRow = await connection.query(
+        selectPlannerListAllByIdQuery,
+        [user_id, user_id]
+      );
+      return plannerListAllRow;
     case 1:
       const selectPlannerListByIdQuery = `
       SELECT id, title, updated_at FROM planner 
