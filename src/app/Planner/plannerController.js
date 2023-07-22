@@ -4,7 +4,7 @@ import { retrievePlannerList, retrievePlannerSearch } from './plannerProvider';
 import { deletePlannerCheck, createPlanner } from './plannerService';
 
 export const getPlannerListAll = async (req, res) => {
-  const { user_id } = req.params;
+  const user_id = req.verifiedToken.id;
 
   // 빈 아이디 체크
   if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
@@ -14,8 +14,7 @@ export const getPlannerListAll = async (req, res) => {
 };
 
 export const getPlannerList = async (req, res) => {
-  const { user_id } = req.params;
-  // const user_id = req.verifiedToken.id;
+  const user_id = req.verifiedToken.id;
 
   // 빈 아이디 체크
   if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
@@ -25,7 +24,7 @@ export const getPlannerList = async (req, res) => {
 };
 
 export const getPlannerListScrap = async (req, res) => {
-  const { user_id } = req.params;
+  const user_id = req.verifiedToken.id;
 
   // 빈 아이디 체크
   if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
@@ -35,7 +34,8 @@ export const getPlannerListScrap = async (req, res) => {
 };
 
 export const deletePlanner = async (req, res) => {
-  const { user_id, planner_id, type } = req.body;
+  const user_id = req.verifiedToken.id;
+  const { planner_id, type } = req.body;
   // 빈 아이디 체크
   if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
   if (!planner_id)
@@ -63,7 +63,7 @@ export const postPlanner = async (req, res) => {
   // 그러면 Controller에서부터 body 다 분해해야 되는데?
   const defaultInfo = {
     title: req.body.title,
-    user_id: req.body.user_id,
+    user_id: req.verifiedToken.id,
     memo: req.body.memo,
   };
   const timetableInfo = req.body.timetable;
@@ -86,9 +86,10 @@ export const postPlanner = async (req, res) => {
 };
 
 export const getPlannerSearch = async (req, res) => {
-  const { userId, searchWord } = req.query;
+  const user_id = req.verifiedToken.id;
+  const { searchWord } = req.query;
   // 아이디 체크
-  if (!userId) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
   // 빈 검색어 체크
   if (!searchWord)
     return res.send(errResponse(baseResponse.PLANNER_PLANNER_SEARCHWORD_EMPTY));
@@ -98,7 +99,7 @@ export const getPlannerSearch = async (req, res) => {
       errResponse(baseResponse.PLANNER_PLANNER_SEARCHWORD_LENGTH)
     );
   const getPlannerSearchResponse = await retrievePlannerSearch(
-    userId,
+    user_id,
     searchWord
   );
   return res.send(getPlannerSearchResponse);

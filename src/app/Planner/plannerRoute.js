@@ -11,9 +11,9 @@ import {
 
 const plannerRouter = express.Router();
 
-plannerRouter.get('/list/:user_id', jwtMiddleware, getPlannerListAll);
-plannerRouter.get('/list/myplanner/:user_id', jwtMiddleware, getPlannerList);
-plannerRouter.get('/list/scrap/:user_id', jwtMiddleware, getPlannerListScrap);
+plannerRouter.get('/list', jwtMiddleware, getPlannerListAll);
+plannerRouter.get('/list/myplanner', jwtMiddleware, getPlannerList);
+plannerRouter.get('/list/scrap', jwtMiddleware, getPlannerListScrap);
 plannerRouter.delete('/', jwtMiddleware, deletePlanner);
 plannerRouter.post('/', jwtMiddleware, postPlanner);
 plannerRouter.get('/search', jwtMiddleware, getPlannerSearch);
