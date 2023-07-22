@@ -15,7 +15,7 @@ export const selectPlannerListById = async (connection, user_id, type) => {
       return plannerListRow;
     case 2:
       const selectPlannerListScrapByIdQuery = `
-      SELECT planner.id, title, updated_at, nickname
+      SELECT planner.id, title, planner_scrap.updated_at, nickname
       FROM planner_scrap JOIN planner 
       ON planner_scrap.planner_id = planner.id
       JOIN user ON planner.user_id = user.id
