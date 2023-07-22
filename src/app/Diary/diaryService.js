@@ -4,9 +4,14 @@ import { response, errResponse } from '../../../config/response';
 import {
     userIdCheck,
     diaryIdCheck,
-
-
 } from "./diaryProvider";
+import {
+    insertDiary,
+    insertContent,
+    insertHashtag,
+    insertExtra
+} from "./diaryDao";
+import {insertPlanner, insertTimetable} from "../Planner/plannerDao";
 
 
 export const deleteDiaryCheck = async (user_id, diary_id) => {
@@ -26,7 +31,7 @@ export const deleteDiaryCheck = async (user_id, diary_id) => {
     return response(baseResponse.SUCCESS, deleteDiarybyIdResult[0]);
 };
 
-export const createDiary = async (defaultInfo, contentInfo, hashtagInfo) => {
+export const createDiary = async (defaultInfo, contentInfo, hashtagInfo, extraInfo) => {
     // user가 존재하는지 체크
     const userExist = await userIdCheck(defaultInfo.user_id);
     if (!userExist[0][0]) {
@@ -35,20 +40,34 @@ export const createDiary = async (defaultInfo, contentInfo, hashtagInfo) => {
     const connection = await pool.getConnection(async (conn) => conn);
     const diaryId = await insertDiary(connection, [
         defaultInfo.title,
-        defaultInfo.user_id
+        defaultInfo.user_id,
+        defaultInfo.planner_id
     ]);
     // diary 생성중 에러 검증
     if (!diaryId[0].insertId) {
         return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
     }
-    //내용 저장(이미지, 글)
-    //이미지 개수는 글 개수보다 1개 작아야함.
-    //글 개수 받아와서 반복문 돌려야 함.
-    const contentId = await insertContent(connection, [
-
-    ])
-
-
-
+    //내용 저장(이미지, 글, 장소).
+    //이들은 모두 type 으로 구분한다.
+    //이미지 = image, 글 = text, 장소 = location
+    for (let i = 0; i < contentInfo.count.length; i++) {
+        const contentId = await insertContent(connection, [
+            diaryId[0].insertId,
+            contentInfo.type,
+            contentInfo.content
+        ]);
+    }
     //해시태그 저장
+    const hashtagId = await insertHashtag(connection, [
+        diaryId[0].insertId,
+        hashtagInfo.tag
+    ]);
+
+    //기타 정보 저장. 데이터 default 값
+    const extraId = await insertExtra(connection, [
+        0,
+        0,
+        extraInfo.is_public,
+        extraInfo.is_temporary
+    ]);
 }

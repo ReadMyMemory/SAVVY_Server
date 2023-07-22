@@ -1,7 +1,7 @@
 import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import { retrieveDiaryList } from './diaryProvider';
-import { deleteDiaryCheck } from "./diaryService";
+import {createDiary, deleteDiaryCheck } from "./diaryService";
 
 
 export const getDiaryListAll = async (req, res) => {
@@ -26,13 +26,23 @@ export const getDiaryList = async (req, res) => {
 
 export const postDiary = async (req, res) => {
     // 코드 보기 쉽게 가능한 이프 작성 형식대로 따라가려함.
-    // body를 "기본 정보, 내용(글과 이미지), 해시 태그로 나누려고 함.
+    // body를 "기본 정보, 내용(글과 이미지), 해시 태그, 기타 정보로 나누려고 함.
     const defaultInfo = {
         title: req.body.title,
-        user_id: req.body.user_id
+        user_id: req.body.user_id,
+        planner_id: req.body.planner_id
     };
-    const contentInfo = req.body.content;
-    const hashtagInfo = req.body.hashtag;
+    const contentInfo = {
+        type : req.body.type,
+        content : req.body.content
+    }
+
+    const hashtagInfo = req.body.tag;
+
+    const extraInfo = {
+        is_public : req.body.is_public,
+        is_temporary : req.body.is_temporary,
+    }
     // 빈 아이디 체크
     if (!defaultInfo.user_id)
         return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
@@ -41,7 +51,9 @@ export const postDiary = async (req, res) => {
         return res.send(errResponse(baseResponse.DIARY_DIARY_TITLE_LENGTH));
     if (!defaultInfo.title) defaultInfo.title = '제목을 입력해주세요';
 
-    const postDiaryResponse = await createDiary(defaultInfo, contentInfo, hashtagInfo);
+
+
+    const postDiaryResponse = await createDiary(defaultInfo, contentInfo, hashtagInfo, extraInfo);
     return res.send(postDiaryResponse);
 };
 
