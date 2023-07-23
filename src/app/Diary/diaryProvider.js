@@ -11,6 +11,13 @@ export const userIdCheck = async (user_id) => {
     connection.release();
     return userIdCheckResult;
 };
+export const diaryIdCheck = async (diary_id) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const diaryIdCheckResult = selectDiarybyId(connection, diary_id);
+
+    connection.release();
+    return diaryIdCheckResult;
+};
 
 
 export const retrieveDiaryList = async (user_id) => {
@@ -29,5 +36,19 @@ export const retrieveDiaryList = async (user_id) => {
     } else {
         return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
     }
+};
+
+export const retrieveDiaryId = async (user_id) => {
+    // 방금 만든 Diary의 id를 받아오기 위함
+    const diaryOwner = await userIdCheck(user_id);
+    if (!diaryOwner[0][0]) {
+        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+    }
+
+    const connection = await pool.getConnection(async (conn) => conn);
+    const retrievePlannerIdResult = await selectPlannerId(connection, user_id);
+
+    connection.release();
+    return retrievePlannerIdResult;
 };
 
