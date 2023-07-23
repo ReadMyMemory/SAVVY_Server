@@ -32,8 +32,8 @@ export const selectDiaryId = async (connection, user_id) => {
 
 export const insertDiary = async (connection, params) => {
     const insertDiaryQuery = `
-        INSERT INTO diary (title, user_id, planner_id)
-        VALUES (?, ?, ?);`;
+        INSERT INTO diary (title, user_id, planner_id, is_public, is_temporary)
+        VALUES (?, ?, ?, ?, ?);`;
 
     const insertDiaryRows = await connection.query(insertDiaryQuery, params);
     return insertDiaryRows;
@@ -44,8 +44,8 @@ export const insertDiary = async (connection, params) => {
 // diary_id를 기준으로 1부터 AUTO_INCREMENT 적용됨.
 export const insertContent = async (connection, params) => {
     const insertContentQuery = `
-    INSERT INTO diary_content(diary_id, type, content)
-    VALUES (?, ?, ?);`;
+    INSERT INTO diary_content(diary_id, count, type, content, location)
+    VALUES (?, ?, ?, ?, ?);`;
 
     const insertContentRows = await connection.query(insertContentQuery, params);
     return insertContentRows;
@@ -61,8 +61,8 @@ export const insertHashtag = async (connection, params) => {
 
 export const insertExtra = async (connection, params) => {
     const insertExtraQuery = `
-    INSERT INTO diary(likes_count, comments_count, is_public, is_temporary)
-    VALUES (?, ?, ? ,?);`;
+    INSERT INTO diary(is_public, is_temporary)
+    VALUES (? ,?);`;
     const insertExtraRows = await connection.query(insertExtraQuery, params);
     return insertExtraRows;
 }

@@ -30,14 +30,13 @@ export const postDiary = async (req, res) => {
     const defaultInfo = {
         title: req.body.title,
         user_id: req.body.user_id,
-        planner_id: req.body.planner_id
+        planner_id: req.body.planner_id,
+        is_public : req.body.is_public,
+        is_temporary : req.body.is_temporary
     };
-    const contentInfo = {
-        type : req.body.type,
-        content : req.body.content
-    }
+    const contentInfo = req.body.content;
 
-    const hashtagInfo = req.body.tag;
+    const hashtagInfo = req.body.hashtag;
 
     const extraInfo = {
         is_public : req.body.is_public,

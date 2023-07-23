@@ -31,7 +31,7 @@ export const deleteDiaryCheck = async (user_id, diary_id) => {
     return response(baseResponse.SUCCESS, deleteDiarybyIdResult[0]);
 };
 
-export const createDiary = async (defaultInfo, contentInfo, hashtagInfo, extraInfo) => {
+export const createDiary = async (defaultInfo, contentInfo, hashtagInfo) => {
     // user가 존재하는지 체크
     const userExist = await userIdCheck(defaultInfo.user_id);
     if (!userExist[0][0]) {
@@ -41,7 +41,9 @@ export const createDiary = async (defaultInfo, contentInfo, hashtagInfo, extraIn
     const diaryId = await insertDiary(connection, [
         defaultInfo.title,
         defaultInfo.user_id,
-        defaultInfo.planner_id
+        defaultInfo.planner_id,
+        defaultInfo.is_public,
+        defaultInfo.is_temporary
     ]);
     // diary 생성중 에러 검증
     if (!diaryId[0].insertId) {
@@ -49,25 +51,25 @@ export const createDiary = async (defaultInfo, contentInfo, hashtagInfo, extraIn
     }
     //내용 저장(이미지, 글, 장소).
     //이들은 모두 type 으로 구분한다.
+
     //이미지 = image, 글 = text, 장소 = location
-    for (let i = 0; i < contentInfo.count.length; i++) {
+    for (let i = 0; i < contentInfo.length; i++) {
         const contentId = await insertContent(connection, [
             diaryId[0].insertId,
-            contentInfo.type,
-            contentInfo.content
+            contentInfo[i].count,
+            contentInfo[i].type,
+            contentInfo[i].content,
+            contentInfo[i].location
         ]);
     }
     //해시태그 저장
-    const hashtagId = await insertHashtag(connection, [
-        diaryId[0].insertId,
-        hashtagInfo.tag
-    ]);
+    for (let j = 0; j < hashtagInfo.length; j++) {
+        const hashtagId = await insertHashtag(connection, [
+            diaryId[0].insertId,
+            hashtagInfo[j].tag
+        ]);
+    }
 
-    //기타 정보 저장. 데이터 default 값
-    const extraId = await insertExtra(connection, [
-        0,
-        0,
-        extraInfo.is_public,
-        extraInfo.is_temporary
-    ]);
+    connection.release();
+    return response(baseResponse.SUCCESS);
 }
