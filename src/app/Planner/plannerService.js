@@ -14,6 +14,9 @@ import {
   insertPlanner,
   insertTimetable,
   insertChecklist,
+  updatePlanner,
+  updateTimetable,
+  updateChecklist,
 } from './plannerDao';
 
 export const deletePlannerCheck = async (user_id, planner_id, type) => {
@@ -88,6 +91,45 @@ export const createPlanner = async (defaultInfo, timetableInfo) => {
           timetableId[0].insertId,
           timetableInfo[i].schedule[j].checklist[k].contents,
           timetableInfo[i].schedule[j].checklist[k].is_checked,
+        ]);
+      }
+    }
+  }
+  connection.release();
+  return response(baseResponse.SUCCESS);
+};
+
+export const modifyPlanner = async (defaultInfo, timetableInfo) => {
+  // user가 존재하는지 체크
+  const userExist = await userIdCheck(defaultInfo.user_id);
+  if (!userExist[0][0]) {
+    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+  }
+  const connection = await pool.getConnection(async (conn) => conn);
+  const plannerId = await updatePlanner(connection, [
+    defaultInfo.title,
+    defaultInfo.memo,
+    defaultInfo.planner_id,
+  ]);
+
+  // 시간표 저장
+  for (let i = 0; i < timetableInfo.length; i++) {
+    for (let j = 0; j < timetableInfo[i].schedule.length; j++) {
+      await updateTimetable(connection, [
+        timetableInfo[i].schedule[j].place_name,
+        timetableInfo[i].date,
+        timetableInfo[i].schedule[j].started_at,
+        timetableInfo[i].schedule[j].finished_at,
+        timetableInfo[i].schedule[j].id,
+      ]);
+
+      // 체크리스트 저장
+      if (!timetableInfo[i].schedule[j].checklist) continue;
+      for (let k = 0; k < timetableInfo[i].schedule[j].checklist.length; k++) {
+        await updateChecklist(connection, [
+          timetableInfo[i].schedule[j].checklist[k].contents,
+          timetableInfo[i].schedule[j].checklist[k].is_checked,
+          timetableInfo[i].schedule[j].checklist[k].id,
         ]);
       }
     }

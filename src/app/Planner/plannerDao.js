@@ -173,3 +173,39 @@ export const selectPlannerSearch = async (connection, params) => {
   );
   return selectPlannerSearchRows;
 };
+
+export const updatePlanner = async (connection, params) => {
+  const updatePlannerQuery = `
+  UPDATE planner
+  SET title = ?, memo = ?
+  WHERE id = ?;`;
+
+  const updatePlannerRows = await connection.query(updatePlannerQuery, params);
+  return updatePlannerRows;
+};
+
+export const updateTimetable = async (connection, params) => {
+  const updateTimetableQuery = `
+  UPDATE planner_timetable 
+  SET place_name = ?, date = ?, started_at = ?, finished_at = ?
+  WHERE id = ?;`;
+
+  const updateTimetableRows = await connection.query(
+    updateTimetableQuery,
+    params
+  );
+  return updateTimetableRows;
+};
+
+export const updateChecklist = async (connection, params) => {
+  const updateChecklistQuery = `
+  UPDATE planner_checklist 
+  SET contents = ?, is_checked = ?
+  WHERE id = ?;`;
+
+  const updateChecklistRows = await connection.query(
+    updateChecklistQuery,
+    params
+  );
+  return updateChecklistRows;
+};
