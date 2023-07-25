@@ -1,11 +1,11 @@
 import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import { retrieveDiaryList } from './diaryProvider';
-import {createDiary, deleteDiaryCheck } from "./diaryService";
+import { createDiary, modifyDiary, deleteDiaryCheck } from "./diaryService";
 
 
 export const getDiaryListAll = async (req, res) => {
-    const { user_id } = req.params;
+    const { user_id } = req.verifiedToken.id;
 
     // 빈 아이디 체크
     if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
@@ -15,7 +15,7 @@ export const getDiaryListAll = async (req, res) => {
 };
 
 export const getDiaryList = async (req, res) => {
-    const { user_id } = req.params;
+    const { user_id } = req.verifiedToken.id;
 
     // 빈 아이디 체크
     if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
@@ -29,7 +29,7 @@ export const postDiary = async (req, res) => {
     // body를 "기본 정보, 내용(글과 이미지), 해시 태그, 기타 정보로 나누려고 함.
     const defaultInfo = {
         title: req.body.title,
-        user_id: req.body.user_id,
+        user_id: req.verifiedToken.id,
         planner_id: req.body.planner_id,
         is_public : req.body.is_public,
         is_temporary : req.body.is_temporary
@@ -38,10 +38,6 @@ export const postDiary = async (req, res) => {
 
     const hashtagInfo = req.body.hashtag;
 
-    const extraInfo = {
-        is_public : req.body.is_public,
-        is_temporary : req.body.is_temporary,
-    }
     // 빈 아이디 체크
     if (!defaultInfo.user_id)
         return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
@@ -52,12 +48,35 @@ export const postDiary = async (req, res) => {
 
 
 
-    const postDiaryResponse = await createDiary(defaultInfo, contentInfo, hashtagInfo, extraInfo);
+    const postDiaryResponse = await createDiary(defaultInfo, contentInfo, hashtagInfo);
     return res.send(postDiaryResponse);
 };
 
+export const putDiary = async (req, res) => {
+    const diary_id = req.body.diary_id;
+    const modifydefaultInfo = {
+        title: req.body.title,
+        is_temporary : req.body.is_temporary
+    };
+    const modifycontentInfo = {
+
+    }
+    const modifyhashtagInfo = req.body.hashtag;
+
+    // 제목 길이 체크
+    if (modifydefaultInfo.title.length > 75)
+        return res.send(errResponse(baseResponse.DIARY_DIARY_TITLE_LENGTH));
+    if (!modifydefaultInfo.title) modifydefaultInfo.title = '제목을 입력해주세요';
+
+
+    const putDiaryResponse = await modifyDiary(diary_id, modifydefaultInfo, modifycontentInfo, modifyhashtagInfo);
+    return res.send(putDiaryResponse);
+}
+
+
 export const deleteDiary = async (req, res) => {
-    const { user_id, diary_id } = req.body;
+    const user_id = req.verifiedToken.id;
+    const diary_id = req.body.diary_id;
     // 빈 아이디 체크
     if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
     if (!diary_id)

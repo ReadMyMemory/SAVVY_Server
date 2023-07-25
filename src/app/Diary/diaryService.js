@@ -9,9 +9,11 @@ import {
     insertDiary,
     insertContent,
     insertHashtag,
-    insertExtra
+    updateDefault,
+    deleteContent,
+    updateContent,
+    updateHashtag
 } from "./diaryDao";
-import {insertPlanner, insertTimetable} from "../Planner/plannerDao";
 
 
 export const deleteDiaryCheck = async (user_id, diary_id) => {
@@ -54,7 +56,7 @@ export const createDiary = async (defaultInfo, contentInfo, hashtagInfo) => {
 
     //이미지 = image, 글 = text, 장소 = location
     for (let i = 0; i < contentInfo.length; i++) {
-        const contentId = await insertContent(connection, [
+        await insertContent(connection, [
             diaryId[0].insertId,
             contentInfo[i].count,
             contentInfo[i].type,
@@ -64,9 +66,50 @@ export const createDiary = async (defaultInfo, contentInfo, hashtagInfo) => {
     }
     //해시태그 저장
     for (let j = 0; j < hashtagInfo.length; j++) {
-        const hashtagId = await insertHashtag(connection, [
+        await insertHashtag(connection, [
             diaryId[0].insertId,
             hashtagInfo[j].tag
+        ]);
+    }
+
+    connection.release();
+    return response(baseResponse.SUCCESS);
+}
+
+export const modifyDiary = async(diary_id, modifydefaultInfo, modifycontentInfo, modifyhashtagInfo) => {
+    // diary가 존재하는지 체크
+    const diaryExist = await diaryIdCheck(diary_id);
+    if (!diaryExist[0][0]) {
+        return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+    }
+    const connection = await pool.getConnection(async (conn) => conn);
+    // 기본 정보 수정
+    await updateDefault(connection, [
+        modifydefaultInfo.title,
+        modifydefaultInfo.is_temporary,
+        diary_id
+    ]);
+    // 내용 정보 수정을 위한 기존 내용 삭제
+    await deleteContent(connection, diary_id);
+
+    // 내용 정보 수정(하지만 처음 내용을 쓰는 것과 같다.)
+    for (let i = 0; i < modifycontentInfo.length; i++) {
+        await insertContent(connection, [
+            diary_id,
+            modifycontentInfo[i].count,
+            modifycontentInfo[i].type,
+            modifycontentInfo[i].content,
+            modifycontentInfo[i].location,
+        ]);
+    }
+    // 해시태그 정보 수정을 위한 기존 내용 삭제
+    await deleteHashtag(connection, diary_id);
+
+    // 해시태그 내용 수정
+    for(let j = 0; j < modifyhashtagInfo.length; j++) {
+        await insertHashtag(connection, [
+            diary_id,
+            modifyhashtagInfo[j].tag
         ]);
     }
 

@@ -3,7 +3,8 @@ import {
     getDiaryList,
     getDiaryListAll,
     deleteDiary,
-    postDiary
+    postDiary,
+    putDiary
 } from "./diaryController";
 
 
@@ -13,4 +14,5 @@ diaryRouter.get('/list/:user_id', getDiaryListAll);
 diaryRouter.get('/list/mydiary/:user_id', getDiaryList);
 diaryRouter.delete('/', deleteDiary);
 diaryRouter.post('/', postDiary);
+diaryRouter.put('/', putDiary);
 export default diaryRouter;
