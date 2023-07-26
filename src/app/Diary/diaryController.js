@@ -56,11 +56,11 @@ export const putDiary = async (req, res) => {
     const diary_id = req.body.diary_id;
     const modifydefaultInfo = {
         title: req.body.title,
+        planner_id : req.body.planner_id,
         is_temporary : req.body.is_temporary
     };
-    const modifycontentInfo = {
+    const modifycontentInfo = req.body.content;
 
-    }
     const modifyhashtagInfo = req.body.hashtag;
 
     // 제목 길이 체크
