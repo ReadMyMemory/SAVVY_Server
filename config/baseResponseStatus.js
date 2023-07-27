@@ -172,6 +172,11 @@ const baseResponse = {
     code: 2102,
     message: 'diaryId를 입력해주세요.',
   },
+  USER_USERID_NOT_MATCH_DIARYOWNER: {
+    isSuccess: false,
+    code: 2103,
+    message: '다이어리 작성자가 아닙니다.',
+  },
 
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {

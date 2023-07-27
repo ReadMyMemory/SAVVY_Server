@@ -9,12 +9,24 @@ export const selectDiaryListById = async (connection, user_id) => {
             return diaryListRow;
 };
 
-export const selectDiarybyId = async (connetion, diary_id) => {
+export const selectDiarybyId = async (connection, diary_id) => {
     const selectDiarybyIdQuery = `
-  SELECT * FROM diary WHERE id = ?;`;
+  SELECT * 
+  FROM diary 
+  WHERE id = ?;`;
 
-    const diaryRows = await connetion.query(selectDiarybyIdQuery, diary_id);
+    const diaryRows = await connection.query(selectDiarybyIdQuery, diary_id);
     return diaryRows;
+};
+
+export const selectUserbyDiaryId = async (connection, diary_id) => {
+    const selectUserbyDiaryIdQuery = `
+    SELECT user_id
+    FROM diary
+    WHERE id = ?;`;
+
+    const selectUserbyDiaryIdRows = await connection.query(selectUserbyDiaryIdQuery, diary_id);
+    return selectUserbyDiaryIdRows;
 };
 
 export const selectDiaryId = async (connection, user_id) => {
@@ -59,10 +71,47 @@ export const insertHashtag = async (connection, params) => {
     return insertHashtagRows;
 };
 
-export const insertExtra = async (connection, params) => {
-    const insertExtraQuery = `
-    INSERT INTO diary(is_public, is_temporary)
-    VALUES (? ,?);`;
-    const insertExtraRows = await connection.query(insertExtraQuery, params);
-    return insertExtraRows;
-}
+// 약간의 문제가 있는데, 일단 한번 만든 content 블록은 그대로 유지된다는 관점으로
+// 위부터 순차적으로 데이터 변경을 하는 방식이다. 하지만 만약에 기존에 25블록을 쓰다가
+// 20블럭을 쓰게 되면? 나머지 5블럭은 삭제되야 할 것이다.
+// 이럴거면 차라리 update가 아니라 모든걸 삭제하고 다시 insert 하는 게 나은가?
+// 일단 그렇게 짜고, 더 좋은 방법이 있으면 그쪽으로 수정.
+
+export const updateDefault = async (connection, params) => {
+    const updateDefaultQuery = `
+    UPDATE diary
+    SET title = ?, planner_id = ?, is_temporary = ?
+    WHERE id = ?;`;
+    const updateDefaultRows = await connection.query(updateDefaultQuery, params);
+    return updateDefaultRows;
+};
+
+export const deleteContent = async (connection, diary_id) => {
+    const deleteContentQuery = `
+    DELETE 
+    FROM diary_content 
+    WHERE diary_id = ?;`;
+    const deleteContentRows = await connection.query(deleteContentQuery, diary_id);
+    return deleteContentRows;
+};
+// 해시태그도 content와 비슷하게 갈 거 같다.
+// 삭제 후 다시 작성하는 방식.
+export const deleteHashtag = async (connection, diary_id) => {
+    const deleteHashtagQuery = `
+    DELETE
+    FROM diary_hashtag
+    WHERE diary_id = ?;`;
+    const deleteHashtagRows = await connection.query(deleteHashtagQuery, diary_id);
+    return  deleteHashtagRows;
+};
+
+// 다른 데이터는 cascade 옵션으로 다같이 삭제될거다.
+// 다만 soft delete 하면 달라질지도?
+export const deleteDiarybyId = async (connection, diary_id) => {
+    const deleteDiarybyIdQuery = `
+    DELETE
+    FROM diary
+    WHERE id = ?;`;
+    const deleteDiarybyIdRows = await connection.query(deleteDiarybyIdQuery, diary_id);
+    return deleteDiarybyIdRows;
+};
