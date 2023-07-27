@@ -53,12 +53,13 @@ export const retrieveDiaryList = async (user_id) => {
 
     const connection = await pool.getConnection(async (conn) => conn);
     const retrieveDairyListResult = await selectDiaryListById(connection, user_id);
+
     //일단은 임시 방법. dayjs를 사용
-    // 시간을 한국 시간대로 변경해 YYYY-MM-DD HH:mm:ss 형식으로 변환하는 과정. 다른 방식으로도 변환 가능.
+    //시간을 한국 시간대로 변경해 YYYY-MM-DD HH:mm:ss 형식으로 변환하는 과정. 다른 방식으로도 변환 가능.
     for(let i = 0; i < retrieveDairyListResult[0].length; i++) {
         const updatedTimeUTC = dayjs(retrieveDairyListResult[0][i].updated_at).utc();
         const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
-        retrieveDairyListResult[0][i].updated_at = updatedTimeKorea.format('YYYY-MM-DD HH:mm:ss');
+        retrieveDairyListResult[0][i].updated_at = updatedTimeKorea.format('YYYY-MM-DD');
     }
     connection.release();
     if (retrieveDairyListResult[0][0]) {
@@ -93,7 +94,7 @@ export const retrieveDiaryDefault = async (diary_id) => {
     // 시간대를 한국 시간대로 바꾸는 과정
     const updatedTimeUTC = dayjs(retrieveDiaryDefaultResult[0][0].updated_at).utc();
     const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
-    retrieveDiaryDefaultResult[0][0].updated_at = updatedTimeKorea.format('YYYY-MM-DD HH:mm:ss');
+   retrieveDiaryDefaultResult[0][0].updated_at = updatedTimeKorea.format('YYYY-MM-DD');
 
     connection.release();
     return retrieveDiaryDefaultResult[0];
