@@ -2,7 +2,7 @@ import pool from '../../../config/database';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import { selectUserbyId } from '../User/userDao';
-import { selectDiaryListById, selectDiarybyId, selectUserbyDiaryId } from "./diaryDao";
+import { selectDiaryListById, selectDiaryId, selectDiarybyId, selectUserbyDiaryId } from "./diaryDao";
 
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
@@ -51,7 +51,6 @@ export const retrieveDiaryList = async (user_id) => {
         const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
         retrieveDairyListResult[0][i].updated_at = updatedTimeKorea.format('YYYY-MM-DD HH:mm:ss');
     }
-console.log(retrieveDairyListResult[0].length);
     connection.release();
     if (retrieveDairyListResult[0][0]) {
         return response(baseResponse.SUCCESS, retrieveDairyListResult[0]);
@@ -68,9 +67,9 @@ export const retrieveDiaryId = async (user_id) => {
     }
 
     const connection = await pool.getConnection(async (conn) => conn);
-    const retrievePlannerIdResult = await selectPlannerId(connection, user_id);
+    const retrieveDiaryIdResult = await selectDiaryId(connection, user_id);
 
     connection.release();
-    return retrievePlannerIdResult;
+    return retrieveDiaryIdResult;
 };
 

@@ -9,11 +9,13 @@ import {
 import {
     insertDiary,
     insertContent,
+    insertThumbnail,
+    insertImgCount,
     insertHashtag,
     updateDefault,
     deleteContent,
     deleteDiarybyId,
-    deleteHashtag,
+    deleteHashtag
 } from "./diaryDao";
 
 
@@ -59,7 +61,7 @@ export const createDiary = async (defaultInfo, contentInfo, hashtagInfo) => {
     //type의 경우 이미지 = image, 글 = text
     //이미지에는 location 정보가 있고, 글에는 null
     for (let i = 0; i < contentInfo.length; i++) {
-        await insertContent(connection, [
+        const contentId = await insertContent(connection, [
             diaryId[0].insertId,
             contentInfo[i].count,
             contentInfo[i].type,
@@ -67,6 +69,23 @@ export const createDiary = async (defaultInfo, contentInfo, hashtagInfo) => {
             contentInfo[i].location
         ]);
     }
+
+    // type이 image인지를 0부터 시작하면서 확인
+    for(let p = 0; p < contentInfo.length; p++) {
+        if(contentInfo[p].type == 'image') {
+            await insertThumbnail(connection, [
+                contentInfo[p].content,
+                diaryId[0].insertId
+            ]);
+            break;
+        }
+    }
+
+    await insertImgCount(connection, [
+        diaryId[0].insertId,
+        diaryId[0].insertId
+    ]);
+
     //해시태그 저장
     for (let j = 0; j < hashtagInfo.length; j++) {
         await insertHashtag(connection, [
@@ -106,6 +125,25 @@ export const modifyDiary = async(diary_id, modifydefaultInfo, modifycontentInfo,
             modifycontentInfo[i].location,
         ]);
     }
+
+// 변경된 썸네일과 이미지 개수 데이터 수정
+// type이 image인지를 0부터 시작하면서 확인
+    for(let p = 0; p < modifycontentInfo.length; p++) {
+        if(modifycontentInfo[p].type == 'image') {
+            await insertThumbnail(connection, [
+                modifycontentInfo[p].content,
+                diary_id
+            ]);
+            break;
+        }
+    }
+
+    await insertImgCount(connection, [
+        diary_id,
+        diary_id
+    ]);
+
+
     // 해시태그 정보 수정을 위한 기존 내용 삭제
     await deleteHashtag(connection, diary_id);
 
