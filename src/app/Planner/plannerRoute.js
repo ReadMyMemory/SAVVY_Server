@@ -9,6 +9,7 @@ import {
   getPlannerSearch,
   putPlanner,
   getPlannerdetail,
+  postPlannerUpload,
 } from './plannerController';
 
 const plannerRouter = express.Router();
@@ -21,5 +22,6 @@ plannerRouter.post('/', jwtMiddleware, postPlanner);
 plannerRouter.get('/search', jwtMiddleware, getPlannerSearch);
 plannerRouter.put('/', jwtMiddleware, putPlanner);
 plannerRouter.get('/:planner_id', jwtMiddleware, getPlannerdetail);
+plannerRouter.post('/upload', jwtMiddleware, postPlannerUpload);
 
 export default plannerRouter;

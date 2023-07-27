@@ -89,7 +89,11 @@ export const postPlanner = async (req, res) => {
   if (timetableInfo.length <= 0) {
     return res.send(errResponse(baseResponse.PLANNER_PLANNER_TIMETABLE_EMPTY));
   }
-  const postPlannerResponse = await createPlanner(defaultInfo, timetableInfo);
+  const postPlannerResponse = await createPlanner(
+    defaultInfo,
+    timetableInfo,
+    0
+  );
   return res.send(postPlannerResponse);
 };
 
@@ -151,4 +155,32 @@ export const getPlannerdetail = async (req, res) => {
     planner_id
   );
   return res.send(getPlannerdetailResponse);
+};
+
+export const postPlannerUpload = async (req, res) => {
+  const defaultInfo = {
+    title: req.body.title,
+    user_id: req.verifiedToken.id,
+    memo: req.body.memo,
+  };
+  const timetableInfo = req.body.timetable;
+  // 빈 아이디 체크
+  if (!defaultInfo.user_id)
+    return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  // 제목 길이 체크
+  if (defaultInfo.title.length > 45)
+    return res.send(errResponse(baseResponse.PLANNER_PLANNER_TITLE_LENGTH));
+  if (!defaultInfo.title) defaultInfo.title = '제목을 입력해주세요';
+  if (!defaultInfo.memo) defaultInfo.memo = null;
+
+  // 시간표 체크
+  if (timetableInfo.length <= 0) {
+    return res.send(errResponse(baseResponse.PLANNER_PLANNER_TIMETABLE_EMPTY));
+  }
+  const postPlannerResponse = await createPlanner(
+    defaultInfo,
+    timetableInfo,
+    1
+  );
+  return res.send(postPlannerResponse);
 };

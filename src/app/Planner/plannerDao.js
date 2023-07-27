@@ -88,13 +88,31 @@ export const deleteScrapbyId = async (connection, params) => {
   return deleteScrapRows;
 };
 
-export const insertPlanner = async (connection, params) => {
-  const insertPlannerQuery = `
-  INSERT INTO planner (title, user_id, memo)
-  VALUES (?, ?, ?);`;
+export const insertPlanner = async (connection, params, type) => {
+  switch (type) {
+    case 0:
+      const insertPlannerQuery = `
+      INSERT INTO planner (title, user_id, memo)
+      VALUES (?, ?, ?);`;
 
-  const insertPlannerRows = await connection.query(insertPlannerQuery, params);
-  return insertPlannerRows;
+      const insertPlannerRows = await connection.query(
+        insertPlannerQuery,
+        params
+      );
+      return insertPlannerRows;
+    case 1:
+      const insertPlannerUploadQuery = `
+      INSERT INTO planner (title, user_id, memo, is_uploaded)
+      VALUES (?, ?, ?, 1);`;
+
+      const insertPlannerUploadRows = await connection.query(
+        insertPlannerUploadQuery,
+        params
+      );
+      return insertPlannerUploadRows;
+    default:
+      return errResponse(baseResponse.DB_ERROR);
+  }
 };
 
 export const selectPlannerId = async (connection, user_id) => {
