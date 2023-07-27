@@ -4,21 +4,19 @@ import { retrieveKakaoLogin } from './userProvider';
 import { createUser } from './userService';
 
 export const loginUser = async (req, res) => {
-  const { accessToken } = req.body;
+  const { kakaoToken } = req.body;
   // 빈 토큰 체크
-  if (!accessToken)
-    return res.send(errResponse(baseResponse.TOKEN_KAKAO_EMPTY));
+  if (!kakaoToken) return res.send(errResponse(baseResponse.TOKEN_KAKAO_EMPTY));
 
-  const loginUserResponse = await retrieveKakaoLogin(accessToken);
+  const loginUserResponse = await retrieveKakaoLogin(kakaoToken);
   return res.send(loginUserResponse);
 };
 
 export const postUser = async (req, res) => {
-  const { accessToken, img_url, nickname, intro } = req.body;
+  const { kakaoToken, pic_url, nickname, intro } = req.body;
 
   // 빈 토큰 체크
-  if (!accessToken)
-    return res.send(errResponse(baseResponse.TOKEN_KAKAO_EMPTY));
+  if (!kakaoToken) return res.send(errResponse(baseResponse.TOKEN_KAKAO_EMPTY));
   // 빈 닉네임 체크
   if (!nickname)
     return res.send(errResponse(baseResponse.SIGNUP_NICKNAME_EMPTY));
@@ -26,12 +24,7 @@ export const postUser = async (req, res) => {
   if (intro.length > 300)
     return res.send(response(baseResponse.SIGNUP_INTRO_LENGTH));
 
-  const signUpResponse = await createUser(
-    accessToken,
-    img_url,
-    nickname,
-    intro
-  );
+  const signUpResponse = await createUser(kakaoToken, pic_url, nickname, intro);
 
   return res.send(signUpResponse);
 };
