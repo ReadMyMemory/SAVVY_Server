@@ -125,6 +125,25 @@ export const modifyDiary = async(diary_id, modifydefaultInfo, modifycontentInfo,
             modifycontentInfo[i].location,
         ]);
     }
+
+// 변경된 썸네일과 이미지 개수 데이터 수정
+// type이 image인지를 0부터 시작하면서 확인
+    for(let p = 0; p < modifycontentInfo.length; p++) {
+        if(modifycontentInfo[p].type == 'image') {
+            await insertThumbnail(connection, [
+                modifycontentInfo[p].content,
+                diary_id
+            ]);
+            break;
+        }
+    }
+
+    await insertImgCount(connection, [
+        diary_id,
+        diary_id
+    ]);
+
+
     // 해시태그 정보 수정을 위한 기존 내용 삭제
     await deleteHashtag(connection, diary_id);
 
