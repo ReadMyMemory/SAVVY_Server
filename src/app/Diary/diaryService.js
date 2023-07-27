@@ -11,8 +11,8 @@ import {
     insertHashtag,
     updateDefault,
     deleteContent,
-    updateContent,
-    updateHashtag
+    deleteDiarybyId,
+    deleteHashtag
 } from "./diaryDao";
 
 
@@ -21,13 +21,14 @@ export const deleteDiaryCheck = async (user_id, diary_id) => {
     if (!diaryOwner[0][0]) {
         return errResponse(baseResponse.USER_USERID_NOT_EXIST);
     }
+    console.log(diary_id);
     const myDiaryCheck = await diaryIdCheck(diary_id);
     // diary가 존재하는지 체크
     if (!myDiaryCheck[0][0]) {
         return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
     }
     const connection = await pool.getConnection(async (conn) => conn);
-    const deleteDiarybyIdResult = deleteDiarybyId(connection, diary_id);
+    const deleteDiarybyIdResult = await deleteDiarybyId(connection, diary_id);
 
     connection.release();
     return response(baseResponse.SUCCESS, deleteDiarybyIdResult[0]);
@@ -54,7 +55,8 @@ export const createDiary = async (defaultInfo, contentInfo, hashtagInfo) => {
     //내용 저장(이미지, 글, 장소).
     //이들은 모두 type 으로 구분한다.
 
-    //이미지 = image, 글 = text, 장소 = location
+    //type의 경우 이미지 = image, 글 = text
+    //이미지에는 location 정보가 있고, 글에는 null
     for (let i = 0; i < contentInfo.length; i++) {
         await insertContent(connection, [
             diaryId[0].insertId,
@@ -106,7 +108,7 @@ export const modifyDiary = async(diary_id, modifydefaultInfo, modifycontentInfo,
     // 해시태그 정보 수정을 위한 기존 내용 삭제
     await deleteHashtag(connection, diary_id);
 
-    // 해시태그 내용 수정
+    // 해시태그 내용 수정(하지만 처음 내용을 쓰는 것과 같다.)
     for(let j = 0; j < modifyhashtagInfo.length; j++) {
         await insertHashtag(connection, [
             diary_id,

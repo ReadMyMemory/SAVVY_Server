@@ -11,7 +11,9 @@ export const selectDiaryListById = async (connection, user_id) => {
 
 export const selectDiarybyId = async (connetion, diary_id) => {
     const selectDiarybyIdQuery = `
-  SELECT * FROM diary WHERE id = ?;`;
+  SELECT * 
+  FROM diary 
+  WHERE id = ?;`;
 
     const diaryRows = await connetion.query(selectDiarybyIdQuery, diary_id);
     return diaryRows;
@@ -63,13 +65,13 @@ export const insertHashtag = async (connection, params) => {
 // 위부터 순차적으로 데이터 변경을 하는 방식이다. 하지만 만약에 기존에 25블록을 쓰다가
 // 20블럭을 쓰게 되면? 나머지 5블럭은 삭제되야 할 것이다.
 // 이럴거면 차라리 update가 아니라 모든걸 삭제하고 다시 insert 하는 게 나은가?
-// 일단 그렇게 짜고, 이프한테 물어봐야겠다.
+// 일단 그렇게 짜고, 더 좋은 방법이 있으면 그쪽으로 수정.
 
 export const updateDefault = async (connection, params) => {
     const updateDefaultQuery = `
     UPDATE diary
     SET title = ?, planner_id = ?, is_temporary = ?
-    WHERE diary_id = ?;`;
+    WHERE id = ?;`;
     const updateDefaultRows = await connection.query(updateDefaultQuery, params);
     return updateDefaultRows;
 };
@@ -91,4 +93,15 @@ export const deleteHashtag = async (connection, diary_id) => {
     WHERE diary_id = ?;`;
     const deleteHashtagRows = await connection.query(deleteHashtagQuery, diary_id);
     return  deleteHashtagRows;
+};
+
+// 다른 데이터는 cascade 옵션으로 다같이 삭제될거다.
+// 다만 soft delete 하면 달라질지도?
+export const deleteDiarybyId = async (connection, diary_id) => {
+    const deleteDiarybyIdQuery = `
+    DELETE
+    FROM diary
+    WHERE id = ?;`;
+    const deleteDiarybyIdRows = await connection.query(deleteDiarybyIdQuery, diary_id);
+    return deleteDiarybyIdRows;
 };
