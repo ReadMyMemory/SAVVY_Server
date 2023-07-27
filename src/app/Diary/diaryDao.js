@@ -2,7 +2,7 @@ import {connect} from "pm2";
 
 export const selectDiaryListById = async (connection, user_id) => {
             const selectDiaryListByIdQuery = `
-      SELECT id, title, updated_at FROM diary
+      SELECT id, title, updated_at, likes_count, comments_count, thumbnail, img_count FROM diary
       WHERE user_id = ?
       ORDER BY updated_at DESC;`;
             const diaryListRow = await connection.query(selectDiaryListByIdQuery, user_id);
@@ -62,6 +62,30 @@ export const insertContent = async (connection, params) => {
     const insertContentRows = await connection.query(insertContentQuery, params);
     return insertContentRows;
 };
+
+export const insertThumbnail = async (connection, params) => {
+    const insertThumbnailQuery = `
+UPDATE diary
+SET thumbnail = ?
+WHERE id = ?;`;
+
+    const insertThumbnailRows = await connection.query(insertThumbnailQuery, params);
+    return insertThumbnailRows;
+};
+
+export const insertImgCount = async(connection, params) => {
+    const insertImgCountQuery = `
+    UPDATE diary
+    SET img_count = (SELECT COUNT(*)
+                     FROM diary_content
+                     WHERE diary_id = ? AND type = 'image')
+    WHERE id = ?;`;
+
+    const insertImgCountRows = await connection.query(insertImgCountQuery, params);
+    return insertImgCountRows;
+
+}
+
 
 export const insertHashtag = async (connection, params) => {
     const insertHashtagQuery = `
