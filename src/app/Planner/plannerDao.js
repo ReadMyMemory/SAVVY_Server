@@ -1,3 +1,4 @@
+import { connect } from 'pm2';
 import baseResponse from '../../../config/baseResponseStatus';
 import { errResponse } from '../../../config/response';
 
@@ -22,7 +23,8 @@ export const selectPlannerListById = async (connection, user_id, type) => {
       return plannerListAllRow;
     case 1:
       const selectPlannerListByIdQuery = `
-      SELECT id, title, updated_at FROM planner 
+      SELECT id, title, updated_at 
+      FROM planner 
       WHERE user_id = ?
       ORDER BY updated_at DESC;`;
       const plannerListRow = await connection.query(
@@ -32,12 +34,12 @@ export const selectPlannerListById = async (connection, user_id, type) => {
       return plannerListRow;
     case 2:
       const selectPlannerListScrapByIdQuery = `
-      SELECT planner.id, title, planner_scrap.updated_at, nickname
+      SELECT planner.id, title, DATE_FORMAT(planner_scrap.updated_at, '%Y-%m-%d') AS 'updated_at', nickname
       FROM planner_scrap JOIN planner 
       ON planner_scrap.planner_id = planner.id
       JOIN user ON planner.user_id = user.id
       WHERE planner_scrap.user_id = ?
-      ORDER BY updated_at DESC;
+      ORDER BY planner_scrap.updated_at DESC;
       `;
       const plannerListScrapRow = await connection.query(
         selectPlannerListScrapByIdQuery,
@@ -208,4 +210,45 @@ export const updateChecklist = async (connection, params) => {
     params
   );
   return updateChecklistRows;
+};
+
+export const selectPlannerDetail = async (connection, planner_id) => {
+  const selectPlannerDetailQuery = `
+  SELECT planner.id, title, nickname, planner.updated_at, memo
+  FROM planner JOIN user ON planner.user_id = user.id
+  WHERE planner.id = ?;`;
+
+  const selectPlannerDetailRow = await connection.query(
+    selectPlannerDetailQuery,
+    planner_id
+  );
+  return selectPlannerDetailRow;
+};
+
+export const selectTimetableDetail = async (connection, planner_id) => {
+  const selectTimetableDetailQuery = `
+  SELECT id, place_name, DATE_FORMAT(started_at, '%H:%i') AS 'started_at', DATE_FORMAT(finished_at, '%H:%i') AS 'finished_at', DATE_FORMAT(planner_timetable.date, '%Y-%m-%d') AS 'date'
+  FROM planner_timetable
+  WHERE planner_id = ?
+  ORDER BY id;`;
+
+  const selectTimetableDetailRows = await connection.query(
+    selectTimetableDetailQuery,
+    planner_id
+  );
+  return selectTimetableDetailRows;
+};
+
+export const selectChecklistDetail = async (connection, timetable_id) => {
+  const selectChecklistDetailQuery = `
+  SELECT id, contents, is_checked
+  FROM planner_checklist
+  WHERE timetable_id = ?
+  ORDER BY id;`;
+
+  const selectChecklistDetailRows = await connection.query(
+    selectChecklistDetailQuery,
+    timetable_id
+  );
+  return selectChecklistDetailRows;
 };

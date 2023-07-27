@@ -9,6 +9,9 @@ import {
   selectPlannerId,
   selectTimetableId,
   selectPlannerSearch,
+  selectPlannerDetail,
+  selectTimetableDetail,
+  selectChecklistDetail,
 } from './plannerDao';
 
 export const userIdCheck = async (user_id) => {
@@ -103,4 +106,68 @@ export const retrievePlannerSearch = async (user_id, search_word) => {
   if (!retrievePlannerSearchResult[0][0])
     return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
   return response(baseResponse.SUCCESS, retrievePlannerSearchResult[0]);
+};
+
+export const retrievePlannerdetail = async (user_id, planner_id) => {
+  // 유저 존재 확인
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  // planner 기본 정보
+  const connection = await pool.getConnection(async (conn) => conn);
+  const defaultInfo = await selectPlannerDetail(connection, planner_id);
+  // planner가 없을 경우
+  if (!defaultInfo[0][0])
+    return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
+
+  // timetable 정보
+  const selectTimetableDetailResult = await selectTimetableDetail(
+    connection,
+    planner_id
+  );
+  const timetableInfo = selectTimetableDetailResult[0];
+  // timetable이 없을 경우
+  if (!timetableInfo[0])
+    return errResponse(baseResponse.PLANNER_TIMETABLEID_NOT_EXIST);
+
+  // checklist 정보
+  for (let i = 0; i < timetableInfo.length; i++) {
+    const selectChecklistResult = await selectChecklistDetail(
+      connection,
+      timetableInfo[i].id
+    );
+    if (!selectChecklistResult[0][0]) {
+      timetableInfo[i].checklist = null;
+      continue;
+    }
+    timetableInfo[i].checklist = selectChecklistResult[0];
+  }
+
+  // default + timetable
+  const timetable = new Array();
+  const timetableObj = { date: null, schedule: new Array() };
+  let tmp = timetableInfo[0].date;
+  for (let i = 0; i < timetableInfo.length; i++) {
+    if (timetableInfo[i].date !== tmp) {
+      timetable.push(Object.assign({}, timetableObj));
+      console.log(timetable);
+      tmp = timetableInfo[i].date;
+      timetableObj.schedule = new Array();
+      console.log(`날짜 변경`);
+    }
+    timetableObj.date = tmp;
+    delete timetableInfo[i].date;
+    timetableObj.schedule.push(timetableInfo[i]);
+  }
+  console.log(timetableObj);
+  console.log(timetable);
+  timetable.push(Object.assign({}, timetableObj));
+
+  defaultInfo[0][0].timetable = timetable;
+  console.log(defaultInfo[0][0]);
+
+  connection.release();
+
+  // Response
+  return response(baseResponse.SUCCESS, defaultInfo[0][0]);
 };
