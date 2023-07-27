@@ -1,7 +1,17 @@
 import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
-import { retrieveDiaryList } from './diaryProvider';
-import { createDiary, modifyDiary, deleteDiaryCheck } from "./diaryService";
+import {
+    retrieveDiaryList,
+    retrieveDiaryTitle,
+    retrieveDiaryHashtag,
+    retrieveDiaryDefault,
+    retrieveDiaryContent
+} from './diaryProvider';
+import {
+    createDiary,
+    modifyDiary,
+    deleteDiaryCheck
+} from "./diaryService";
 
 
 export const getDiaryListAll = async (req, res) => {
@@ -22,6 +32,24 @@ export const getDiaryList = async (req, res) => {
     const getListResponse = await retrieveDiaryList(user_id);
     return res.send(getListResponse);
 };
+
+export const getDiaryDetail = async (req, res) => {
+    const { diary_id } = req.params;
+    //빈 다이어리 아이디 체크
+    if (!diary_id) return res.send(errResponse(baseResponse.DIARY_DIARYID_EMPTY));
+
+    const successResponse = baseResponse.SUCCESS;
+    const getDiaryTitleResponse = await retrieveDiaryTitle(diary_id);
+    // 다이어리가 없는 경우
+    if(!getDiaryTitleResponse[0]) return res.send(errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST));
+    const getDiaryHashtagResponse = await retrieveDiaryHashtag(diary_id);
+    const getDiaryDefaultResponse = await retrieveDiaryDefault(diary_id);
+    const getDiaryContentResponse = await retrieveDiaryContent(diary_id);
+
+    const getDiaryDetailResponse = {successResponse, getDiaryTitleResponse, getDiaryHashtagResponse, getDiaryDefaultResponse, getDiaryContentResponse}
+    return res.send(getDiaryDetailResponse);
+
+}
 
 export const postDiary = async (req, res) => {
     // body를 "기본 정보, 내용(글과 이미지), 해시 태그로 나누려고 함.
@@ -78,7 +106,7 @@ export const putDiary = async (req, res) => {
 
 export const deleteDiary = async (req, res) => {
     const user_id = req.verifiedToken.id;
-    const  { diary_id } = req.params;
+    const { diary_id } = req.params;
     // 빈 아이디 체크
     if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
     if (!diary_id) return res.send(errResponse(baseResponse.DIARY_DIARYID_EMPTY));

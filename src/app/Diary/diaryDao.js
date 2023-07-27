@@ -139,3 +139,46 @@ export const deleteDiarybyId = async (connection, diary_id) => {
     const deleteDiarybyIdRows = await connection.query(deleteDiarybyIdQuery, diary_id);
     return deleteDiarybyIdRows;
 };
+
+export const selectDiaryDefault = async (connection, diary_id) => {
+    const selectDiaryDefaultQuery = `
+    SELECT diary.user_id, user.nickname, diary.updated_at,
+           diary.likes_count, diary.comments_count, diary.planner_id
+    FROM diary
+    INNER JOIN user
+    ON diary.user_id = user.id
+    WHERE diary.id = ? ;`;
+
+    const selectDiaryDefaultRows = await connection.query(selectDiaryDefaultQuery, diary_id);
+    return selectDiaryDefaultRows;
+};
+
+export const selectDiaryContent = async (connection, diary_id) => {
+    const selectDiaryContentQuery = `
+    SELECT count, type, content, location
+    FROM diary_content
+    WHERE diary_id = ? ;`;
+
+    const selectDiaryContentRows = await connection.query(selectDiaryContentQuery, diary_id);
+    return selectDiaryContentRows;
+};
+
+export const selectDiaryHashtag = async (connection, diary_id) => {
+    const selectDiaryHashtagQuery = `
+    SELECT tag
+    FROM diary_hashtag
+    WHERE diary_id = ? ;`;
+
+    const selectDiaryHashtagRows = await connection.query(selectDiaryHashtagQuery, diary_id);
+    return selectDiaryHashtagRows;
+};
+
+export const selectDiaryTitle = async (connection, diary_id) => {
+    const selectDiaryTitleQuery = `
+    SELECT title
+    FROM diary
+    WHERE id = ? ;`;
+
+    const selectDiaryTitleRows = await connection.query(selectDiaryTitleQuery, diary_id);
+    return selectDiaryTitleRows;
+};
