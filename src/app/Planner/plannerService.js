@@ -17,6 +17,7 @@ import {
   updatePlanner,
   updateTimetable,
   updateChecklist,
+  deleteTimetable,
 } from './plannerDao';
 
 export const deletePlannerCheck = async (user_id, planner_id, type) => {
@@ -112,24 +113,27 @@ export const modifyPlanner = async (defaultInfo, timetableInfo) => {
     defaultInfo.planner_id,
   ]);
 
+  // 시간표 + 체크리스트 삭제
+  await deleteTimetable(connection, defaultInfo.planner_id);
+
   // 시간표 저장
   for (let i = 0; i < timetableInfo.length; i++) {
     for (let j = 0; j < timetableInfo[i].schedule.length; j++) {
-      await updateTimetable(connection, [
+      const timetableId = await insertTimetable(connection, [
+        defaultInfo.planner_id,
         timetableInfo[i].schedule[j].place_name,
         timetableInfo[i].date,
         timetableInfo[i].schedule[j].started_at,
         timetableInfo[i].schedule[j].finished_at,
-        timetableInfo[i].schedule[j].id,
       ]);
 
       // 체크리스트 저장
       if (!timetableInfo[i].schedule[j].checklist) continue;
       for (let k = 0; k < timetableInfo[i].schedule[j].checklist.length; k++) {
-        await updateChecklist(connection, [
+        await insertChecklist(connection, [
+          timetableId[0].insertId,
           timetableInfo[i].schedule[j].checklist[k].contents,
           timetableInfo[i].schedule[j].checklist[k].is_checked,
-          timetableInfo[i].schedule[j].checklist[k].id,
         ]);
       }
     }
