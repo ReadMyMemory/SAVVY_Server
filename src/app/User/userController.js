@@ -1,6 +1,6 @@
 import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
-import { retrieveKakaoLogin } from './userProvider';
+import { retrieveKakaoLogin, userIdCheck } from './userProvider';
 import { createUser } from './userService';
 
 export const loginUser = async (req, res) => {
@@ -27,4 +27,15 @@ export const postUser = async (req, res) => {
   const signUpResponse = await createUser(kakaoToken, pic_url, nickname, intro);
 
   return res.send(signUpResponse);
+};
+
+export const loginTest = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+  // 빈 아이디 체크
+  if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+
+  const loginTestResult = await userIdCheck(user_id);
+  if (!loginTestResult[0][0])
+    return res.send(baseResponse.USER_USERID_NOT_EXIST);
+  return res.send(baseResponse.SUCCESS);
 };
