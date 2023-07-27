@@ -1,7 +1,7 @@
 import pool from '../../../config/database';
 import axios from 'axios';
 import { generateToken } from '../../../config/jwtMiddleware';
-import { selectUserKakaoId } from './userDao';
+import { selectUserKakaoId, selectUserbyId } from './userDao';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 
@@ -48,4 +48,12 @@ export const loginIdCheck = async (kakao_id) => {
   connection.release();
 
   return loginIdCheckResult;
+};
+
+export const userIdCheck = async (user_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const userIdCheckResult = selectUserbyId(connection, user_id);
+
+  connection.release();
+  return userIdCheckResult;
 };

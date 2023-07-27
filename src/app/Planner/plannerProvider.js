@@ -1,5 +1,6 @@
 import pool from '../../../config/database';
 import { response, errResponse } from '../../../config/response';
+import { userIdCheck } from '../User/userProvider';
 import { selectUserbyId } from '../User/userDao';
 import baseResponse from '../../../config/baseResponseStatus';
 import {
@@ -14,13 +15,13 @@ import {
   selectChecklistDetail,
 } from './plannerDao';
 
-export const userIdCheck = async (user_id) => {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const userIdCheckResult = selectUserbyId(connection, user_id);
+// export const userIdCheck = async (user_id) => {
+//   const connection = await pool.getConnection(async (conn) => conn);
+//   const userIdCheckResult = selectUserbyId(connection, user_id);
 
-  connection.release();
-  return userIdCheckResult;
-};
+//   connection.release();
+//   return userIdCheckResult;
+// };
 
 export const plannerIdCheck = async (planner_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
