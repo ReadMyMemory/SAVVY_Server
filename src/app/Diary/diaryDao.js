@@ -2,7 +2,7 @@ import {connect} from "pm2";
 
 export const selectDiaryListById = async (connection, user_id) => {
             const selectDiaryListByIdQuery = `
-      SELECT id, title, updated_at, likes_count, comments_count, thumbnail, img_count FROM diary
+      SELECT id, title, updated_at, likes_count, comments_count, thumbnail, img_count, is_public FROM diary
       WHERE user_id = ?
       ORDER BY updated_at DESC;`;
             const diaryListRow = await connection.query(selectDiaryListByIdQuery, user_id);
