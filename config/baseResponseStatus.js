@@ -215,6 +215,11 @@ const baseResponse = {
     code: 3008,
     message: '해당 스크랩이 존재하지 않습니다.',
   },
+  PLANNER_TIMETABLEID_NOT_EXIST: {
+    isSuccess: false,
+    code: 3009,
+    message: '해당 시간표가 존재하지 않습니다.',
+  },
   DAIRY_DIARYID_NOT_EXIST: {
     isSuccess: false,
     code: 3101,

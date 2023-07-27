@@ -29,7 +29,7 @@ export const createUser = async (accessToken, pic_url, nickname, intro) => {
     return errResponse(baseResponse.USER_USERID_ALREADY_EXIST);
 
   const connection = await pool.getConnection(async (conn) => conn);
-  const insertUserInfoResult = insertUserInfo(connection, [
+  const insertUserInfoResult = await insertUserInfo(connection, [
     kakaoId,
     pic_url,
     nickname,

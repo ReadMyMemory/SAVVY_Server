@@ -1,6 +1,10 @@
 import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
-import { retrievePlannerList, retrievePlannerSearch } from './plannerProvider';
+import {
+  retrievePlannerList,
+  retrievePlannerSearch,
+  retrievePlannerdetail,
+} from './plannerProvider';
 import {
   deletePlannerCheck,
   createPlanner,
@@ -132,4 +136,19 @@ export const putPlanner = async (req, res) => {
   }
   const putPlannerResponse = await modifyPlanner(defaultInfo, timetableInfo);
   return res.send(putPlannerResponse);
+};
+
+export const getPlannerdetail = async (req, res) => {
+  const { planner_id } = req.params;
+  const user_id = req.verifiedToken.id;
+
+  // 여행계획서 아이디 체크
+  if (!planner_id)
+    return res.send(errResponse(baseResponse.PLANNER_PLANNERID_EMPTY));
+
+  const getPlannerdetailResponse = await retrievePlannerdetail(
+    user_id,
+    planner_id
+  );
+  return res.send(getPlannerdetailResponse);
 };
