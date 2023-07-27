@@ -18,10 +18,6 @@ import {
 
 
 export const deleteDiaryCheck = async (user_id, diary_id) => {
-    const diaryOwner = await userIdCheck(user_id);
-    if (!diaryOwner[0][0]) {
-        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
-    }
     // 다이어리 작성자 user_id와 삭제를 시도하는 user_id가 같은지 체크
     const diaryOwnermatch = await diaryOwnerMatchCheck(diary_id);
     if(user_id != diaryOwnermatch[0][0]) {
