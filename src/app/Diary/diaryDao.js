@@ -9,14 +9,24 @@ export const selectDiaryListById = async (connection, user_id) => {
             return diaryListRow;
 };
 
-export const selectDiarybyId = async (connetion, diary_id) => {
+export const selectDiarybyId = async (connection, diary_id) => {
     const selectDiarybyIdQuery = `
   SELECT * 
   FROM diary 
   WHERE id = ?;`;
 
-    const diaryRows = await connetion.query(selectDiarybyIdQuery, diary_id);
+    const diaryRows = await connection.query(selectDiarybyIdQuery, diary_id);
     return diaryRows;
+};
+
+export const selectUserbyDiaryId = async (connection, diary_id) => {
+    const selectUserbyDiaryIdQuery = `
+    SELECT user_id
+    FROM diary
+    WHERE id = ?;`;
+
+    const selectUserbyDiaryIdRows = await connection.query(selectUserbyDiaryIdQuery, diary_id);
+    return selectUserbyDiaryIdRows;
 };
 
 export const selectDiaryId = async (connection, user_id) => {

@@ -2,7 +2,7 @@ import pool from '../../../config/database';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import { selectUserbyId } from '../User/userDao';
-import { selectDiaryListById, selectDiarybyId } from "./diaryDao";
+import { selectDiaryListById, selectDiarybyId, selectUserbyDiaryId } from "./diaryDao";
 
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
@@ -27,6 +27,13 @@ export const diaryIdCheck = async (diary_id) => {
     return diaryIdCheckResult;
 };
 
+export const diaryOwnerMatchCheck = async (diary_id) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const diaryOwnerMatchCheckResult = selectUserbyDiaryId(connection, diary_id);
+
+    connection.release();
+    return diaryOwnerMatchCheckResult;
+}
 
 export const retrieveDiaryList = async (user_id) => {
     // user_id 존재 체크
