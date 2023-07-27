@@ -2,7 +2,16 @@ import pool from '../../../config/database';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import { selectUserbyId } from '../User/userDao';
-import { selectDiaryListById, selectDiaryId, selectDiarybyId, selectUserbyDiaryId } from "./diaryDao";
+import {
+    selectDiaryListById,
+    selectDiaryId,
+    selectDiarybyId,
+    selectUserbyDiaryId,
+    selectDiaryDefault,
+    selectDiaryContent,
+    selectDiaryHashtag,
+    selectDiaryTitle
+} from "./diaryDao";
 
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
@@ -58,6 +67,46 @@ export const retrieveDiaryList = async (user_id) => {
         return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
     }
 };
+
+// 다이어리 제목 정보(제목)
+export const retrieveDiaryTitle = async (diary_id) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const retrieveDiaryTitleResult = await selectDiaryTitle(connection, diary_id);
+
+    connection.release();
+    return retrieveDiaryTitleResult[0];
+}
+
+// 다이어리 태그 정보(해시태그)
+export const retrieveDiaryHashtag = async (diary_id) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const retrieveDiaryHashtagResult = await selectDiaryHashtag(connection, diary_id);
+
+    connection.release();
+    return retrieveDiaryHashtagResult[0];
+}
+
+// 다이어리 기본 정보(작성자, 작성 날짜 등)
+export const retrieveDiaryDefault = async (diary_id) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const retrieveDiaryDefaultResult = await selectDiaryDefault(connection, diary_id);
+    // 시간대를 한국 시간대로 바꾸는 과정
+    const updatedTimeUTC = dayjs(retrieveDiaryDefaultResult[0][0].updated_at).utc();
+    const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
+    retrieveDiaryDefaultResult[0][0].updated_at = updatedTimeKorea.format('YYYY-MM-DD HH:mm:ss');
+
+    connection.release();
+    return retrieveDiaryDefaultResult[0];
+}
+
+// 다이어리 내용 정보(글, 사진 등)
+export const retrieveDiaryContent = async (diary_id) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const retrieveDiaryContentResult = await selectDiaryContent(connection, diary_id);
+
+    connection.release();
+    return retrieveDiaryContentResult[0];
+}
 
 export const retrieveDiaryId = async (user_id) => {
     // 방금 만든 Diary의 id를 받아오기 위함
