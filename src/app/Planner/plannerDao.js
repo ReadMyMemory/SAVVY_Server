@@ -252,3 +252,15 @@ export const selectChecklistDetail = async (connection, timetable_id) => {
   );
   return selectChecklistDetailRows;
 };
+
+export const deleteTimetable = async (connection, planner_id) => {
+  const deleteTimetableQuery = `
+  DELETE FROM planner_timetable 
+  WHERE planner_id = ?;`;
+
+  const deleteTimetableRows = await connection.query(
+    deleteTimetableQuery,
+    planner_id
+  );
+  return deleteTimetableRows;
+};
