@@ -58,20 +58,23 @@ export const deletePlannerCheck = async (user_id, planner_id, type) => {
   }
 };
 
-export const createPlanner = async (defaultInfo, timetableInfo) => {
+export const createPlanner = async (defaultInfo, timetableInfo, type) => {
   // user가 존재하는지 체크
   const userExist = await userIdCheck(defaultInfo.user_id);
   if (!userExist[0][0]) {
     return errResponse(baseResponse.USER_USERID_NOT_EXIST);
   }
   const connection = await pool.getConnection(async (conn) => conn);
-  const plannerId = await insertPlanner(connection, [
-    defaultInfo.title,
-    defaultInfo.user_id,
-    defaultInfo.memo,
-  ]);
+  const plannerId = await insertPlanner(
+    connection,
+    [defaultInfo.title, defaultInfo.user_id, defaultInfo.memo],
+    type
+  );
+  console.log(type);
+  console.log(plannerId);
 
   // planner 생성중 에러 검증
+  if (plannerId === errResponse(baseResponse.DB_ERROR)) return plannerId;
   if (!plannerId[0].insertId) {
     return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
   }
@@ -98,6 +101,11 @@ export const createPlanner = async (defaultInfo, timetableInfo) => {
     }
   }
   connection.release();
+  if (type === 1) {
+    return response(baseResponse.SUCCESS, {
+      planner_id: plannerId[0].insertId,
+    });
+  }
   return response(baseResponse.SUCCESS);
 };
 
