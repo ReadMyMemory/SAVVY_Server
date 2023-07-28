@@ -75,7 +75,6 @@ export const retrieveDiaryDetail = async(diary_id) => {
     // dairy가 없을 경우
     if (!defaultInfo[0][0])
         return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
-    console.log(defaultInfo[0][0]);
     // 시간 포맷 변경(YYYY.MM.DD)
     const updatedTimeUTC = dayjs(defaultInfo[0][0].updated_at).utc();
     const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
