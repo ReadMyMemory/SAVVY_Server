@@ -30,7 +30,7 @@ export const retrieveKakaoLogin = async (accessToken) => {
   })
     .then((token) => {
       console.log(token);
-      return { token: token };
+      return { token: token, nickname: userKakaoCheck[0][0].nickname };
     })
     .catch((err) => {
       return 'error';
