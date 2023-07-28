@@ -9,7 +9,8 @@ import {
     selectUserbyDiaryId,
     selectDiaryDefault,
     selectDiaryContent,
-    selectDiaryHashtag
+    selectDiaryHashtag,
+    selectIsLiked
 } from "./diaryDao";
 
 const dayjs = require('dayjs');
@@ -69,7 +70,7 @@ export const retrieveDiaryList = async (user_id) => {
     }
 };
 
-export const retrieveDiaryDetail = async(diary_id) => {
+export const retrieveDiaryDetail = async(user_id, diary_id) => {
     const connection = await pool.getConnection(async (conn) => conn);
     const defaultInfo = await selectDiaryDefault(connection, diary_id);
     // dairy가 없을 경우
@@ -79,7 +80,17 @@ export const retrieveDiaryDetail = async(diary_id) => {
     const updatedTimeUTC = dayjs(defaultInfo[0][0].updated_at).utc();
     const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
     defaultInfo[0][0].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
-
+    const isLikedInfo = await selectIsLiked(connection, [
+        user_id,
+        diary_id
+    ]);
+    // 다이어리를 보는 유저가 이 다이어리에 좋아요 눌렀는지 검증하는 과정
+    if (!isLikedInfo[0][0]) {
+        defaultInfo[0][0].isLiked = false;
+    }
+    else {
+        defaultInfo[0][0].isLiked = true;
+    }
     const retrieveDiaryContentResult = await selectDiaryContent(connection, diary_id);
     const retrieveDiaryHashtagResult = await selectDiaryHashtag(connection, diary_id);
     defaultInfo[0][0].content = retrieveDiaryContentResult[0];
