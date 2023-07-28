@@ -9,6 +9,7 @@ import {
   deletePlannerCheck,
   createPlanner,
   modifyPlanner,
+  createScrap,
 } from './plannerService';
 
 export const getPlannerListAll = async (req, res) => {
@@ -183,4 +184,19 @@ export const postPlannerUpload = async (req, res) => {
     1
   );
   return res.send(postPlannerResponse);
+};
+
+export const postScrap = async (req, res) => {
+  const { planner_id } = req.body;
+  const user_id = req.verifiedToken.id;
+
+  // 아이디 체크
+  if (!user_id)
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+  // 여행계획서 아이디 체크
+  if (!planner_id)
+    return res.send(errResponse(baseResponse.PLANNER_PLANNERID_EMPTY));
+
+  const postScrapResponse = await createScrap(user_id, planner_id);
+  return res.send(postScrapResponse);
 };

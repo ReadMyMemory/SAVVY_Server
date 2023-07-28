@@ -282,3 +282,12 @@ export const deleteTimetable = async (connection, planner_id) => {
   );
   return deleteTimetableRows;
 };
+
+export const insertScrap = async (connection, params) => {
+  const insertScrapQuery = `
+  INSERT INTO planner_scrap (user_id, planner_id)
+  VALUES (?, ?);`;
+
+  const insertScrapRow = await connection.query(insertScrapQuery, params);
+  return insertScrapRow;
+};
