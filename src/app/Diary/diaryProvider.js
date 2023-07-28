@@ -59,7 +59,7 @@ export const retrieveDiaryList = async (user_id) => {
     for(let i = 0; i < retrieveDairyListResult[0].length; i++) {
         const updatedTimeUTC = dayjs(retrieveDairyListResult[0][i].updated_at).utc();
         const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
-        retrieveDairyListResult[0][i].updated_at = updatedTimeKorea.format('YYYY-MM-DD');
+        retrieveDairyListResult[0][i].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
     }
     connection.release();
     if (retrieveDairyListResult[0][0]) {
@@ -94,7 +94,7 @@ export const retrieveDiaryDefault = async (diary_id) => {
     // 시간대를 한국 시간대로 바꾸는 과정
     const updatedTimeUTC = dayjs(retrieveDiaryDefaultResult[0][0].updated_at).utc();
     const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
-   retrieveDiaryDefaultResult[0][0].updated_at = updatedTimeKorea.format('YYYY-MM-DD');
+   retrieveDiaryDefaultResult[0][0].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
 
     connection.release();
     return retrieveDiaryDefaultResult[0];
