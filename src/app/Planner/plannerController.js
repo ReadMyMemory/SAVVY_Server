@@ -44,16 +44,16 @@ export const getPlannerListScrap = async (req, res) => {
 
 export const deletePlanner = async (req, res) => {
   const user_id = req.verifiedToken.id;
-  const { planner_id, type } = req.body;
+  const { plannerId, type } = req.query;
   // 빈 아이디 체크
   if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
-  if (!planner_id)
+  if (!plannerId)
     return res.send(errResponse(baseResponse.PLANNER_PLANNERID_EMPTY));
   if (!(type === '0' || type === '1'))
     return res.send(errResponse(baseResponse.PLANNER_TYPE_WRONG));
   const deletePlannerResponse = await deletePlannerCheck(
     user_id,
-    planner_id,
+    plannerId,
     type
   );
   return res.send(deletePlannerResponse);
