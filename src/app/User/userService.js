@@ -43,7 +43,7 @@ export const createUser = async (accessToken, pic_url, nickname, intro) => {
     id: insertUserInfoResult.insertId,
   })
     .then((token) => {
-      return { token: token };
+      return { token: token, nickname: nickname };
     })
     .catch((err) => {
       return 'error';

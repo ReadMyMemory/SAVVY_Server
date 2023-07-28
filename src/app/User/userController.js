@@ -36,6 +36,10 @@ export const loginTest = async (req, res) => {
 
   const loginTestResult = await userIdCheck(user_id);
   if (!loginTestResult[0][0])
-    return res.send(baseResponse.USER_USERID_NOT_EXIST);
-  return res.send(baseResponse.SUCCESS);
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+  return res.send(
+    response(baseResponse.SUCCESS, {
+      nickname: loginTestResult[0][0].nickname,
+    })
+  );
 };
