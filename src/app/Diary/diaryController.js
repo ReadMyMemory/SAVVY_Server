@@ -31,11 +31,14 @@ export const getDiaryList = async (req, res) => {
 };
 
 export const getDiaryDetail = async (req, res) => {
+    const user_id = req.verifiedToken.id;
+    // 빈 아이디 체크
+    if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
     const { diary_id } = req.params;
     //빈 다이어리 아이디 체크
     if (!diary_id) return res.send(errResponse(baseResponse.DIARY_DIARYID_EMPTY));
 
-    const getDiaryDetailResponse = await retrieveDiaryDetail(diary_id);
+    const getDiaryDetailResponse = await retrieveDiaryDetail(user_id, diary_id);
     return res.send(getDiaryDetailResponse);
 
 }
