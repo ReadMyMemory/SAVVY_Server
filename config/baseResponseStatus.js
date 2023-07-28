@@ -225,6 +225,21 @@ const baseResponse = {
     code: 3009,
     message: '해당 시간표가 존재하지 않습니다.',
   },
+  PLANNER_SCRAP_ALREADY_EXIST: {
+    isSuccess: false,
+    code: 3010,
+    message: '해당 스크랩이 이미 존재합니다.',
+  },
+  PLANNER_PLANNER_IS_NOT_UPLOADED: {
+    isSuccess: false,
+    code: 3011,
+    message: '업로드 되지 않은 여행계획서입니다.',
+  },
+  PLANNER_SCRAP_OWNER_IS_SAME: {
+    isSuccess: false,
+    code: 3012,
+    message: '본인의 여행계획서는 스크랩 할 수 없습니다.',
+  },
   DAIRY_DIARYID_NOT_EXIST: {
     isSuccess: false,
     code: 3101,

@@ -31,7 +31,7 @@ dayjs.extend(timezone);
 
 export const plannerIdCheck = async (planner_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
-  const plannerIdCheckResult = selectPlannerbyId(connection, planner_id);
+  const plannerIdCheckResult = await selectPlannerbyId(connection, planner_id);
 
   connection.release();
   return plannerIdCheckResult;
@@ -39,7 +39,10 @@ export const plannerIdCheck = async (planner_id) => {
 
 export const scrapIdCheck = async (user_id, planner_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
-  const scrapIdCheckResult = selectScrapbyId(connection, [user_id, planner_id]);
+  const scrapIdCheckResult = await selectScrapbyId(connection, [
+    user_id,
+    planner_id,
+  ]);
 
   connection.release();
   return scrapIdCheckResult;

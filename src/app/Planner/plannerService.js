@@ -19,6 +19,7 @@ import {
   updateTimetable,
   updateChecklist,
   deleteTimetable,
+  insertScrap,
 } from './plannerDao';
 
 export const deletePlannerCheck = async (user_id, planner_id, type) => {
@@ -148,5 +149,35 @@ export const modifyPlanner = async (defaultInfo, timetableInfo) => {
     }
   }
   connection.release();
+  return response(baseResponse.SUCCESS);
+};
+
+export const createScrap = async (user_id, planner_id) => {
+  // user가 존재하는지 체크
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) {
+    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+  }
+
+  // 여행계획서가 존재하는지 체크
+  const plannerExist = await plannerIdCheck(planner_id);
+  if (!plannerExist[0][0])
+    return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
+  // 업로드 된 여행계획서인지 체크
+  if (plannerExist[0][0].is_uploaded === 0)
+    return errResponse(baseResponse.PLANNER_PLANNER_IS_NOT_UPLOADED);
+  // 여행계획서의 작성자가 본인이 아닌지 체크
+  if (plannerExist[0][0].user_id === user_id)
+    return errResponse(baseResponse.PLANNER_SCRAP_OWNER_IS_SAME);
+
+  // 이미 스크랩이 되어있는지 체크
+  const scrapExist = await scrapIdCheck(user_id, planner_id);
+  if (scrapExist[0][0])
+    return errResponse(baseResponse.PLANNER_SCRAP_ALREADY_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+  await insertScrap(connection, [user_id, planner_id]);
+  connection.release();
+
   return response(baseResponse.SUCCESS);
 };
