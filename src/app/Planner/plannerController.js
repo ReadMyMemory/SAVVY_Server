@@ -10,6 +10,7 @@ import {
   createPlanner,
   modifyPlanner,
   createScrap,
+  createPlannerReport,
 } from './plannerService';
 
 export const getPlannerListAll = async (req, res) => {
@@ -199,4 +200,49 @@ export const postScrap = async (req, res) => {
 
   const postScrapResponse = await createScrap(user_id, planner_id);
   return res.send(postScrapResponse);
+};
+
+export const postPlannerReport = async (req, res) => {
+  const reason = [
+    req.body.reason_1,
+    req.body.reason_2,
+    req.body.reason_3,
+    req.body.reason_4,
+  ];
+  const defaultInfo = {
+    planner_id: req.body.planner_id,
+    contents: req.body.contents,
+    is_blocked: req.body.is_blocked,
+  };
+  const user_id = req.verifiedToken.id;
+
+  // 빈 아이디 체크
+  if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  // 여행계획서 아이디 체크
+  if (!defaultInfo.planner_id)
+    return res.send(errResponse(baseResponse.PLANNER_PLANNERID_EMPTY));
+  // reason 유무 체크
+  let cnt = 0;
+  for (let i = 0; i < 4; i++) {
+    if (reason[i] !== 0 && reason[i] !== 1) {
+      return res.send(errResponse(baseResponse.REPORT_REASON_IS_INVALID));
+    }
+    if (reason[i] === 0) cnt++;
+  }
+  // reason이 모두 0일 때
+  if (cnt === 4)
+    return res.send(errResponse(baseResponse.REPORT_REASON_NOT_CHECKED));
+  // contents만 입력되었을 때
+  if (reason[3] === 0 && defaultInfo.contents)
+    return res.send(errResponse(baseResponse.REPORT_CONTENTS_CANT_BE_WRITTEN));
+  // is_blocked 체크
+  if (defaultInfo.is_blocked !== 0 && defaultInfo.is_blocked !== 1)
+    return res.send(errResponse(baseResponse.REPORT_BLOCK_INVALID));
+
+  const createPlannerReportResult = await createPlannerReport(
+    user_id,
+    defaultInfo,
+    reason
+  );
+  return res.send(createPlannerReportResult);
 };

@@ -8,6 +8,7 @@ import {
   // userIdCheck,
   retrievePlannerId,
   retrieveTimetableId,
+  reportCheck,
 } from './plannerProvider';
 import {
   deletePlannerbyId,
@@ -20,6 +21,8 @@ import {
   updateChecklist,
   deleteTimetable,
   insertScrap,
+  insertPlannerReport,
+  insertUserBlock,
 } from './plannerDao';
 
 export const deletePlannerCheck = async (user_id, planner_id, type) => {
@@ -180,4 +183,54 @@ export const createScrap = async (user_id, planner_id) => {
   connection.release();
 
   return response(baseResponse.SUCCESS);
+};
+
+export const createPlannerReport = async (user_id, defaultInfo, reason) => {
+  // user가 존재하는지 체크
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) {
+    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+  }
+
+  // 여행계획서가 존재하는지 체크
+  const plannerExist = await plannerIdCheck(defaultInfo.planner_id);
+  if (!plannerExist[0][0])
+    return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
+  // 업로드 된 여행계획서인지 체크
+  if (plannerExist[0][0].is_uploaded === 0)
+    return errResponse(baseResponse.PLANNER_PLANNER_IS_NOT_UPLOADED);
+
+  // 이미 신고 한 적이 있는지 체크
+  const beforeReport = await reportCheck(user_id, defaultInfo.planner_id);
+  if (beforeReport[0][0]) return errResponse(baseResponse.REPORT_ALREADY_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+  await insertPlannerReport(connection, [
+    defaultInfo.planner_id,
+    user_id,
+    reason[0],
+    reason[1],
+    reason[2],
+    reason[3],
+    defaultInfo.contents,
+  ]);
+  connection.release();
+
+  if (defaultInfo.is_blocked === 1) {
+    await createUserBlock(plannerExist[0][0].user_id, user_id);
+    return response(baseResponse.SUCCESS);
+  }
+
+  return response(baseResponse.SUCCESS);
+};
+
+export const createUserBlock = async (blocked_user, user_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const insertUserBlockResult = await insertUserBlock(connection, [
+    blocked_user,
+    user_id,
+  ]);
+
+  connection.release();
+  return insertUserBlockResult;
 };
