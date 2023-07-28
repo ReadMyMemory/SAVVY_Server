@@ -291,3 +291,40 @@ export const insertScrap = async (connection, params) => {
   const insertScrapRow = await connection.query(insertScrapQuery, params);
   return insertScrapRow;
 };
+
+export const selectPlannerReported = async (connection, params) => {
+  const selectPlannerReportedQuery = `
+  SELECT * FROM planner_report
+  WHERE user_id = ? AND planner_id = ?;`;
+
+  const selectPlannerReportedRow = await connection.query(
+    selectPlannerReportedQuery,
+    params
+  );
+  return selectPlannerReportedRow;
+};
+
+export const insertPlannerReport = async (connection, params) => {
+  const insertPlannerReportQuery = `
+  INSERT INTO planner_report 
+  (planner_id, user_id, reason_1, reason_2, reason_3, reason_4, contents)
+  VALUES (?, ?, ?, ?, ?, ?, ?);`;
+
+  const insertPlannerReportRow = await connection.query(
+    insertPlannerReportQuery,
+    params
+  );
+  return insertPlannerReportRow;
+};
+
+export const insertUserBlock = async (connection, params) => {
+  const insertUserBlockQuery = `
+  INSERT INTO user_blocked (blocked_user, user_id)
+  VALUES (?, ?);`;
+
+  const insertUserBlockRow = await connection.query(
+    insertUserBlockQuery,
+    params
+  );
+  return insertUserBlockRow;
+};
