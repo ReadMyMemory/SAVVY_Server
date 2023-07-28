@@ -14,6 +14,12 @@ import {
   selectTimetableDetail,
   selectChecklistDetail,
 } from './plannerDao';
+import dayjs, { Dayjs } from 'dayjs';
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // export const userIdCheck = async (user_id) => {
 //   const connection = await pool.getConnection(async (conn) => conn);
@@ -55,6 +61,18 @@ export const retrievePlannerList = async (user_id, type) => {
 
   connection.release();
   if (retrievePlannerListResult[0][0]) {
+    // 전체보기 시간 포맷 변환
+    if (type === 0) {
+      for (let i = 0; i < retrievePlannerListResult[0].length; i++) {
+        const updatedTimeUTC = dayjs(
+          retrievePlannerListResult[0][i].updated_at
+        ).utc();
+        const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
+        retrievePlannerListResult[0][i].updated_at =
+          updatedTimeKorea.format('YYYY.MM.DD');
+      }
+    }
+
     return response(baseResponse.SUCCESS, retrievePlannerListResult[0]);
   } else {
     return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
@@ -106,6 +124,16 @@ export const retrievePlannerSearch = async (user_id, search_word) => {
   connection.release();
   if (!retrievePlannerSearchResult[0][0])
     return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
+
+  // 검색결과 시간 포맷 변경
+  for (let i = 0; i < retrievePlannerSearchResult[0].length; i++) {
+    const updatedTimeUTC = dayjs(
+      retrievePlannerSearchResult[0][i].updated_at
+    ).utc();
+    const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
+    retrievePlannerSearchResult[0][i].updated_at =
+      updatedTimeKorea.format('YYYY.MM.DD');
+  }
   return response(baseResponse.SUCCESS, retrievePlannerSearchResult[0]);
 };
 

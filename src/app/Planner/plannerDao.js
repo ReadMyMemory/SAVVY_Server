@@ -23,10 +23,10 @@ export const selectPlannerListById = async (connection, user_id, type) => {
       return plannerListAllRow;
     case 1:
       const selectPlannerListByIdQuery = `
-      SELECT id, title, updated_at 
+      SELECT id, title, DATE_FORMAT(updated_at, '%Y.%m.%d') AS 'updated_at' 
       FROM planner 
       WHERE user_id = ?
-      ORDER BY updated_at DESC;`;
+      ORDER BY planner.updated_at DESC;`;
       const plannerListRow = await connection.query(
         selectPlannerListByIdQuery,
         user_id
@@ -34,7 +34,7 @@ export const selectPlannerListById = async (connection, user_id, type) => {
       return plannerListRow;
     case 2:
       const selectPlannerListScrapByIdQuery = `
-      SELECT planner.id, title, DATE_FORMAT(planner_scrap.updated_at, '%Y-%m-%d') AS 'updated_at', nickname
+      SELECT planner.id, title, DATE_FORMAT(planner_scrap.updated_at, '%Y.%m.%d') AS 'updated_at', nickname
       FROM planner_scrap JOIN planner 
       ON planner_scrap.planner_id = planner.id
       JOIN user ON planner.user_id = user.id
@@ -232,7 +232,7 @@ export const updateChecklist = async (connection, params) => {
 
 export const selectPlannerDetail = async (connection, planner_id) => {
   const selectPlannerDetailQuery = `
-  SELECT planner.id, title, nickname, planner.updated_at, memo
+  SELECT planner.id, title, nickname, DATE_FORMAT(planner.updated_at, '%Y.%m.%d') AS 'updated_at', memo
   FROM planner JOIN user ON planner.user_id = user.id
   WHERE planner.id = ?;`;
 
