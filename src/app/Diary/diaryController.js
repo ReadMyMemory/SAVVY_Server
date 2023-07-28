@@ -2,10 +2,7 @@ import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import {
     retrieveDiaryList,
-    retrieveDiaryTitle,
-    retrieveDiaryHashtag,
-    retrieveDiaryDefault,
-    retrieveDiaryContent
+    retrieveDiaryDetail
 } from './diaryProvider';
 import {
     createDiary,
@@ -38,15 +35,7 @@ export const getDiaryDetail = async (req, res) => {
     //빈 다이어리 아이디 체크
     if (!diary_id) return res.send(errResponse(baseResponse.DIARY_DIARYID_EMPTY));
 
-    const successResponse = baseResponse.SUCCESS;
-    const getDiaryTitleResponse = await retrieveDiaryTitle(diary_id);
-    // 다이어리가 없는 경우
-    if(!getDiaryTitleResponse[0]) return res.send(errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST));
-    const getDiaryHashtagResponse = await retrieveDiaryHashtag(diary_id);
-    const getDiaryDefaultResponse = await retrieveDiaryDefault(diary_id);
-    const getDiaryContentResponse = await retrieveDiaryContent(diary_id);
-
-    const getDiaryDetailResponse = {successResponse, getDiaryTitleResponse, getDiaryHashtagResponse, getDiaryDefaultResponse, getDiaryContentResponse}
+    const getDiaryDetailResponse = await retrieveDiaryDetail(diary_id);
     return res.send(getDiaryDetailResponse);
 
 }

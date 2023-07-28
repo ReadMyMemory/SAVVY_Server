@@ -143,7 +143,8 @@ export const deleteDiarybyId = async (connection, diary_id) => {
 export const selectDiaryDefault = async (connection, diary_id) => {
     const selectDiaryDefaultQuery = `
     SELECT diary.user_id, user.nickname, diary.updated_at,
-           diary.likes_count, diary.comments_count, diary.planner_id
+           diary.likes_count, diary.comments_count, diary.planner_id,
+           diary.title
     FROM diary
     INNER JOIN user
     ON diary.user_id = user.id
@@ -171,14 +172,4 @@ export const selectDiaryHashtag = async (connection, diary_id) => {
 
     const selectDiaryHashtagRows = await connection.query(selectDiaryHashtagQuery, diary_id);
     return selectDiaryHashtagRows;
-};
-
-export const selectDiaryTitle = async (connection, diary_id) => {
-    const selectDiaryTitleQuery = `
-    SELECT title
-    FROM diary
-    WHERE id = ? ;`;
-
-    const selectDiaryTitleRows = await connection.query(selectDiaryTitleQuery, diary_id);
-    return selectDiaryTitleRows;
 };
