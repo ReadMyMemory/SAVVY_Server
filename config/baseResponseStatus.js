@@ -197,6 +197,11 @@ const baseResponse = {
     code: 2303,
     message: 'is_blocked값이 유효하지 않습니다.',
   },
+    COMMENT_COMMENTID_NOT_EXIST: {
+    isSuccess: false,
+    code: 2401,
+    message: '해당 댓글이 존재하지 않습니다',
+  },
 
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
