@@ -23,6 +23,7 @@ import {
   insertScrap,
   insertPlannerReport,
   insertUserBlock,
+  updatePlannerReportCount,
 } from './plannerDao';
 
 export const deletePlannerCheck = async (user_id, planner_id, type) => {
@@ -214,6 +215,7 @@ export const createPlannerReport = async (user_id, defaultInfo, reason) => {
     reason[3],
     defaultInfo.contents,
   ]);
+  await updatePlannerReportCount(connection, defaultInfo.planner_id);
   connection.release();
 
   if (defaultInfo.is_blocked === 1) {
