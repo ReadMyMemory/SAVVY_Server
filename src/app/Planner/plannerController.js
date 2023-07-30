@@ -130,6 +130,9 @@ export const putPlanner = async (req, res) => {
   // 빈 아이디 체크
   if (!defaultInfo.user_id)
     return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  // 빈 여행계획서 아이디 체크
+  if (!defaultInfo.planner_id)
+    return res.send(errResponse(baseResponse.PLANNER_PLANNERID_EMPTY));
   // 제목 길이 체크
   if (defaultInfo.title.length > 45)
     return res.send(errResponse(baseResponse.PLANNER_PLANNER_TITLE_LENGTH));
