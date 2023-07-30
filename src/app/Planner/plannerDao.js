@@ -14,7 +14,7 @@ export const selectPlannerListById = async (connection, user_id, type) => {
         FROM planner_scrap JOIN planner
         ON planner_scrap.planner_id = planner.id
         JOIN user ON planner.user_id = user.id
-        WHERE planner_scrap.user_id = ?)
+        WHERE planner_scrap.user_id = ? AND planner.report_count < 5)
         ORDER BY updated_at DESC;`;
       const plannerListAllRow = await connection.query(
         selectPlannerListAllByIdQuery,
@@ -38,7 +38,7 @@ export const selectPlannerListById = async (connection, user_id, type) => {
       FROM planner_scrap JOIN planner 
       ON planner_scrap.planner_id = planner.id
       JOIN user ON planner.user_id = user.id
-      WHERE planner_scrap.user_id = ?
+      WHERE planner_scrap.user_id = ? AND planner.report_count < 5
       ORDER BY planner_scrap.updated_at DESC;
       `;
       const plannerListScrapRow = await connection.query(
@@ -184,7 +184,7 @@ export const selectPlannerSearch = async (connection, params) => {
     FROM planner_scrap JOIN planner
     ON planner_scrap.planner_id = planner.id
     JOIN user ON planner.user_id = user.id
-    WHERE planner_scrap.user_id = ? AND (title LIKE ? OR nickname LIKE ?))
+    WHERE planner_scrap.user_id = ? AND planner.report_count < 5 AND (title LIKE ? OR nickname LIKE ?))
     ORDER BY updated_at DESC;`;
 
   const selectPlannerSearchRows = await connection.query(
@@ -234,7 +234,7 @@ export const selectPlannerDetail = async (connection, planner_id) => {
   const selectPlannerDetailQuery = `
   SELECT planner.id, title, nickname, DATE_FORMAT(planner.updated_at, '%Y.%m.%d') AS 'updated_at', memo
   FROM planner JOIN user ON planner.user_id = user.id
-  WHERE planner.id = ?;`;
+  WHERE planner.id = ? AND planner.report_count < 5;`;
 
   const selectPlannerDetailRow = await connection.query(
     selectPlannerDetailQuery,
@@ -245,7 +245,7 @@ export const selectPlannerDetail = async (connection, planner_id) => {
 
 export const selectTimetableDetail = async (connection, planner_id) => {
   const selectTimetableDetailQuery = `
-  SELECT id, place_name, DATE_FORMAT(started_at, '%H:%i') AS 'started_at', DATE_FORMAT(finished_at, '%H:%i') AS 'finished_at', DATE_FORMAT(planner_timetable.date, '%Y.%m.%d') AS 'date'
+  SELECT id, place_name, DATE_FORMAT(started_at, '%H:%i') AS 'started_at', DATE_FORMAT(finished_at, '%H:%i') AS 'finished_at', DATE_FORMAT(planner_timetable.date, '%Y-%m-%d') AS 'date'
   FROM planner_timetable
   WHERE planner_id = ?
   ORDER BY id;`;
@@ -327,4 +327,16 @@ export const insertUserBlock = async (connection, params) => {
     params
   );
   return insertUserBlockRow;
+};
+
+export const updatePlannerReportCount = async (connection, planner_id) => {
+  const updatePlannerReportCountQuery = `
+  UPDATE planner SET report_count = report_count + 1
+  WHERE id = ?;`;
+
+  const updatePlannerReportCountRow = await connection.query(
+    updatePlannerReportCountQuery,
+    planner_id
+  );
+  return updatePlannerReportCountRow;
 };
