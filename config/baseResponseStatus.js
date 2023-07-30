@@ -177,6 +177,11 @@ const baseResponse = {
     code: 2103,
     message: '다이어리 작성자가 아닙니다.',
   },
+  COMMENT_COMMENTID_NOT_EXIST: {
+    isSuccess: false,
+    code: 2201,
+    message: '해당 댓글이 존재하지 않습니다',
+  },
 
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
