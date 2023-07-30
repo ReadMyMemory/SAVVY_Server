@@ -14,7 +14,7 @@ export const selectPlannerListById = async (connection, user_id, type) => {
         FROM planner_scrap JOIN planner
         ON planner_scrap.planner_id = planner.id
         JOIN user ON planner.user_id = user.id
-        WHERE planner_scrap.user_id = ?)
+        WHERE planner_scrap.user_id = ? AND planner.report_count < 5)
         ORDER BY updated_at DESC;`;
       const plannerListAllRow = await connection.query(
         selectPlannerListAllByIdQuery,
@@ -38,7 +38,7 @@ export const selectPlannerListById = async (connection, user_id, type) => {
       FROM planner_scrap JOIN planner 
       ON planner_scrap.planner_id = planner.id
       JOIN user ON planner.user_id = user.id
-      WHERE planner_scrap.user_id = ?
+      WHERE planner_scrap.user_id = ? AND planner.report_count < 5
       ORDER BY planner_scrap.updated_at DESC;
       `;
       const plannerListScrapRow = await connection.query(
@@ -184,7 +184,7 @@ export const selectPlannerSearch = async (connection, params) => {
     FROM planner_scrap JOIN planner
     ON planner_scrap.planner_id = planner.id
     JOIN user ON planner.user_id = user.id
-    WHERE planner_scrap.user_id = ? AND (title LIKE ? OR nickname LIKE ?))
+    WHERE planner_scrap.user_id = ? AND planner.report_count < 5 AND (title LIKE ? OR nickname LIKE ?))
     ORDER BY updated_at DESC;`;
 
   const selectPlannerSearchRows = await connection.query(
@@ -234,7 +234,7 @@ export const selectPlannerDetail = async (connection, planner_id) => {
   const selectPlannerDetailQuery = `
   SELECT planner.id, title, nickname, DATE_FORMAT(planner.updated_at, '%Y.%m.%d') AS 'updated_at', memo
   FROM planner JOIN user ON planner.user_id = user.id
-  WHERE planner.id = ?;`;
+  WHERE planner.id = ? AND planner.report_count < 5;`;
 
   const selectPlannerDetailRow = await connection.query(
     selectPlannerDetailQuery,
@@ -290,4 +290,53 @@ export const insertScrap = async (connection, params) => {
 
   const insertScrapRow = await connection.query(insertScrapQuery, params);
   return insertScrapRow;
+};
+
+export const selectPlannerReported = async (connection, params) => {
+  const selectPlannerReportedQuery = `
+  SELECT * FROM planner_report
+  WHERE user_id = ? AND planner_id = ?;`;
+
+  const selectPlannerReportedRow = await connection.query(
+    selectPlannerReportedQuery,
+    params
+  );
+  return selectPlannerReportedRow;
+};
+
+export const insertPlannerReport = async (connection, params) => {
+  const insertPlannerReportQuery = `
+  INSERT INTO planner_report 
+  (planner_id, user_id, reason_1, reason_2, reason_3, reason_4, contents)
+  VALUES (?, ?, ?, ?, ?, ?, ?);`;
+
+  const insertPlannerReportRow = await connection.query(
+    insertPlannerReportQuery,
+    params
+  );
+  return insertPlannerReportRow;
+};
+
+export const insertUserBlock = async (connection, params) => {
+  const insertUserBlockQuery = `
+  INSERT INTO user_blocked (blocked_user, user_id)
+  VALUES (?, ?);`;
+
+  const insertUserBlockRow = await connection.query(
+    insertUserBlockQuery,
+    params
+  );
+  return insertUserBlockRow;
+};
+
+export const updatePlannerReportCount = async (connection, planner_id) => {
+  const updatePlannerReportCountQuery = `
+  UPDATE planner SET report_count = report_count + 1
+  WHERE id = ?;`;
+
+  const updatePlannerReportCountRow = await connection.query(
+    updatePlannerReportCountQuery,
+    planner_id
+  );
+  return updatePlannerReportCountRow;
 };

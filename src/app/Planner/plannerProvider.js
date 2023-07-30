@@ -13,6 +13,7 @@ import {
   selectPlannerDetail,
   selectTimetableDetail,
   selectChecklistDetail,
+  selectPlannerReported,
 } from './plannerDao';
 import dayjs, { Dayjs } from 'dayjs';
 const utc = require('dayjs/plugin/utc');
@@ -202,4 +203,26 @@ export const retrievePlannerdetail = async (user_id, planner_id) => {
 
   // Response
   return response(baseResponse.SUCCESS, defaultInfo[0][0]);
+};
+
+export const reportCheck = async (user_id, planner_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const selectPlannerReportedResult = await selectPlannerReported(connection, [
+    user_id,
+    planner_id,
+  ]);
+
+  connection.release();
+  return selectPlannerReportedResult;
+};
+
+export const createUserBlock = async (blocked_user, user_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const insertUserBlockResult = await insertUserBlock(connection, [
+    blocked_user,
+    user_id,
+  ]);
+
+  connection.release();
+  return insertUserBlockResult;
 };

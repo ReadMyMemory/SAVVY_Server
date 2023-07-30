@@ -177,9 +177,29 @@ const baseResponse = {
     code: 2103,
     message: '다이어리 작성자가 아닙니다.',
   },
-  COMMENT_COMMENTID_NOT_EXIST: {
+  REPORT_REASON_IS_INVALID: {
     isSuccess: false,
-    code: 2201,
+    code: 2300,
+    message: 'reason값이 유효하지 않습니다.',
+  },
+  REPORT_REASON_NOT_CHECKED: {
+    isSuccess: false,
+    code: 2301,
+    message: '하나 이상의 신고 사유를 체크해주세요.',
+  },
+  REPORT_CONTENTS_CANT_BE_WRITTEN: {
+    isSuccess: false,
+    code: 2302,
+    message: '신고사유 중 기타를 체크하지 않았습니다.',
+  },
+  REPORT_BLOCK_INVALID: {
+    isSuccess: false,
+    code: 2303,
+    message: 'is_blocked값이 유효하지 않습니다.',
+  },
+    COMMENT_COMMENTID_NOT_EXIST: {
+    isSuccess: false,
+    code: 2401,
     message: '해당 댓글이 존재하지 않습니다',
   },
 
@@ -259,6 +279,11 @@ const baseResponse = {
     isSuccess: false,
     code: 3201,
     message: '이미 존재하는 사용자입니다.',
+  },
+  REPORT_ALREADY_EXIST: {
+    isSuccess: false,
+    code: 3300,
+    message: '이미 신고한 여행계획서입니다.',
   },
 
   //Connection, Transaction 등의 서버 오류
