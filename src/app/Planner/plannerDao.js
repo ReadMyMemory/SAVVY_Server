@@ -245,7 +245,7 @@ export const selectPlannerDetail = async (connection, planner_id) => {
 
 export const selectTimetableDetail = async (connection, planner_id) => {
   const selectTimetableDetailQuery = `
-  SELECT id, place_name, DATE_FORMAT(started_at, '%H:%i') AS 'started_at', DATE_FORMAT(finished_at, '%H:%i') AS 'finished_at', DATE_FORMAT(planner_timetable.date, '%Y-%m-%d') AS 'date'
+  SELECT id, place_name, DATE_FORMAT(started_at, '%H:%i') AS 'started_at', DATE_FORMAT(finished_at, '%H:%i') AS 'finished_at', DATE_FORMAT(planner_timetable.date, '%Y.%.%d') AS 'date'
   FROM planner_timetable
   WHERE planner_id = ?
   ORDER BY id;`;
