@@ -15,7 +15,6 @@ userRouter.post('/signup', postUser);
 userRouter.get('/login', jwtMiddleware, loginTest);
 userRouter.post(
   '/image/profile',
-  jwtMiddleware,
   uploadImage.single('image'),
   postProfileImage
 );
