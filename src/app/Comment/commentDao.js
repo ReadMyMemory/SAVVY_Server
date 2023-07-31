@@ -28,3 +28,5 @@ export const selectCommentbyId = async (connection, comment_id) => {
     const selectCommentbyIdRows = await connection.query(selectCommentbyIdQuery, comment_id);
     return selectCommentbyIdRows;
 }
+
+export const selectReplyListbyId = async 
