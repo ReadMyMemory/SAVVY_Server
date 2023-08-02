@@ -1,11 +1,22 @@
 import express from 'express';
 import { jwtMiddleware } from '../../../config/jwtMiddleware';
-import { loginUser, postUser, loginTest } from './userController';
+import { uploadImage } from '../../../config/imageUploader';
+import {
+  loginUser,
+  postUser,
+  loginTest,
+  postProfileImage,
+} from './userController';
 
 const userRouter = express.Router();
 
 userRouter.post('/login', loginUser);
 userRouter.post('/signup', postUser);
 userRouter.get('/login', jwtMiddleware, loginTest);
+userRouter.post(
+  '/image/profile',
+  uploadImage.single('image'),
+  postProfileImage
+);
 
 export default userRouter;

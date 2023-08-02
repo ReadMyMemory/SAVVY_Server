@@ -206,7 +206,7 @@ const baseResponse = {
     code: 2401,
     message: 'commentId를 입력해주세요.',
   },
-    COMMENT_COMMENTID_NOT_EXIST: {
+  COMMENT_COMMENTID_NOT_EXIST: {
     isSuccess: false,
     code: 2401,
     message: '해당 댓글이 존재하지 않습니다',
@@ -294,6 +294,7 @@ const baseResponse = {
   DB_ERROR: { isSuccess: false, code: 4000, message: '데이터 베이스 에러' },
   SERVER_ERROR: { isSuccess: false, code: 4001, message: '서버 에러' },
   AXIOS_ERROR: { isSuccess: false, code: 4002, message: 'AXIOS 에러' },
+  S3_ERROR: { isSuccess: false, code: 4003, message: '이미지 url 생성 실패' },
 };
 
 export default baseResponse;

@@ -43,3 +43,11 @@ export const loginTest = async (req, res) => {
     })
   );
 };
+
+export const postProfileImage = async (req, res) => {
+  if (!req.file) return res.send(errResponse(baseResponse.S3_ERROR));
+  const filePath = req.file.location;
+
+  if (!filePath) return res.send(errResponse(baseResponse.S3_ERROR));
+  return res.send(response(baseResponse.SUCCESS, { pic_url: filePath }));
+};
