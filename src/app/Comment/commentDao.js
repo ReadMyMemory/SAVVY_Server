@@ -34,14 +34,16 @@ export const selectCommentbyId = async (connection, comment_id) => {
 export const selectCommentListbyId = async (connection, params) => {
   const selectCommentListbyIdQuery = `
     SELECT diary_comment.id, user.nickname, user.pic_url, 
-    diary_comment.content, 
-    TIMEDIFF(current_timestamp(6), diary_comment.updated_at) AS 'updated_at',
+    diary_comment.content,
+    diary_comment.updated_at,
     is_updated
     FROM diary_comment
     INNER JOIN user
     ON diary_comment.user_id = user.id
     WHERE diary_id = ? AND 
-    NOT diary_comment.user_id IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?) ;`;
+    NOT diary_comment.user_id IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?)
+    ORDER BY diary_comment.updated_at DESC
+    ;`;
 
   const selectCommentListbyIdRows = await connection.query(
     selectCommentListbyIdQuery,
@@ -54,13 +56,16 @@ export const selectReplyListbyId = async (connection, params) => {
   const selectReplyListbyIdQuery = `
     SELECT diary_reply.id, user.nickname, user.pic_url,
     diary_reply.content,
-    TIMEDIFF(current_timestamp(6), diary_reply.updated_at) AS 'updated_at',
+    diary_reply.updated_at,
     is_updated
     from diary_reply
     INNER JOIN user
     ON diary_reply.user_id = user.id
     WHERE comment_id = ? AND
-    NOT diary_reply.user_id IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?) ;`;
+    NOT diary_reply.user_id IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?)
+    ORDER BY diary_reply.updated_at DESC
+    ;`;
+
 
   const selectReplyListbyIdRows = await connection.query(
     selectReplyListbyIdQuery,
