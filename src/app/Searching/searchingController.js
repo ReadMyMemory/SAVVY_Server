@@ -4,6 +4,7 @@ import {
   retrieveDiarySearch,
   retrieveUserSearch,
   retrieveDiaryHistory,
+  retrieveUserHistory,
 } from './searchingProvider';
 
 export const getDiarySearch = async (req, res) => {
@@ -52,6 +53,16 @@ export const getDiaryHistory = async (req, res) => {
   // 빈 아이디 체크
   if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
 
-  const getDiaryHistoryResponse = await retrieveDiaryHistory(user_id, 0);
+  const getDiaryHistoryResponse = await retrieveDiaryHistory(user_id);
   return res.send(getDiaryHistoryResponse);
+};
+
+export const getUserHistory = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+
+  // 빈 아이디 체크
+  if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+
+  const getUserHistoryResponse = await retrieveUserHistory(user_id);
+  return res.send(getUserHistoryResponse);
 };

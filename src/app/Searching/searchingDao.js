@@ -91,3 +91,20 @@ export const selectDiaryHistory = async (connection, user_id) => {
   );
   return selectSearchHistoryRows;
 };
+
+export const selectUserHistory = async (connection, user_id) => {
+  const selectUserHistoryQuery = `
+  SELECT user.id, search_word, pic_url, likes, amount_planner, amount_diary, searching_at FROM searching_history
+  JOIN user ON searching_history.search_word = user.nickname
+    WHERE user_id = ? AND is_user = 1 AND (search_word, searching_at) IN (
+      SELECT search_word, MAX(searching_at) AS 'searching_at'
+      FROM searching_history GROUP BY search_word)
+    ORDER BY searching_at DESC
+    LIMIT 10;`;
+
+  const selectUserHistoryRows = await connection.query(
+    selectUserHistoryQuery,
+    user_id
+  );
+  return selectUserHistoryRows;
+};
