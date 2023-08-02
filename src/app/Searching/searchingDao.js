@@ -120,3 +120,15 @@ export const deleteSearchHistory = async (connection, params) => {
   );
   return deleteSearchHistoryRow;
 };
+
+export const deleteSearchHistoryAll = async (connection, params) => {
+  const deleteSearchHistoryAllQuery = `
+  DELETE FROM searching_history
+  WHERE user_id = ? AND is_user = ?;`;
+
+  const deleteSearchHistoryAllRow = await connection.query(
+    deleteSearchHistoryAllQuery,
+    params
+  );
+  return deleteSearchHistoryAllRow;
+};
