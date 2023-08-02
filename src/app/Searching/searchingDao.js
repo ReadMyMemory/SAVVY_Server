@@ -1,3 +1,5 @@
+import { connect } from 'pm2';
+
 export const selectDiarySearch = async (connection, params) => {
   const search_word = '%' + params[1] + '%';
   const new_params = [params[0], search_word, search_word, search_word];
@@ -60,4 +62,32 @@ export const selectUserSearch = async (connection, params) => {
     new_params
   );
   return selectUserSearchRows;
+};
+
+export const insertSearchHistory = async (connection, params) => {
+  const insertSearchHistoryQuery = `
+  INSERT INTO searching_history (user_id, search_word, is_user)
+  VALUES (?, ?, ?);`;
+
+  const insertSearchHistoryRow = await connection.query(
+    insertSearchHistoryQuery,
+    params
+  );
+  return insertSearchHistoryRow;
+};
+
+export const selectDiaryHistory = async (connection, user_id) => {
+  const selectSearchHistoryQuery = `
+  SELECT search_word, searching_at FROM searching_history
+    WHERE user_id = ? AND is_user = 0 AND (search_word, searching_at) IN (
+      SELECT search_word, MAX(searching_at) AS 'searching_at'
+      FROM searching_history GROUP BY search_word)
+    ORDER BY searching_at DESC
+    LIMIT 10;`;
+
+  const selectSearchHistoryRows = await connection.query(
+    selectSearchHistoryQuery,
+    user_id
+  );
+  return selectSearchHistoryRows;
 };
