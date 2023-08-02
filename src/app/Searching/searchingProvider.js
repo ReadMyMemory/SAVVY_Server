@@ -2,13 +2,20 @@ import pool from '../../../config/database';
 import { response, errResponse } from '../../../config/response';
 import { userIdCheck } from '../User/userProvider';
 import baseResponse from '../../../config/baseResponseStatus';
+import { createSearchHistory } from './searchingService';
 import {
   selectDiarySearch,
   selectHashtag,
   selectUserSearch,
+  selectDiaryHistory,
 } from './searchingDao';
 
 export const retrieveDiarySearch = async (user_id, search_word) => {
+  // 검색기록 저장
+  const HistoryResult = await createSearchHistory(user_id, search_word, 0);
+  if (!HistoryResult[0].insertId)
+    return errResponse(baseResponse.SEARCHING_HISTORY_INSERT_ERROR);
+
   // 유저 정보 확인
   const userExist = await userIdCheck(user_id);
   if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
@@ -41,6 +48,11 @@ export const retrieveDiarySearch = async (user_id, search_word) => {
 };
 
 export const retrieveUserSearch = async (user_id, search_word) => {
+  // 검색기록 저장
+  const HistoryResult = await createSearchHistory(user_id, search_word, 1);
+  if (!HistoryResult[0].insertId)
+    return errResponse(baseResponse.SEARCHING_HISTORY_INSERT_ERROR);
+
   // 유저 존재 체크
   const userExist = await userIdCheck(user_id);
   if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
@@ -51,10 +63,28 @@ export const retrieveUserSearch = async (user_id, search_word) => {
     user_id,
     search_word,
   ]);
+  connection.release();
+
   if (!selectUserSearchResult[0][0])
     return errResponse(baseResponse.USER_USERID_NOT_EXIST);
 
-  connection.release();
-
   return response(baseResponse.SUCCESS, selectUserSearchResult[0]);
+};
+
+export const retrieveDiaryHistory = async (user_id, is_user) => {
+  // 유저 존재 체크
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+  const selectDiaryHistoryResult = await selectDiaryHistory(
+    connection,
+    user_id
+  );
+
+  connection.release();
+  // 검색기록 오류 체크
+  if (!selectDiaryHistoryResult[0][0])
+    return errResponse(baseResponse.SEARCHING_HISTORY_NOT_EXIST);
+  return response(baseResponse.SUCCESS, selectDiaryHistoryResult[0]);
 };

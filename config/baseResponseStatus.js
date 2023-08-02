@@ -274,6 +274,16 @@ const baseResponse = {
     code: 3012,
     message: '본인의 여행계획서는 스크랩 할 수 없습니다.',
   },
+  SEARCHING_HISTORY_INSERT_ERROR: {
+    isSuccess: false,
+    code: 3013,
+    message: '검색기록 생성 실패',
+  },
+  SEARCHING_HISTORY_NOT_EXIST: {
+    isSuccess: false,
+    code: 3014,
+    message: '검색기록이 존재하지 않습니다.',
+  },
   USER_NEED_SIGNUP: {
     isSuccess: false,
     code: 3200,
