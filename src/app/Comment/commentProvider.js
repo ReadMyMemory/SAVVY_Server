@@ -21,17 +21,18 @@ export const retrieveCommentList = async (diary_id, user_id) => {
     diary_id,
     user_id,
   ]);
+
   connection.release();
-  return retrieveCommentListResult[0];
+  return response(baseResponse.SUCCESS, retrieveCommentListResult[0]);
 };
 
 export const retrieveReplyList = async (comment_id, user_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
-  const retrieveReplyListResult = selectReplyListbyId(connection, [
+  const retrieveReplyListResult = await selectReplyListbyId(connection, [
     comment_id,
     user_id,
   ]);
-
+console.log(retrieveReplyListResult[0]);
   connection.release();
-  return retrieveReplyListResult;
+  return response(baseResponse.SUCCESS, retrieveReplyListResult[0]);
 };

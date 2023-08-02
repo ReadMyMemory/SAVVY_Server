@@ -12,7 +12,7 @@ import {
     commentIdCheck
 } from "./commentProvider";
 
-export const createComment = async(diary_id, user_id, contents) => {
+export const createComment = async(diary_id, user_id, content) => {
     // diary가 존재하는지 체크
     const diaryExist = await diaryIdCheck(diary_id);
     if (!diaryExist[0][0]) {
@@ -22,14 +22,14 @@ export const createComment = async(diary_id, user_id, contents) => {
     await insertComment(connection, [
         diary_id,
         user_id,
-        contents
+        content
     ]);
 
     connection.release();
     return response(baseResponse.SUCCESS);
 }
 
-export const createReply = async(comment_id, user_id, contents) => {
+export const createReply = async(comment_id, user_id, content) => {
     // comment가 존재하는지 체크
     const commentExist = await commentIdCheck(comment_id);
     if (!commentExist[0][0]) {
@@ -39,7 +39,7 @@ export const createReply = async(comment_id, user_id, contents) => {
     await insertReply(connection, [
         comment_id,
         user_id,
-        contents
+        content
     ]);
 
     connection.release();

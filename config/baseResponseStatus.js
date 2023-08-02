@@ -208,7 +208,7 @@ const baseResponse = {
   },
   COMMENT_COMMENTID_NOT_EXIST: {
     isSuccess: false,
-    code: 2401,
+    code: 2402,
     message: '해당 댓글이 존재하지 않습니다',
   },
 
