@@ -34,6 +34,7 @@ export const selectHashtag = async (connection, diary_id) => {
 export const selectUserSearch = async (connection, params) => {
   const new_params = [
     params[0],
+    params[0],
     '%' + params[1] + '%',
     params[1],
     params[1] + '%',
@@ -46,7 +47,7 @@ export const selectUserSearch = async (connection, params) => {
   WHERE user.id NOT IN (
     SELECT blocked_user FROM user_blocked
     WHERE user_id = ?)
-  AND nickname LIKE ?
+  AND id != ? AND nickname LIKE ?
   ORDER BY CASE WHEN nickname = ? then 0
     WHEN nickname = ? then 1
     WHEN nickname = ? then 2
