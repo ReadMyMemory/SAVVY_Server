@@ -55,8 +55,6 @@ export const postDiary = async (req, res) => {
 
     const contentInfo = req.body.content;
     const hashtagInfo = req.body.hashtag;
-
-    console.log(req.verifiedToken);
     // 빈 아이디 체크
     if (!defaultInfo.user_id)
         return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
@@ -65,6 +63,11 @@ export const postDiary = async (req, res) => {
         return res.send(errResponse(baseResponse.DIARY_DIARY_TITLE_LENGTH));
     if (!defaultInfo.title) defaultInfo.title = '제목을 입력해주세요';
 
+    //공개 여부, 임시 저장 여부 데이터 치환
+    if(defaultInfo.is_public === true) defaultInfo.is_public = 'true';
+    else defaultInfo.is_public = 'false';
+    if(defaultInfo.is_temporary === true) defaultInfo.is_temporary = 'true';
+    else defaultInfo.is_temporary = 'false';
 
 
     const postDiaryResponse = await createDiary(defaultInfo, contentInfo, hashtagInfo);
@@ -77,9 +80,7 @@ export const putDiary = async (req, res) => {
     //그러니까 수정을 한다 해도 기존 내용 다 삭제하고 다시 새로 쓰는 것처럼 한다.
     const diary_id = req.body.diary_id;
     const modifydefaultInfo = {
-        title: req.body.title,
-        planner_id : req.body.planner_id,
-        is_temporary : req.body.is_temporary
+        title: req.body.title
     };
     const modifycontentInfo = req.body.content;
 

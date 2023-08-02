@@ -108,8 +108,6 @@ export const modifyDiary = async(diary_id, modifydefaultInfo, modifycontentInfo,
     // 기본 정보 수정
     await updateDefault(connection, [
         modifydefaultInfo.title,
-        modifydefaultInfo.planner_id,
-        modifydefaultInfo.is_temporary,
         diary_id
     ]);
     // 내용 정보 수정을 위한 기존 내용 삭제

@@ -104,7 +104,7 @@ export const insertHashtag = async (connection, params) => {
 export const updateDefault = async (connection, params) => {
     const updateDefaultQuery = `
     UPDATE diary
-    SET title = ?, planner_id = ?, is_temporary = ?
+    SET title = ?
     WHERE id = ?;`;
     const updateDefaultRows = await connection.query(updateDefaultQuery, params);
     return updateDefaultRows;

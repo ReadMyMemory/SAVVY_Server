@@ -208,8 +208,18 @@ const baseResponse = {
   },
   COMMENT_COMMENTID_NOT_EXIST: {
     isSuccess: false,
-    code: 2401,
+    code: 2402,
     message: '해당 댓글이 존재하지 않습니다',
+  },
+  COMMENT_IS_UPDATED_DATETYPE_EXCEPTION: {
+    isSuccess: false,
+    code: 2403,
+    message: '댓글의 수정 여부 데이터가 true/false 형태가 아닙니다.',
+  },
+  REPLY_IS_UPDATED_DATETYPE_EXCEPTION: {
+    isSuccess: false,
+    code: 2404,
+    message: '답글의 수정 여부 데이터가 true/false 형태가 아닙니다.',
   },
 
   // Response error
@@ -305,6 +315,7 @@ const baseResponse = {
   SERVER_ERROR: { isSuccess: false, code: 4001, message: '서버 에러' },
   AXIOS_ERROR: { isSuccess: false, code: 4002, message: 'AXIOS 에러' },
   S3_ERROR: { isSuccess: false, code: 4003, message: '이미지 url 생성 실패' },
+  TIME_ERROR: {isSuccess: false, code: 4004, message: 'updated_at이 0이거나 음수의 값을 가집니다.'},
 };
 
 export default baseResponse;
