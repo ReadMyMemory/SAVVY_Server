@@ -52,8 +52,8 @@ export const postDiary = async (req, res) => {
         is_public : req.body.is_public,
         is_temporary : req.body.is_temporary
     };
-    const contentInfo = req.body.content;
 
+    const contentInfo = req.body.content;
     const hashtagInfo = req.body.hashtag;
 
     console.log(req.verifiedToken);
@@ -108,3 +108,14 @@ export const deleteDiary = async (req, res) => {
     );
     return res.send(deleteDiaryResponse);
 };
+
+export const postDiaryImage = async(req, res) => {
+    if (!req.files) return res.send(errResponse(baseResponse.S3_ERROR));
+    const fileResponse = new Array();
+    for(let i = 0; i < req.files.length; i++) {
+        fileResponse.push({content : req.files[i].location});
+    }
+    if (!fileResponse) return res.send(errResponse(baseResponse.S3_ERROR));
+    return res.send(response(baseResponse.SUCCESS, fileResponse));
+}
+

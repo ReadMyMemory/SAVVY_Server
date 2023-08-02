@@ -1,12 +1,14 @@
 import express from 'express';
 import { jwtMiddleware } from '../../../config/jwtMiddleware';
+import { uploadImage } from '../../../config/imageUploader';
 import {
     getDiaryList,
     getDiaryListAll,
     getDiaryDetail,
     deleteDiary,
     postDiary,
-    putDiary
+    putDiary,
+    postDiaryImage
 } from "./diaryController";
 
 
@@ -18,4 +20,10 @@ diaryRouter.get('/list/mydiary', jwtMiddleware, getDiaryList);
 diaryRouter.delete('/:diary_id', jwtMiddleware, deleteDiary);
 diaryRouter.post('/', jwtMiddleware, postDiary);
 diaryRouter.put('/', jwtMiddleware, putDiary);
+diaryRouter.post('/image',
+    jwtMiddleware,
+    uploadImage.array('image', 10),
+    postDiaryImage
+);
+
 export default diaryRouter;

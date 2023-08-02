@@ -30,3 +30,4 @@ export const uploadImage = multer({
     acl: 'public-read-write',
   }),
 });
+
