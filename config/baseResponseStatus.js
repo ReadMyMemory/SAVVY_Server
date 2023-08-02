@@ -166,7 +166,6 @@ const baseResponse = {
     code: 2101,
     message: '제목은 25자리 미만으로 입력해주세요.',
   },
-
   DIARY_DIARYID_EMPTY: {
     isSuccess: false,
     code: 2102,
@@ -176,6 +175,11 @@ const baseResponse = {
     isSuccess: false,
     code: 2103,
     message: '다이어리 작성자가 아닙니다.',
+  },
+  DAIRY_DIARYID_NOT_EXIST: {
+    isSuccess: false,
+    code: 2104,
+    message: '해당 다이어리가 존재하지 않습니다.',
   },
   REPORT_REASON_IS_INVALID: {
     isSuccess: false,
@@ -196,6 +200,11 @@ const baseResponse = {
     isSuccess: false,
     code: 2303,
     message: 'is_blocked값이 유효하지 않습니다.',
+  },
+  COMMENT_COMMENTID_EMPTY: {
+    isSuccess: false,
+    code: 2401,
+    message: 'commentId를 입력해주세요.',
   },
   COMMENT_COMMENTID_NOT_EXIST: {
     isSuccess: false,
@@ -264,11 +273,6 @@ const baseResponse = {
     isSuccess: false,
     code: 3012,
     message: '본인의 여행계획서는 스크랩 할 수 없습니다.',
-  },
-  DAIRY_DIARYID_NOT_EXIST: {
-    isSuccess: false,
-    code: 3101,
-    message: '해당 다이어리가 존재하지 않습니다.',
   },
   USER_NEED_SIGNUP: {
     isSuccess: false,
