@@ -1,7 +1,7 @@
 import baseResponse from '../../../config/baseResponseStatus';
 import pool from '../../../config/database';
 import { response, errResponse } from '../../../config/response';
-import { insertSearchHistory } from './searchingDao';
+import { insertSearchHistory, deleteSearchHistory } from './searchingDao';
 import { userIdCheck } from '../User/userProvider';
 
 export const createSearchHistory = async (user_id, search_word, is_user) => {
@@ -14,4 +14,19 @@ export const createSearchHistory = async (user_id, search_word, is_user) => {
   connection.release();
 
   return insertSearchHistoryResult;
+};
+
+export const deleteSearchList = async (user_id, search_word, is_user) => {
+  // 유저 존재 체크
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+  const deleteSearchHistoryResult = await deleteSearchHistory(connection, [
+    user_id,
+    search_word,
+    is_user,
+  ]);
+
+  return response(baseResponse.SUCCESS);
 };

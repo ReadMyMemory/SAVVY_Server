@@ -81,7 +81,7 @@ export const selectDiaryHistory = async (connection, user_id) => {
   SELECT search_word, searching_at FROM searching_history
     WHERE user_id = ? AND is_user = 0 AND (search_word, searching_at) IN (
       SELECT search_word, MAX(searching_at) AS 'searching_at'
-      FROM searching_history GROUP BY search_word)
+      FROM searching_history WHERE is_user = 0 GROUP BY search_word)
     ORDER BY searching_at DESC
     LIMIT 10;`;
 
@@ -98,7 +98,7 @@ export const selectUserHistory = async (connection, user_id) => {
   JOIN user ON searching_history.search_word = user.nickname
     WHERE user_id = ? AND is_user = 1 AND (search_word, searching_at) IN (
       SELECT search_word, MAX(searching_at) AS 'searching_at'
-      FROM searching_history GROUP BY search_word)
+      FROM searching_history WHERE is_user = 1 GROUP BY search_word)
     ORDER BY searching_at DESC
     LIMIT 10;`;
 
@@ -107,4 +107,16 @@ export const selectUserHistory = async (connection, user_id) => {
     user_id
   );
   return selectUserHistoryRows;
+};
+
+export const deleteSearchHistory = async (connection, params) => {
+  const deleteSearchHistoryQuery = `
+  DELETE FROM searching_history
+  WHERE user_id = ? AND search_word = ? AND is_user = ?;`;
+
+  const deleteSearchHistoryRow = await connection.query(
+    deleteSearchHistoryQuery,
+    params
+  );
+  return deleteSearchHistoryRow;
 };
