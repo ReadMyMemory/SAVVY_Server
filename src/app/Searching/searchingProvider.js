@@ -2,7 +2,11 @@ import pool from '../../../config/database';
 import { response, errResponse } from '../../../config/response';
 import { userIdCheck } from '../User/userProvider';
 import baseResponse from '../../../config/baseResponseStatus';
-import { selectDiarySearch, selectHashtag } from './searchingDao';
+import {
+  selectDiarySearch,
+  selectHashtag,
+  selectUserSearch,
+} from './searchingDao';
 
 export const retrieveDiarySearch = async (user_id, search_word) => {
   // 유저 정보 확인
@@ -34,4 +38,23 @@ export const retrieveDiarySearch = async (user_id, search_word) => {
   connection.release();
 
   return response(baseResponse.SUCCESS, selectDiarySearchResult[0]);
+};
+
+export const retrieveUserSearch = async (user_id, search_word) => {
+  // 유저 존재 체크
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+  // 유저 검색 목록
+  const selectUserSearchResult = await selectUserSearch(connection, [
+    user_id,
+    search_word,
+  ]);
+  if (!selectUserSearchResult[0][0])
+    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  connection.release();
+
+  return response(baseResponse.SUCCESS, selectUserSearchResult[0]);
 };

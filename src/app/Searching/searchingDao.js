@@ -30,3 +30,34 @@ export const selectHashtag = async (connection, diary_id) => {
   );
   return selectHashtagRows;
 };
+
+export const selectUserSearch = async (connection, params) => {
+  const new_params = [
+    params[0],
+    params[0],
+    '%' + params[1] + '%',
+    params[1],
+    params[1] + '%',
+    '%' + params[1] + '%',
+    '%' + params[1],
+  ];
+  const selectUserSearchQuery = `
+  SELECT id, nickname, pic_url, likes, amount_planner, amount_diary
+  FROM user
+  WHERE user.id NOT IN (
+    SELECT blocked_user FROM user_blocked
+    WHERE user_id = ?)
+  AND id != ? AND nickname LIKE ?
+  ORDER BY CASE WHEN nickname = ? then 0
+    WHEN nickname = ? then 1
+    WHEN nickname = ? then 2
+    WHEN nickname = ? then 3
+    ELSE 4
+    END;`;
+
+  const selectUserSearchRows = await connection.query(
+    selectUserSearchQuery,
+    new_params
+  );
+  return selectUserSearchRows;
+};
