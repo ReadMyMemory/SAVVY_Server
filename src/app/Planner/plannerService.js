@@ -42,7 +42,10 @@ export const deletePlannerCheck = async (user_id, planner_id, type) => {
       return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
     }
     const connection = await pool.getConnection(async (conn) => conn);
-    const deletePlannerbyIdResult = deletePlannerbyId(connection, planner_id);
+    const deletePlannerbyIdResult = await deletePlannerbyId(
+      connection,
+      planner_id
+    );
 
     connection.release();
     return response(baseResponse.SUCCESS, deletePlannerbyIdResult[0]);
