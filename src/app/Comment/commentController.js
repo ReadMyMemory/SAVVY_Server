@@ -65,6 +65,4 @@ export const getReply = async (req, res) => {
  
     const getReplyResponse = await retrieveReplyList(comment_id, user_id);
     return res.send(getReplyResponse);
-
-
 }
