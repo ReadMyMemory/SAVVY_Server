@@ -1,7 +1,7 @@
 import admin from 'firebase-admin';
 import baseResponse from './baseResponseStatus';
 import { response, errResponse } from './response';
-const serviceAccount = require('../savvy-392315-firebase-adminsdk-ojqc6-e72189ce22.json');
+const serviceAccount = require('../savvy-392315-firebase-adminsdk-ojqc6-2994b3a065.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -9,28 +9,28 @@ admin.initializeApp({
 
 // push 기능 구현
 export const pushAlarm = async (deviceToken, alarmContent) => {
+  console.log(deviceToken);
   const message = {
     notification: {
       title: alarmContent.title,
       body: alarmContent.body,
     },
-    // data: {
-    //   id: 'id',
-    //   title: 'data-title',
-    //   body: 'data-body',
-    //   origin: 'chat',
-    // },
-    // android: {
-    //   priority: 'high',
-    //   notification: {
-    //     title: title,
-    //     body: body,
-    //     sound: 'default',
-    //     priority: 'high',
-    //     icon: 'default',
-    //     channelId: '500',
-    //   },
-    // },
+    data: {
+      title: alarmContent.title,
+      body: alarmContent.body,
+    },
+    android: {
+      priority: 'high',
+      //   notification: {
+      //     title: alarmContent.title,
+      //     body: alarmContent.body,
+      //     sound: 'default',
+      //     priority: 'high',
+      //     imageUrl:
+      //       'https://savvybucket.s3.ap-northeast-2.amazonaws.com/1690730876044_%EB%A1%9C%EA%B3%A0.png',
+      //     channelId: '500',
+      //   },
+    },
     token: deviceToken,
   };
 
