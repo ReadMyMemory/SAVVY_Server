@@ -34,7 +34,7 @@ export const deleteDiaryCheck = async (user_id, diary_id) => {
     const deleteDiarybyIdResult = await deleteDiarybyId(connection, diary_id);
 
     connection.release();
-    return response(baseResponse.SUCCESS, deleteDiarybyIdResult[0]);
+    return response(baseResponse.SUCCESS);
 };
 
 export const createDiary = async (defaultInfo, contentInfo, hashtagInfo) => {
