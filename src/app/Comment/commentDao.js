@@ -73,3 +73,13 @@ export const selectReplyListbyId = async (connection, params) => {
   );
   return selectReplyListbyIdRows;
 };
+
+export const showReplyCountbyId = async (connection, value) => {
+  const showReplyCountbyIdQuery = `
+  SELECT COUNT(id) AS count
+  FROM diary_reply
+  WHERE comment_id = ? ;`;
+
+  const showReplyCountbyIdRows = await connection.query(showReplyCountbyIdQuery, value);
+  return showReplyCountbyIdRows;
+}
