@@ -1,6 +1,7 @@
 import pool from '../../../config/database';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
+import {diaryIdCheck, userIdCheck} from "../Diary/diaryProvider";
 import {
   selectCommentbyId,
   selectCommentListbyId,
@@ -9,6 +10,7 @@ import {
 } from './commentDao';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration'
+
 
 dayjs.extend(duration);
 
@@ -48,6 +50,16 @@ export const dateDivider = async (datevalue) => {
 };
 
 export const retrieveCommentList = async (diary_id, user_id) => {
+  // user가 존재하는지 체크
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) {
+    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+  }
+  // diary가 존재하는지 체크
+  const diaryExist = await diaryIdCheck(diary_id)
+  if (!diaryExist[0][0]) {
+    return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+  }
   const connection = await pool.getConnection(async (conn) => conn);
   const retrieveCommentListResult = await selectCommentListbyId(connection, [
     diary_id,
@@ -73,6 +85,17 @@ export const retrieveCommentList = async (diary_id, user_id) => {
 };
 
 export const retrieveReplyList = async (comment_id, user_id) => {
+  // user가 존재하는지 체크
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) {
+    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+  }
+  // comment가 존재하는지 체크
+  const commentExist = await commentIdCheck(comment_id);
+  if (!commentExist[0][0]) {
+    return errResponse(baseResponse.COMMENT_COMMENTID_NOT_EXIST);
+  }
+  console.log(commentExist[0][0]);
   const connection = await pool.getConnection(async (conn) => conn);
   const retrieveReplyListResult = await selectReplyListbyId(connection, [
     comment_id,
