@@ -315,7 +315,16 @@ const baseResponse = {
   SERVER_ERROR: { isSuccess: false, code: 4001, message: '서버 에러' },
   AXIOS_ERROR: { isSuccess: false, code: 4002, message: 'AXIOS 에러' },
   S3_ERROR: { isSuccess: false, code: 4003, message: '이미지 url 생성 실패' },
-  TIME_ERROR: {isSuccess: false, code: 4004, message: 'updated_at이 0이거나 음수의 값을 가집니다.'},
+  TIME_ERROR: {
+    isSuccess: false,
+    code: 4004,
+    message: 'updated_at이 0이거나 음수의 값을 가집니다.',
+  },
+  ALARM_ERROR: {
+    isSuccess: false,
+    code: 4005,
+    message: '알림 메세지 전송 에러',
+  },
 };
 
 export default baseResponse;
