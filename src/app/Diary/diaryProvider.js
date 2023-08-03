@@ -23,14 +23,14 @@ dayjs.extend(timezone);
 
 export const userIdCheck = async (user_id) => {
     const connection = await pool.getConnection(async (conn) => conn);
-    const userIdCheckResult = selectUserbyId(connection, user_id);
+    const userIdCheckResult = await selectUserbyId(connection, user_id);
 
     connection.release();
     return userIdCheckResult;
 };
 export const diaryIdCheck = async (diary_id) => {
     const connection = await pool.getConnection(async (conn) => conn);
-    const diaryIdCheckResult = selectDiarybyId(connection, diary_id);
+    const diaryIdCheckResult = await selectDiarybyId(connection, diary_id);
 
     connection.release();
     return diaryIdCheckResult;
@@ -38,8 +38,7 @@ export const diaryIdCheck = async (diary_id) => {
 
 export const diaryOwnerMatchCheck = async (diary_id) => {
     const connection = await pool.getConnection(async (conn) => conn);
-    const diaryOwnerMatchCheckResult = selectUserbyDiaryId(connection, diary_id);
-
+    const diaryOwnerMatchCheckResult = await selectUserbyDiaryId(connection, diary_id);
     connection.release();
     return diaryOwnerMatchCheckResult;
 }
