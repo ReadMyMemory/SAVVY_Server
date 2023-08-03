@@ -156,3 +156,36 @@ export const modifyDiary = async(diary_id, modifydefaultInfo, modifycontentInfo,
     connection.release();
     return response(baseResponse.SUCCESS);
 }
+
+export const updateLikeCount = async(user_id, diary_id, value) => {
+    // user가 존재하는지 체크
+    const userExist = await userIdCheck(user_id);
+    if (!userExist[0][0]) {
+        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+    }
+    // diary가 존재하는지 체크
+    const diaryExist = await diaryIdCheck(diary_id);
+    if (!diaryExist[0][0]) {
+        return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+    }
+    const connection = await pool.getConnection(async (conn) => conn);
+    //좋아요 수가 0 이하인지 확인
+    const LikeNum = await CheckLikeCount(diary_id);
+    if(LikeNum < 0) return errResponse(baseResponse.DAIRY_DIARY_LIKE_COUNT_IS);
+    if(value === 'up') {
+        const upLikeCountResult = upLikeCount(connection, [
+            user_id,
+            diary_id
+        ]);
+    } else {
+        const downLikeCountResult = downLikeCount(connection, [
+            user_id,
+            diary_id
+        ]);
+    }
+    connection.release();
+    return response(baseResponse.SUCCESS);
+}
+export const updatedPublicStatus = async(user_id, diary_id, value) => {
+
+}

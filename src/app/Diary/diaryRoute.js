@@ -8,7 +8,8 @@ import {
     deleteDiary,
     postDiary,
     putDiary,
-    postDiaryImage
+    postDiaryImage,
+    ModifyStatus
 } from "./diaryController";
 
 
@@ -25,5 +26,7 @@ diaryRouter.post('/image',
     uploadImage.array('image', 10),
     postDiaryImage
 );
+diaryRouter.post('/status', jwtMiddleware, ModifyStatus);
+
 
 export default diaryRouter;
