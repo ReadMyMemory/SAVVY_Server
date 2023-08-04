@@ -67,7 +67,7 @@ export const retrieveCommentList = async (diary_id, user_id) => {
   ]);
   if(retrieveCommentListResult[0][0]) {
     // 답글 수 표시
-    for (let p = 0; p < retrieveCommentListResult.length; p++) {
+    for (let p = 0; p < retrieveCommentListResult[0].length; p++) {
       const countValue = await showReplyCountbyId(connection, retrieveCommentListResult[0][p].id);
       retrieveCommentListResult[0][p].reply_count = countValue[0][0].count;
     }
