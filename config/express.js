@@ -7,6 +7,8 @@ import plannerRouter from '../src/app/Planner/plannerRoute';
 import diaryRouter from '../src/app/Diary/diaryRoute';
 import commentRouter from '../src/app/Comment/commentRoute';
 import searchingRouter from '../src/app/Searching/searchingRoute';
+import { errResponse } from './response';
+import baseResponse from './baseResponseStatus';
 const app = express();
 
 // app.use(미들웨어) -> 미들웨어를 사용하기 위한 메서드
@@ -24,5 +26,10 @@ app.use('/src/app/User', userRouter);
 app.use('/api/diary', diaryRouter);
 app.use('/api/comment', commentRouter);
 app.use('/api/searching', searchingRouter);
+
+app.use((error, req, res, next) => {
+  console.log(`예외처리 발생: ${error}`);
+  res.send(errResponse(baseResponse.SERVER_ERROR));
+});
 
 export default app;
