@@ -41,7 +41,7 @@ export const diaryOwnerMatchCheck = async (diary_id) => {
     const diaryOwnerMatchCheckResult = await selectUserbyDiaryId(connection, diary_id);
     connection.release();
     return diaryOwnerMatchCheckResult;
-}
+};
 
 
 export const retrieveDiaryList = async (user_id) => {
