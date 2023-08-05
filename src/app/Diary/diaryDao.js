@@ -183,3 +183,17 @@ export const selectIsLiked = async (connection, params) => {
     const selectIsLikedRows = await connection.query(selectIsLikedQuery, params);
     return selectIsLikedRows;
 }
+
+export const checkLikeCount = async (connection, diary_id) => {
+    const checkLikeCountQuery = `
+    SELECT likes_count
+    FROM diary
+    WHERE id = ? ;`;
+
+    const checkLikeCountRows = await connection.query(checkLikeCountQuery, diary_id);
+    return checkLikeCountRows;
+}
+
+export const upLikeCount = async (connection, params) => {
+
+}

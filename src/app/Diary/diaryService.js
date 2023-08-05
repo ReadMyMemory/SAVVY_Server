@@ -15,7 +15,8 @@ import {
     updateDefault,
     deleteContent,
     deleteDiarybyId,
-    deleteHashtag
+    deleteHashtag,
+    checkLikeCount
 } from "./diaryDao";
 
 
@@ -170,8 +171,9 @@ export const updateLikeCount = async(user_id, diary_id, value) => {
     }
     const connection = await pool.getConnection(async (conn) => conn);
     //좋아요 수가 0 이하인지 확인
-    const LikeNum = await CheckLikeCount(diary_id);
-    if(LikeNum < 0) return errResponse(baseResponse.DAIRY_DIARY_LIKE_COUNT_IS);
+    const likeNum = await checkLikeCount(connection, diary_id);
+    console.log(likeNum);
+    if(likeNum < 0) return errResponse(baseResponse.DAIRY_DIARY_LIKE_COUNT_IS_INVALID);
     if(value === 'up') {
         const upLikeCountResult = upLikeCount(connection, [
             user_id,
