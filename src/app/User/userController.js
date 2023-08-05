@@ -2,9 +2,10 @@ import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import { retrieveKakaoLogin, userIdCheck } from './userProvider';
 import { createUser } from './userService';
+import { pushAlarm } from '../../../config/firebaseAlarm';
 
 export const loginUser = async (req, res) => {
-  const { kakaoToken } = req.body;
+  const { kakaoToken, deviceToken } = req.body;
   // 빈 토큰 체크
   if (!kakaoToken) return res.send(errResponse(baseResponse.TOKEN_KAKAO_EMPTY));
 
@@ -50,4 +51,23 @@ export const postProfileImage = async (req, res) => {
 
   if (!filePath) return res.send(errResponse(baseResponse.S3_ERROR));
   return res.send(response(baseResponse.SUCCESS, { pic_url: filePath }));
+};
+
+export const alarmTest = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+  const { user_alarmed } = req.params;
+
+  const userExist = await userIdCheck(user_alarmed);
+  if (!userExist[0][0])
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+
+  const alarmTestResponse = await pushAlarm(userExist[0][0].deviceToken, {
+    title: '제목',
+    body: '이건 내용이에요',
+  });
+
+  if (alarmTestResponse === errResponse(baseResponse.ALARM_ERROR))
+    return res.send(errResponse(baseResponse.ALARM_ERROR));
+
+  return res.send(response(baseResponse.SUCCESS));
 };

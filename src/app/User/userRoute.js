@@ -6,17 +6,27 @@ import {
   postUser,
   loginTest,
   postProfileImage,
+  alarmTest,
 } from './userController';
+import { wrapAsync } from '../../../config/errorHandler';
 
 const userRouter = express.Router();
 
-userRouter.post('/login', loginUser);
-userRouter.post('/signup', postUser);
-userRouter.get('/login', jwtMiddleware, loginTest);
+userRouter.post('/login', wrapAsync(loginUser));
+userRouter.post('/signup', wrapAsync(postUser));
+userRouter.get('/login', jwtMiddleware, wrapAsync(loginTest));
 userRouter.post(
   '/image/profile',
   uploadImage.single('image'),
-  postProfileImage
+  wrapAsync(postProfileImage)
+);
+userRouter.get('/push/:user_alarmed', jwtMiddleware, wrapAsync(alarmTest));
+userRouter.get(
+  '/error',
+  jwtMiddleware,
+  wrapAsync(async (req, res) => {
+    throw new Error('에러');
+  })
 );
 
 export default userRouter;
