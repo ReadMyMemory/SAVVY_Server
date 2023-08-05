@@ -3,13 +3,14 @@ import { jwtMiddleware } from '../../../config/jwtMiddleware';
 import { uploadImage } from '../../../config/imageUploader';
 import { wrapAsync } from '../../../config/errorHandler';
 import {
-  getDiaryList,
-  getDiaryListAll,
-  getDiaryDetail,
-  deleteDiary,
-  postDiary,
-  putDiary,
-  postDiaryImage,
+    getDiaryList,
+    getDiaryListAll,
+    getDiaryDetail,
+    deleteDiary,
+    postDiary,
+    putDiary,
+    postDiaryImage,
+    ModifyStatus
 } from './diaryController';
 
 const diaryRouter = express.Router();
@@ -26,5 +27,7 @@ diaryRouter.post(
   uploadImage.array('image', 10),
   wrapAsync(postDiaryImage)
 );
+diaryRouter.post('/status', jwtMiddleware, ModifyStatus);
+
 
 export default diaryRouter;

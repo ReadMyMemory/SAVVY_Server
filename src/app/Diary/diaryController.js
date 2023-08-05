@@ -7,7 +7,9 @@ import {
 import {
     createDiary,
     modifyDiary,
-    deleteDiaryCheck
+    deleteDiaryCheck,
+    updateLikeCount,
+    updatedPublicStatus
 } from "./diaryService";
 
 
@@ -118,5 +120,37 @@ export const postDiaryImage = async(req, res) => {
     }
     if (!fileResponse) return res.send(errResponse(baseResponse.S3_ERROR));
     return res.send(response(baseResponse.SUCCESS, fileResponse));
+}
+
+export const ModifyStatus = async(req, res) => {
+    const user_id = req.verifiedToken.id;
+    const diary_id = req.body.diary_id;
+    const { type, value } = req.query;
+
+    // 빈 아이디 체크
+    if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    // 빈 다이어리 아이디 체크
+    if (!diary_id) return res.send(errResponse(baseResponse.DIARY_DIARYID_EMPTY));
+    //value(up, down, true, false) 체크
+    if(value !== 'up' && value !== 'down' && value !== 'true' && value !== 'false') {
+        return res.send(errResponse(baseResponse.DAIRY_DIARY_METHOD_VALUE_EMPTY));
+    }
+    //type(like, public) 체크
+    if (type !== 'like' && type !== 'public') {
+        return res.send(errResponse(baseResponse.DIARY_DIARY_METHOD_TYPE_EMPTY));
+    }
+    if(type === 'like') {
+        const modifyLikeCountResponse = await updateLikeCount(user_id, diary_id, value);
+        return res.send(modifyLikeCountResponse);
+    } else {
+        const modifyPublicStatusResponse = await updatedPublicStatus(user_id, diary_id, value);
+        return res.send(modifyPublicStatusResponse);
+    }
+
+
+
+
+
+
 }
 
