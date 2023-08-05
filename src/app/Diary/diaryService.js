@@ -16,20 +16,30 @@ import {
     deleteContent,
     deleteDiarybyId,
     deleteHashtag,
-    checkLikeCount
+    checkLikeCount,
+    upLikeCount,
+    downLikeCount,
+    deleteLikeLog,
+    insertLikeLog,
+    updatePublicIsTrue,
+    updatePublicIsFalse
 } from "./diaryDao";
 
 
 export const deleteDiaryCheck = async (user_id, diary_id) => {
-    // 다이어리 작성자 user_id와 삭제를 시도하는 user_id가 같은지 체크
-    const diaryOwnermatch = await diaryOwnerMatchCheck(diary_id);
-    if(user_id != diaryOwnermatch[0][0]) {
-        return errResponse(baseResponse.USER_USERID_NOT_MATCH_DIARYOWNER);
+    // user가 존재하는지 체크
+    const userExist = await userIdCheck(defaultInfo.user_id);
+    if (!userExist[0][0]) {
+        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
     }
-    const myDiaryCheck = await diaryIdCheck(diary_id);
+    const diaryExist = await diaryIdCheck(diary_id);
     // diary가 존재하는지 체크
     if (!myDiaryCheck[0][0]) {
         return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+    }
+    // 다이어리 작성자 user_id와 삭제를 시도하는 user_id가 같은지 체크
+    if(user_id != diaryExist[0][0].user_id) {
+        return errResponse(baseResponse.USER_USERID_NOT_MATCH_DIARYOWNER);
     }
     const connection = await pool.getConnection(async (conn) => conn);
     const deleteDiarybyIdResult = await deleteDiarybyId(connection, diary_id);
@@ -169,25 +179,55 @@ export const updateLikeCount = async(user_id, diary_id, value) => {
     if (!diaryExist[0][0]) {
         return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
     }
-    const connection = await pool.getConnection(async (conn) => conn);
-    //좋아요 수가 0 이하인지 확인
+    //좋아요 수가 음수인지 확인
     const likeNum = await checkLikeCount(connection, diary_id);
-    console.log(likeNum);
-    if(likeNum < 0) return errResponse(baseResponse.DAIRY_DIARY_LIKE_COUNT_IS_INVALID);
+    if(likeNum[0][0].likes_count < 0) return errResponse(baseResponse.DAIRY_DIARY_LIKE_COUNT_IS_INVALID);
+    
+    const connection = await pool.getConnection(async (conn) => conn);
+
     if(value === 'up') {
-        const upLikeCountResult = upLikeCount(connection, [
+        await upLikeCount(connection, diary_id); 
+        await insertLikeLog(connection, [
+            user_id,
+            diary_id
+        ]);
+    } else if (value === 'down') {
+        await downLikeCount(connection, diary_id);
+        await deleteLikeLog(connection, [
             user_id,
             diary_id
         ]);
     } else {
-        const downLikeCountResult = downLikeCount(connection, [
-            user_id,
-            diary_id
-        ]);
-    }
+        return response(errResponse(baseResponse.DAIRY_STATUS_VALUE_IS_INVALID));
+        }
+    
     connection.release();
     return response(baseResponse.SUCCESS);
 }
 export const updatedPublicStatus = async(user_id, diary_id, value) => {
+    // user가 존재하는지 체크
+    const userExist = await userIdCheck(user_id);
+    if (!userExist[0][0]) {
+        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+    }
+    // diary가 존재하는지 체크
+    const diaryExist = await diaryIdCheck(diary_id);
+    if (!diaryExist[0][0]) {
+        return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+    }
+    // 다이어리 작성자 user_id와 공개 여부를 바꾸려는 user_id가 같은지 체크
+    if(user_id != diaryExist[0][0].user_id) {
+        return errResponse(baseResponse.USER_USERID_NOT_MATCH_DIARYOWNER);
+    }
+    const connection = await pool.getConnection(async (conn) => conn);
 
+    if(value === 'true') {
+        await updatePublicIsTrue(connection, diary_id);
+    } else if (value === 'false') {
+        await updatePublicIsFalse(connection, diary_id);
+    } else {
+        return errResponse(baseResponse.DAIRY_STATUS_VALUE_IS_INVALID);
+    }
+    connection.release();
+    return response(baseResponse.SUCCESS);
 }

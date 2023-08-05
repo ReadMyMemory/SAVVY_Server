@@ -221,6 +221,21 @@ const baseResponse = {
     code: 2404,
     message: '답글의 수정 여부 데이터가 true/false 형태가 아닙니다.',
   },
+  DAIRY_DIARY_LIKE_COUNT_IS_INVALID: {
+    isSuccess: false,
+    code: 2405,
+    message: '현재 다이어리의 좋아요 개수가 0보다 적습니다.'
+  },
+  DAIRY_STATUS_VALUE_IS_INVALID: {
+    isSuccess: false,
+    code: 2406,
+    message: '상태를 변경하고자 하는 VALUE값이 올바르지 않습니다.'
+  },
+  DAIRY_DIARY_METHOD_VALUE_EMPTY: {
+    isSuccess: false,
+    code: 2407,
+    message: '쿼리 스트링에 담긴 VALUE가 올바르지 않거나 비어있습니다.'
+  },
 
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
