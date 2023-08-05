@@ -231,10 +231,35 @@ const baseResponse = {
     code: 2406,
     message: '상태를 변경하고자 하는 VALUE값이 올바르지 않습니다.'
   },
-  DAIRY_DIARY_METHOD_VALUE_EMPTY: {
+  DIARY_DIARY_METHOD_TYPE_EMPTY: {
     isSuccess: false,
     code: 2407,
+    message: '쿼리 스트링에 담긴 TYPE이 올바르지 않거나 비어있습니다.'
+  },
+  DAIRY_DIARY_METHOD_VALUE_EMPTY: {
+    isSuccess: false,
+    code: 2408,
     message: '쿼리 스트링에 담긴 VALUE가 올바르지 않거나 비어있습니다.'
+  },
+  DAIRY_USER_ALREADY_DIARY_LIKED: {
+    isSuccess: false,
+    code: 2409,
+    message: '이미 좋아요를 누른 다이어리에 좋아요를 추가하려고 시도하고 있습니다.'
+  },
+  DAIRY_USER_NOT_DIARY_LIKED: {
+    isSuccess: false,
+    code: 2410,
+    message: '좋아요를 누르지 않은 다이어리에 좋아요를 취소하려고 시도하고 있습니다.'
+  },
+  DAIRY_DAIRY_PUBLIC_STATUS_ALREADY_TRUE: {
+    isSuccess: false,
+    code: 2411,
+    message: '다이어리 상태를 공개로 바꾸려고 하지만, 이미 공개 상태입니다.'
+  },
+  DAIRY_DAIRY_PUBLIC_STATUS_ALREADY_FALSE: {
+    isSuccess: false,
+    code: 2412,
+    message: '다이어리 상태를 비공개로 바꾸려고 하지만, 이미 비공개 상태입니다.'
   },
 
   // Response error

@@ -220,7 +220,7 @@ export const insertLikeLog = async (connection, params) => {
     INSERT INTO diary_likes(diary_id, user_id)
     VALUES (?, ?) ;`;
 
-    const insertLikeLogRows = await connection.query(insertUpLikeQuery, params);
+    const insertLikeLogRows = await connection.query(insertLikeLogQuery, params);
     return insertLikeLogRows;
 }
 
@@ -237,7 +237,7 @@ export const deleteLikeLog = async (connection, params) => {
 export const updatePublicIsTrue = async (connection, diary_id) => {
     const updatePublicIsTrueQuery = `
     UPDATE diary
-    SET is_public = true
+    SET is_public = 'true'
     WHERE id = ? ;`;
 
     const updatePublicIsTrueRows = await connection.query(updatePublicIsTrueQuery, diary_id);
@@ -247,9 +247,29 @@ export const updatePublicIsTrue = async (connection, diary_id) => {
 export const updatePublicIsFalse = async (connection, diary_id) => {
     const updatePublicIsFalseQuery = `
     UPDATE diary
-    SET is_public = false
+    SET is_public = 'false'
     WHERE id = ? ;`;
     
     const updatePublicIsFalseRows = await connection.query(updatePublicIsFalseQuery, diary_id);
     return updatePublicIsFalseRows;
+}
+
+export const checkIsLiked = async (connection, params) => {
+    const checkIsLikedQuery = `
+    SELECT *
+    FROM diary_likes
+    WHERE diary_id = ? AND user_id = ? ;`;
+
+    const checkIsLikedRows = await connection.query(checkIsLikedQuery, params);
+    return checkIsLikedRows;
+}
+
+export const checkPublicStatus = async (connection, diary_id) => {
+    const checkPublicStatusQuery = `
+    SELECT is_public
+    FROM diary
+    WHERE id = ? ;`;
+
+    const checkPublicStatusRows = await connection.query(checkPublicStatusQuery, diary_id);
+    return checkPublicStatusRows;
 }
