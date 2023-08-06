@@ -1,6 +1,10 @@
 import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
-import { retrieveKakaoLogin, userIdCheck } from './userProvider';
+import {
+  retrieveKakaoLogin,
+  userIdCheck,
+  retrieveMypage,
+} from './userProvider';
 import { createUser } from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
 
@@ -70,4 +74,15 @@ export const alarmTest = async (req, res) => {
     return res.send(errResponse(baseResponse.ALARM_ERROR));
 
   return res.send(response(baseResponse.SUCCESS));
+};
+
+export const getMypage = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0])
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+
+  const getMypageResponse = await retrieveMypage(user_id);
+  return res.send(getMypageResponse);
 };
