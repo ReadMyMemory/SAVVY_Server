@@ -1,7 +1,8 @@
 import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import { createComment, createReply } from './commentService';
-import { retrieveCommentList, retrieveReplyList } from './commentProvider';
+import { retrieveCommentListAll } from "./commentProvider";
+//import { retrieveCommentList, retrieveReplyList } from './commentProvider';
 
 export const postComment = async (req, res) => {
   const diary_id = req.body.diary_id;
@@ -32,7 +33,20 @@ export const postReply = async (req, res) => {
   return res.send(postReplyResponse);
 };
 
-export const getCommentList = async (req, res) => {
+export const getCommentListAll = async(req, res) => {
+  const diary_id = req.params.diary_id;
+  const user_id = req.verifiedToken.id;
+
+  // 빈 아이디 체크
+  if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  //빈 다이어리 아이디 체크
+  if (!diary_id) return res.send(errResponse(baseResponse.DIARY_DIARYID_EMPTY));
+
+  const getCommentResponse = await retrieveCommentListAll(diary_id, user_id);
+  return res.send(getCommentResponse);
+};
+
+/* export const getCommentList = async (req, res) => {
   const diary_id = req.params.diary_id;
   const user_id = req.verifiedToken.id;
 
@@ -57,3 +71,4 @@ export const getReplyList = async (req, res) => {
   const getReplyResponse = await retrieveReplyList(comment_id, user_id);
   return res.send(getReplyResponse);
 };
+*/
