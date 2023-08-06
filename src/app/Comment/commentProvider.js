@@ -79,10 +79,8 @@ export const retrieveCommentListAll = async(diary_id, user_id) => {
     retrieveCommentListResult[0][i].updated_at = await dateDivider(retrieveCommentListResult[0][i].updated_at);
     if (retrieveCommentListResult[0][i].updated_at === -1) retrieveCommentListResult[0][i] = errResponse(baseResponse.TIME_ERROR);
 
-    console.log(retrieveCommentListResult[0][i]);
-    // 답글 리스트 불러오기
 
-    retrieveCommentListResult[0][i].reply_List = new Array();
+    // 답글 리스트 불러오기
     // comment가 존재하는지 체크
     const commentExist = await commentIdCheck(retrieveCommentListResult[0][i].id);
     if (!commentExist[0][0]) {
@@ -92,6 +90,7 @@ export const retrieveCommentListAll = async(diary_id, user_id) => {
       retrieveCommentListResult[0][i].id,
       user_id
     ]);
+
     for (let j = 0; j < retrieveReplyListResult[0].length; j++) {
       //댓글 is_updated의 boolean 치환
       if (retrieveReplyListResult[0][j].is_updated === 'true') retrieveReplyListResult[0][j].is_updated = true;
@@ -103,6 +102,7 @@ export const retrieveCommentListAll = async(diary_id, user_id) => {
     }
     retrieveCommentListResult[0][i].reply_List = retrieveReplyListResult[0];
   }
+
     connection.release();
     return response(baseResponse.SUCCESS, retrieveCommentListResult[0]);
 };
