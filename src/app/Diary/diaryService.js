@@ -30,30 +30,24 @@ import {
 
 export const deleteDiaryCheck = async (user_id, diary_id) => {
     // user가 존재하는지 체크
-    const userExist = await userIdCheck(defaultInfo.user_id);
+    const userExist = await userIdCheck(user_id);
     if (!userExist[0][0]) {
         return errResponse(baseResponse.USER_USERID_NOT_EXIST);
-        // 다이어리 작성자 user_id와 삭제를 시도하는 user_id가 같은지 체크
-        const diaryOwnermatch = await diaryOwnerMatchCheck(diary_id);
-        if (user_id != diaryOwnermatch[0][0].user_id) {
-            return errResponse(baseResponse.USER_USERID_NOT_MATCH_DIARYOWNER);
-        }
-        const diaryExist = await diaryIdCheck(diary_id);
-        // diary가 존재하는지 체크
-        if (!myDiaryCheck[0][0]) {
-            return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
-        }
-        // 다이어리 작성자 user_id와 삭제를 시도하는 user_id가 같은지 체크
-        if (user_id != diaryExist[0][0].user_id) {
-            return errResponse(baseResponse.USER_USERID_NOT_MATCH_DIARYOWNER);
-        }
+    }
+    // diary가 존재하는지 체크
+    const diaryExist = await diaryIdCheck(diary_id);
+    if (!diaryExist[0][0]) {
+        return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+    }
+    // 다이어리 작성자 user_id와 삭제를 시도하는 user_id가 같은지 체크
+    if (user_id != diaryExist[0][0].user_id) {
+        return errResponse(baseResponse.USER_USERID_NOT_MATCH_DIARYOWNER);
+    }
         const connection = await pool.getConnection(async (conn) => conn);
         const deleteDiarybyIdResult = await deleteDiarybyId(connection, diary_id);
-
         connection.release();
         return response(baseResponse.SUCCESS);
-    }
-};
+    };
 
 export const createDiary = async (defaultInfo, contentInfo, hashtagInfo) => {
     // user가 존재하는지 체크
