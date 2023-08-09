@@ -125,7 +125,7 @@ export const retrieveHomeListdefault = async (user_id) => {
     }
     const connection = await pool.getConnection(async (conn) => conn);
     const retrieveHomeListdefaultResult = await selectHomeListdefault(connection, user_id);
-    if(!retrieveHomeListbyIdResult[0][0]) return errResponse(baseResponse.DAIRY_NOT_EXIST_SHOWN_DIARY);
+    if(!retrieveHomeListdefaultResult[0][0]) return errResponse(baseResponse.DAIRY_NOT_EXIST_SHOWN_DIARY);
     for(let i = 0; i < retrieveHomeListdefaultResult[0].length; i++) {
         //작성자 닉네임 받아오기
         const findNickname = await findUserNickname(connection, retrieveHomeListdefaultResult[0][i].user_id);
