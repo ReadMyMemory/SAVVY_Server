@@ -273,3 +273,42 @@ export const checkPublicStatus = async (connection, diary_id) => {
     const checkPublicStatusRows = await connection.query(checkPublicStatusQuery, diary_id);
     return checkPublicStatusRows;
 }
+
+export const selectHomeListdefault = async (connection, user_id) => {
+    const selectHomeListdefaultQuery = `
+    SELECT id, title, user_id, updated_at, likes_count, comments_count, thumbnail,
+    likes_count, comments_count
+    FROM diary
+    WHERE user_id NOT IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?) AND 
+    is_public = 'true'
+    ORDER BY updated_at DESC LIMIT 20;`;
+
+    const selectHomeListdefaultRows = await connection.query(selectHomeListdefaultQuery, user_id);
+    return selectHomeListdefaultRows;
+}
+
+
+export const selectHomeListbyId = async (connection, params) => {
+    const selectHomeListbyIdQuery = ` 
+    SELECT id, title, user_id, updated_at, likes_count, comments_count, thumbnail,
+    likes_count, comments_count
+    FROM diary
+    WHERE updated_at < (SELECT updated_at FROM diary WHERE id = ?) AND
+          user_id NOT IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?) AND 
+          is_public = 'true'
+    ORDER BY updated_at DESC LIMIT 20;`;
+
+    const selectHomeListbyIdRows = await connection.query(selectHomeListbyIdQuery, params);
+    return selectHomeListbyIdRows;
+
+}
+
+export const findUserNickname = async (connection, user_id) => {
+    const findUserNicknameQuery = ` 
+    SELECT nickname
+    FROM user
+    WHERE id = ? ;`;
+
+    const findUserNicknameRows = await connection.query(findUserNicknameQuery, user_id);
+    return findUserNicknameRows;
+}
