@@ -10,12 +10,14 @@ import {
     postDiary,
     putDiary,
     postDiaryImage,
-    ModifyStatus
+    ModifyStatus,
+    getHomeList
 } from './diaryController';
 
 const diaryRouter = express.Router();
 
 diaryRouter.get('/list', jwtMiddleware, wrapAsync(getDiaryListAll));
+diaryRouter.get('/home', jwtMiddleware, wrapAsync(getHomeList));
 diaryRouter.get('/:diary_id', jwtMiddleware, wrapAsync(getDiaryDetail));
 diaryRouter.get('/list/mydiary', jwtMiddleware, wrapAsync(getDiaryList));
 diaryRouter.delete('/:diary_id', jwtMiddleware, wrapAsync(deleteDiary));
@@ -27,7 +29,7 @@ diaryRouter.post(
   uploadImage.array('image', 10),
   wrapAsync(postDiaryImage)
 );
-diaryRouter.post('/status', jwtMiddleware, ModifyStatus);
+diaryRouter.post('/status', jwtMiddleware, wrapAsync(ModifyStatus));
 
 
 export default diaryRouter;
