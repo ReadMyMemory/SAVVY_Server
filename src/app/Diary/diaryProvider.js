@@ -143,7 +143,7 @@ export const retrieveHomeListdefault = async (user_id) => {
         retrieveHomeListdefaultResult[0][i].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
     }
     connection.release();
-    return retrieveHomeListdefaultResult[0];
+    return response(baseResponse.SUCCESS, retrieveHomeListdefaultResult[0]);
 
 }
 
@@ -182,7 +182,7 @@ export const retrieveHomeListbyId = async (user_id, diary_id) => {
     }
 
     connection.release();
-    return retrieveHomeListbyIdResult[0];
+    return response(baseResponse.SUCCESS, retrieveHomeListbyIdResult[0]);
 
 }
 
