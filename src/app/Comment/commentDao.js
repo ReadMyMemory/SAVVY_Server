@@ -113,3 +113,23 @@ export const updateReply = async (connection, params) => {
   const updateReplyRows = await connection.query(updateReplyQuery, params);
   return updateReplyRows;
 };
+
+export const deleteComment = async (connection, comment_id) => {
+  const deleteCommentQuery = `
+  DELETE 
+  FROM diary_comment
+  WHERE id = ? ;`;
+
+  const deleteCommentRows = await connection.query(deleteCommentQuery, comment_id);
+  return deleteCommentRows;
+};
+
+export const deleteReply = async (connection, reply_id) => {
+  const deleteReplyQuery = `
+  DELETE
+  FROM diary_reply
+  WHERE id = ? ;`;
+
+  const deleteReplyRows = await connection.query(deleteReplyQuery, reply_id);
+  return deleteReplyRows;
+}
