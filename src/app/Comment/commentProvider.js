@@ -6,7 +6,8 @@ import {
   selectCommentbyId,
   selectCommentListbyId,
   selectReplyListbyId,
-  showReplyCountbyId
+  showReplyCountbyId,
+  selectReplybyId
 } from './commentDao';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration'
@@ -22,6 +23,13 @@ export const commentIdCheck = async (comment_id) => {
   return commentIdCheckResult;
 };
 
+export const replyIdCheck = async (reply_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const replyIdCheckResult = selectReplybyId(connection, reply_id);
+
+  connection.release();
+  return replyIdCheckResult;
+}
 
 
 export const dateDivider = async (datevalue) => {
