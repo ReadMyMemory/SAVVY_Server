@@ -82,4 +82,34 @@ export const showReplyCountbyId = async (connection, value) => {
 
   const showReplyCountbyIdRows = await connection.query(showReplyCountbyIdQuery, value);
   return showReplyCountbyIdRows;
-}
+};
+
+export const selectReplybyId = async (connection, reply_id) => {
+  const selectReplybyIdQuery = `
+  SELECT *
+  FROM diary_reply
+  WHERE id = ? ;`;
+
+  const selectReplybyIdRows = await connection.query(selectReplybyIdQuery, reply_id);
+  return selectReplybyIdRows;
+};
+
+export const updateComment = async (connection, params) => {
+  const updateCommentQuery = `
+  UPDATE diary_comment
+  SET content = ?, is_updated = 'true'
+  WHERE id = ? ;`;
+
+  const updateCommentRows = await connection.query(updateCommentQuery, params);
+  return updateCommentRows;
+};
+
+export const updateReply = async (connection, params) => {
+  const updateReplyQuery = `
+  UPDATE diary_reply
+  SET content = ?, is_updated = 'true'
+  WHERE id = ? ;`;
+
+  const updateReplyRows = await connection.query(updateReplyQuery, params);
+  return updateReplyRows;
+};
