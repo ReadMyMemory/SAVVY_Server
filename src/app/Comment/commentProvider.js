@@ -29,7 +29,7 @@ export const replyIdCheck = async (reply_id) => {
 
   connection.release();
   return replyIdCheckResult;
-}
+};
 
 
 export const dateDivider = async (datevalue) => {
