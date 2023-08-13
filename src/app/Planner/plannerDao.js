@@ -232,7 +232,7 @@ export const updateChecklist = async (connection, params) => {
 
 export const selectPlannerDetail = async (connection, planner_id) => {
   const selectPlannerDetailQuery = `
-  SELECT planner.id, title, nickname, DATE_FORMAT(planner.updated_at, '%Y.%m.%d') AS 'updated_at', memo
+  SELECT planner.id, title, user.pic_url, nickname, DATE_FORMAT(planner.updated_at, '%Y.%m.%d') AS 'updated_at', memo
   FROM planner JOIN user ON planner.user_id = user.id
   WHERE planner.id = ? AND planner.report_count < 5;`;
 
@@ -339,4 +339,18 @@ export const updatePlannerReportCount = async (connection, planner_id) => {
     planner_id
   );
   return updatePlannerReportCountRow;
+};
+
+export const selectPlannerListUpload = async (connection, user_id) => {
+  const selectPlannerListUploadQuery = `
+  SELECT planner.id, title, DATE_FORMAT(planner.updated_at, '%Y.%m.%d') AS 'updated_at', nickname 
+    FROM planner JOIN user ON planner.user_id = user.id
+    WHERE user_id = ? AND planner.report_count < 5 AND is_uploaded = 1
+    ORDER BY planner.updated_at DESC;`;
+
+  const selectPlannerListUploadRows = await connection.query(
+    selectPlannerListUploadQuery,
+    user_id
+  );
+  return selectPlannerListUploadRows;
 };

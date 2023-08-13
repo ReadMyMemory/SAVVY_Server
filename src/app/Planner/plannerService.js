@@ -24,6 +24,7 @@ import {
   insertPlannerReport,
   insertUserBlock,
   updatePlannerReportCount,
+  selectChecklistDetail,
 } from './plannerDao';
 
 export const deletePlannerCheck = async (user_id, planner_id, type) => {
@@ -240,4 +241,18 @@ export const createUserBlock = async (blocked_user, user_id) => {
 
   connection.release();
   return insertUserBlockResult;
+};
+
+export const modifyChecklist = async (checklist) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  for (let i = 0; i < checklist.length; i++) {
+    // const checklistExist = await selectChecklistById(connection, checklist[i].id);
+    const updateChecklistResult = await updateChecklist(connection, [
+      checklist[i].contents,
+      checklist[i].is_checked,
+      checklist[i].id,
+    ]);
+  }
+  connection.release();
+  return response(baseResponse.SUCCESS);
 };

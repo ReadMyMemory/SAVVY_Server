@@ -1,98 +1,105 @@
-import {connect} from "pm2";
+import { connect } from 'pm2';
 
 export const selectDiaryListById = async (connection, user_id) => {
-            const selectDiaryListByIdQuery = `
+  const selectDiaryListByIdQuery = `
       SELECT id, title, updated_at, likes_count, comments_count, thumbnail, img_count, is_public FROM diary
       WHERE user_id = ?
       ORDER BY updated_at DESC;`;
-            const diaryListRow = await connection.query(selectDiaryListByIdQuery, user_id);
-            return diaryListRow;
+  const diaryListRow = await connection.query(
+    selectDiaryListByIdQuery,
+    user_id
+  );
+  return diaryListRow;
 };
 
 export const selectDiarybyId = async (connection, diary_id) => {
-    const selectDiarybyIdQuery = `
+  const selectDiarybyIdQuery = `
   SELECT * 
   FROM diary 
   WHERE id = ?;`;
 
-    const diaryRows = await connection.query(selectDiarybyIdQuery, diary_id);
-    return diaryRows;
+  const diaryRows = await connection.query(selectDiarybyIdQuery, diary_id);
+  return diaryRows;
 };
 
 export const selectUserbyDiaryId = async (connection, diary_id) => {
-    const selectUserbyDiaryIdQuery = `
+  const selectUserbyDiaryIdQuery = `
     SELECT user_id
     FROM diary
     WHERE id = ?;`;
 
-    const selectUserbyDiaryIdRows = await connection.query(selectUserbyDiaryIdQuery, diary_id);
-    return selectUserbyDiaryIdRows;
+  const selectUserbyDiaryIdRows = await connection.query(
+    selectUserbyDiaryIdQuery,
+    diary_id
+  );
+  return selectUserbyDiaryIdRows;
 };
 
 export const selectDiaryId = async (connection, user_id) => {
-    const selectDiaryIdQuery = `
+  const selectDiaryIdQuery = `
   SELECT id FROM diary WHERE user_id = ?
   ORDER BY updated_at DESC
   LIMIT 1;`;
 
-    const selectDiaryIdRow = await connection.query(
-        selectDiaryIdQuery,
-        user_id
-    );
-    return selectDiaryIdRow;
+  const selectDiaryIdRow = await connection.query(selectDiaryIdQuery, user_id);
+  return selectDiaryIdRow;
 };
 
 export const insertDiary = async (connection, params) => {
-    const insertDiaryQuery = `
+  const insertDiaryQuery = `
         INSERT INTO diary (title, user_id, planner_id, is_public, is_temporary)
         VALUES (?, ?, ?, ?, ?);`;
 
-    const insertDiaryRows = await connection.query(insertDiaryQuery, params);
-    return insertDiaryRows;
+  const insertDiaryRows = await connection.query(insertDiaryQuery, params);
+  return insertDiaryRows;
 };
 
 // 테이블 생성 시
 // count INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (diary_id, count) 이런식으로 작성해야
 // diary_id를 기준으로 1부터 AUTO_INCREMENT 적용됨.
 export const insertContent = async (connection, params) => {
-    const insertContentQuery = `
+  const insertContentQuery = `
     INSERT INTO diary_content(diary_id, count, type, content, location)
     VALUES (?, ?, ?, ?, ?);`;
 
-    const insertContentRows = await connection.query(insertContentQuery, params);
-    return insertContentRows;
+  const insertContentRows = await connection.query(insertContentQuery, params);
+  return insertContentRows;
 };
 
 export const insertThumbnail = async (connection, params) => {
-    const insertThumbnailQuery = `
+  const insertThumbnailQuery = `
 UPDATE diary
 SET thumbnail = ?
 WHERE id = ?;`;
 
-    const insertThumbnailRows = await connection.query(insertThumbnailQuery, params);
-    return insertThumbnailRows;
+  const insertThumbnailRows = await connection.query(
+    insertThumbnailQuery,
+    params
+  );
+  return insertThumbnailRows;
 };
 
-export const insertImgCount = async(connection, params) => {
-    const insertImgCountQuery = `
+export const insertImgCount = async (connection, params) => {
+  const insertImgCountQuery = `
     UPDATE diary
     SET img_count = (SELECT COUNT(*)
                      FROM diary_content
                      WHERE diary_id = ? AND type = 'image')
     WHERE id = ?;`;
 
-    const insertImgCountRows = await connection.query(insertImgCountQuery, params);
-    return insertImgCountRows;
-
-}
-
+  const insertImgCountRows = await connection.query(
+    insertImgCountQuery,
+    params
+  );
+  return insertImgCountRows;
+};
 
 export const insertHashtag = async (connection, params) => {
-    const insertHashtagQuery = `
+  const insertHashtagQuery = `
         INSERT INTO diary_hashtag(diary_id, tag)
         VALUES (?, ?);`;
-    const insertHashtagRows = await connection.query(insertHashtagQuery, params);
-    return insertHashtagRows;
+  const insertHashtagRows = await connection.query(insertHashtagQuery, params);
+  return insertHashtagRows;
 };
 
 // 약간의 문제가 있는데, 일단 한번 만든 content 블록은 그대로 유지된다는 관점으로
@@ -102,46 +109,55 @@ export const insertHashtag = async (connection, params) => {
 // 일단 그렇게 짜고, 더 좋은 방법이 있으면 그쪽으로 수정.
 
 export const updateDefault = async (connection, params) => {
-    const updateDefaultQuery = `
+  const updateDefaultQuery = `
     UPDATE diary
     SET title = ?
     WHERE id = ?;`;
-    const updateDefaultRows = await connection.query(updateDefaultQuery, params);
-    return updateDefaultRows;
+  const updateDefaultRows = await connection.query(updateDefaultQuery, params);
+  return updateDefaultRows;
 };
 
 export const deleteContent = async (connection, diary_id) => {
-    const deleteContentQuery = `
+  const deleteContentQuery = `
     DELETE 
     FROM diary_content 
     WHERE diary_id = ?;`;
-    const deleteContentRows = await connection.query(deleteContentQuery, diary_id);
-    return deleteContentRows;
+  const deleteContentRows = await connection.query(
+    deleteContentQuery,
+    diary_id
+  );
+  return deleteContentRows;
 };
 // 해시태그도 content와 비슷하게 갈 거 같다.
 // 삭제 후 다시 작성하는 방식.
 export const deleteHashtag = async (connection, diary_id) => {
-    const deleteHashtagQuery = `
+  const deleteHashtagQuery = `
     DELETE
     FROM diary_hashtag
     WHERE diary_id = ?;`;
-    const deleteHashtagRows = await connection.query(deleteHashtagQuery, diary_id);
-    return  deleteHashtagRows;
+  const deleteHashtagRows = await connection.query(
+    deleteHashtagQuery,
+    diary_id
+  );
+  return deleteHashtagRows;
 };
 
 // 다른 데이터는 cascade 옵션으로 다같이 삭제될거다.
 // 다만 soft delete 하면 달라질지도?
 export const deleteDiarybyId = async (connection, diary_id) => {
-    const deleteDiarybyIdQuery = `
+  const deleteDiarybyIdQuery = `
     DELETE
     FROM diary
     WHERE id = ?;`;
-    const deleteDiarybyIdRows = await connection.query(deleteDiarybyIdQuery, diary_id);
-    return deleteDiarybyIdRows;
+  const deleteDiarybyIdRows = await connection.query(
+    deleteDiarybyIdQuery,
+    diary_id
+  );
+  return deleteDiarybyIdRows;
 };
 
 export const selectDiaryDefault = async (connection, diary_id) => {
-    const selectDiaryDefaultQuery = `
+  const selectDiaryDefaultQuery = `
     SELECT diary.user_id, user.nickname, user.pic_url, diary.updated_at,
            diary.likes_count, diary.comments_count, diary.planner_id,
            diary.title
@@ -150,132 +166,165 @@ export const selectDiaryDefault = async (connection, diary_id) => {
     ON diary.user_id = user.id
     WHERE diary.id = ? ;`;
 
-    const selectDiaryDefaultRows = await connection.query(selectDiaryDefaultQuery, diary_id);
-    return selectDiaryDefaultRows;
+  const selectDiaryDefaultRows = await connection.query(
+    selectDiaryDefaultQuery,
+    diary_id
+  );
+  return selectDiaryDefaultRows;
 };
 
 export const selectDiaryContent = async (connection, diary_id) => {
-    const selectDiaryContentQuery = `
+  const selectDiaryContentQuery = `
     SELECT count, type, content, location
     FROM diary_content
     WHERE diary_id = ? ;`;
 
-    const selectDiaryContentRows = await connection.query(selectDiaryContentQuery, diary_id);
-    return selectDiaryContentRows;
+  const selectDiaryContentRows = await connection.query(
+    selectDiaryContentQuery,
+    diary_id
+  );
+  return selectDiaryContentRows;
 };
 
 export const selectDiaryHashtag = async (connection, diary_id) => {
-    const selectDiaryHashtagQuery = `
+  const selectDiaryHashtagQuery = `
     SELECT tag
     FROM diary_hashtag
     WHERE diary_id = ? ;`;
 
-    const selectDiaryHashtagRows = await connection.query(selectDiaryHashtagQuery, diary_id);
-    return selectDiaryHashtagRows;
+  const selectDiaryHashtagRows = await connection.query(
+    selectDiaryHashtagQuery,
+    diary_id
+  );
+  return selectDiaryHashtagRows;
 };
 
 export const selectIsLiked = async (connection, params) => {
-    const selectIsLikedQuery = `
+  const selectIsLikedQuery = `
     SELECT id
     FROM diary_likes
     WHERE user_id = ? AND diary_id = ? ;`;
 
-    const selectIsLikedRows = await connection.query(selectIsLikedQuery, params);
-    return selectIsLikedRows;
-}
+  const selectIsLikedRows = await connection.query(selectIsLikedQuery, params);
+  return selectIsLikedRows;
+};
 
 export const checkLikeCount = async (connection, diary_id) => {
-    const checkLikeCountQuery = `
+  const checkLikeCountQuery = `
     SELECT likes_count
     FROM diary
     WHERE id = ? ;`;
 
-    const checkLikeCountRows = await connection.query(checkLikeCountQuery, diary_id);
-    return checkLikeCountRows;
-}
+  const checkLikeCountRows = await connection.query(
+    checkLikeCountQuery,
+    diary_id
+  );
+  return checkLikeCountRows;
+};
 
 export const upLikeCount = async (connection, diary_id) => {
-    const upLikeCountQuery = `
+  const upLikeCountQuery = `
     UPDATE diary
     SET likes_count = likes_count + 1
     WHERE id = ?
     ;`;
 
-    const upLikeCountRows = await connection.query(upLikeCountQuery, diary_id);
-    return upLikeCountRows;
-}
+  const upLikeCountRows = await connection.query(upLikeCountQuery, diary_id);
+  return upLikeCountRows;
+};
 
 export const downLikeCount = async (connection, diary_id) => {
-    const downLikeCountQuery = `
+  const downLikeCountQuery = `
     UPDATE diary
     SET likes_count = likes_count - 1
     WHERE id = ? ;`;
 
-    const downLikeCountRows = await connection.query(downLikeCountQuery, diary_id);
-    return downLikeCountRows;
-}
+  const downLikeCountRows = await connection.query(
+    downLikeCountQuery,
+    diary_id
+  );
+  return downLikeCountRows;
+};
 
 export const insertLikeLog = async (connection, params) => {
-    const insertLikeLogQuery = `
+  const insertLikeLogQuery = `
     INSERT INTO diary_likes(diary_id, user_id)
     VALUES (?, ?) ;`;
 
-    const insertLikeLogRows = await connection.query(insertLikeLogQuery, params);
-    return insertLikeLogRows;
-}
+  const insertLikeLogRows = await connection.query(insertLikeLogQuery, params);
+  return insertLikeLogRows;
+};
 
 export const deleteLikeLog = async (connection, params) => {
-    const deleteLikeLogQuery = `
+  const deleteLikeLogQuery = `
     DELETE 
     FROM diary_likes
     WHERE diary_id = ? && user_id = ? ;`;
 
-    const deleteLikeLogRows = await connection.query(deleteLikeLogQuery, params);
-    return deleteLikeLogRows;
-} 
+  const deleteLikeLogRows = await connection.query(deleteLikeLogQuery, params);
+  return deleteLikeLogRows;
+};
 
 export const updatePublicIsTrue = async (connection, diary_id) => {
-    const updatePublicIsTrueQuery = `
+  const updatePublicIsTrueQuery = `
     UPDATE diary
     SET is_public = 'true'
     WHERE id = ? ;`;
 
-    const updatePublicIsTrueRows = await connection.query(updatePublicIsTrueQuery, diary_id);
-    return updatePublicIsTrueRows;
-}
+  const updatePublicIsTrueRows = await connection.query(
+    updatePublicIsTrueQuery,
+    diary_id
+  );
+  return updatePublicIsTrueRows;
+};
 
 export const updatePublicIsFalse = async (connection, diary_id) => {
-    const updatePublicIsFalseQuery = `
+  const updatePublicIsFalseQuery = `
     UPDATE diary
     SET is_public = 'false'
     WHERE id = ? ;`;
-    
-    const updatePublicIsFalseRows = await connection.query(updatePublicIsFalseQuery, diary_id);
-    return updatePublicIsFalseRows;
-}
+
+  const updatePublicIsFalseRows = await connection.query(
+    updatePublicIsFalseQuery,
+    diary_id
+  );
+  return updatePublicIsFalseRows;
+};
 
 export const checkIsLiked = async (connection, params) => {
-    const checkIsLikedQuery = `
+  const checkIsLikedQuery = `
     SELECT *
     FROM diary_likes
     WHERE diary_id = ? AND user_id = ? ;`;
 
-    const checkIsLikedRows = await connection.query(checkIsLikedQuery, params);
-    return checkIsLikedRows;
-}
+  const checkIsLikedRows = await connection.query(checkIsLikedQuery, params);
+  return checkIsLikedRows;
+};
 
 export const checkPublicStatus = async (connection, diary_id) => {
-    const checkPublicStatusQuery = `
+  const checkPublicStatusQuery = `
     SELECT is_public
     FROM diary
     WHERE id = ? ;`;
+  
+  const checkPublicStatusRows = await connection.query(checkPublicStatusQuery, diary_id);
+  return checkPublicStatusRows;
+};
 
-    const checkPublicStatusRows = await connection.query(checkPublicStatusQuery,
-        diary_id
-    );
-    return checkPublicStatusRows;
-}
+export const selectDiaryListPublic = async (connection, user_id) => {
+  const selectDiaryListPublicQuery = `
+  SELECT id, title, updated_at, likes_count, comments_count, thumbnail, img_count, is_public 
+  FROM diary
+  WHERE user_id = ? AND is_public = 'true' AND is_temporary = 'false'
+  ORDER BY updated_at DESC;`;
 
+  const selectDiaryListPublicRows = await connection.query(
+    selectDiaryListPublicQuery,
+    user_id
+  );
+  return selectDiaryListPublicRows;
+};
+    
 export const selectHomeListdefault = async (connection, user_id) => {
     const selectHomeListdefaultQuery = `
     SELECT id, title, user_id, updated_at, likes_count, comments_count, thumbnail,
@@ -313,7 +362,7 @@ export const findUserNickname = async (connection, user_id) => {
 
     const findUserNicknameRows = await connection.query(findUserNicknameQuery, user_id);
     return findUserNicknameRows;
-}
+};
 
 export const selectDiaryReported = async(connection, params) => {
     const selectDiaryReportedQuery = `
@@ -345,3 +394,4 @@ export const updateDiaryReportCount = async (connection, diary_id) => {
     );
     return updateDiaryReportCountRows;
 };
+
