@@ -11,6 +11,7 @@ import {
   modifyPlanner,
   createScrap,
   createPlannerReport,
+  modifyChecklist,
 } from './plannerService';
 
 export const getPlannerListAll = async (req, res) => {
@@ -248,4 +249,24 @@ export const postPlannerReport = async (req, res) => {
     reason
   );
   return res.send(createPlannerReportResult);
+};
+
+export const putChecklist = async (req, res) => {
+  const { checklist } = req.body;
+
+  // 체크리스트 정보 체크
+  if (!checklist)
+    return res.send(errResponse(baseResponse.PLANNER_CHECKLIST_EMPTY));
+  for (let i = 0; i < checklist.length; i++) {
+    if (
+      !checklist[i].id ||
+      !checklist[i].contents ||
+      !(checklist[i].is_checked === 0 || checklist[i].is_checked === 1)
+    ) {
+      return res.send(errResponse(baseResponse.PLANNER_CHECKLIST_INVALID));
+    }
+  }
+
+  const putChecklistResponse = await modifyChecklist(checklist);
+  return res.send(putChecklistResponse);
 };
