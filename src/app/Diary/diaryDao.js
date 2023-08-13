@@ -395,3 +395,20 @@ export const updateDiaryReportCount = async (connection, diary_id) => {
     return updateDiaryReportCountRows;
 };
 
+export const selectDiarySearch = async(connection, params) => {
+  const search_word = '%' + params[1] + '%';
+  const new_params = [
+    params[0],
+    search_word
+  ];
+  const selectDiarySearchQuery = `
+  SELECT diary.id, title, diary.updated_at, nickname 
+  FROM diary 
+  INNER JOIN user 
+  ON diary.user_id = user.id
+  WHERE user_id = ? AND title LIKE ?
+  ORDER BY updated_at DESC ;`;
+
+  const selectDiarySearchRows = await connection.query(selectDiarySearchQuery, new_params);
+  return selectDiarySearchRows;
+};

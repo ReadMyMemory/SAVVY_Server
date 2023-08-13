@@ -4,7 +4,8 @@ import {
     retrieveDiaryList,
     retrieveDiaryDetail,
     retrieveHomeListdefault,
-    retrieveHomeListbyId
+    retrieveHomeListbyId,
+    retrieveDiarySearch
 } from './diaryProvider';
 import {
     createDiary,
@@ -211,4 +212,21 @@ export const postDiaryReport = async (req, res) => {
     );
     return res.send(createDiaryReportResult);
 };
+
+export const getDiarySearch = async(req, res) => {
+    const user_id = req.verifiedToken.id;
+    const {searchWord} = req.query;
+    // 아이디 체크
+    if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    // 빈 검색어 체크
+    if (!searchWord) return res.send(errResponse(baseResponse.PLANNER_PLANNER_SEARCHWORD_EMPTY));
+    // 검색어 길이 체크
+    if (searchWord.length > 45) return res.send(errResponse(baseResponse.PLANNER_PLANNER_SEARCHWORD_LENGTH));
+    const getDiarySearchResponse = await retrieveDiarySearch(
+        user_id,
+        searchWord
+    );
+    return res.send(getDiarySearchResponse);
+
+}
 

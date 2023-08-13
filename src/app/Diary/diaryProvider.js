@@ -15,7 +15,8 @@ import {
     selectHomeListdefault,
     selectHomeListbyId,
     findUserNickname,
-    selectDiaryReported
+    selectDiaryReported,
+    selectDiarySearch
 } from "./diaryDao";
 
 const dayjs = require('dayjs');
@@ -267,4 +268,27 @@ export const reportCheck = async (user_id, diary_id) => {
     return selectDiaryReportedResult;
 };
 
+export const retrieveDiarySearch = async (user_id, search_word) => {
+    // user가 존재하는지 체크
+    const userExist = await userIdCheck(user_id);
+    if (!userExist[0][0]) {
+        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+    }
+    const connection = await pool.getConnection(async (conn) => conn);
+    const retrieveDiarySearchResult = await selectDiarySearch(connection, [
+        user_id,
+        search_word
+    ]);
+
+    connection.release();
+    if(!retrieveDiarySearchResult[0][0]) return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+
+    // 검색 결과 시간 포맷 변경
+    for (let i = 0; i < retrieveDiarySearchResult[0].length; i++) {
+        const updatedTimeUTC = dayjs(retrieveDiarySearchResult[0][i].updated_at).utc();
+        const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
+        retrieveDiarySearchResult[0][i].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
+    }
+    return response(baseResponse.SUCCESS, retrieveDiarySearchResult[0]);
+};
 
