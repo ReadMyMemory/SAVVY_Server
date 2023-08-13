@@ -340,3 +340,17 @@ export const updatePlannerReportCount = async (connection, planner_id) => {
   );
   return updatePlannerReportCountRow;
 };
+
+export const selectPlannerListUpload = async (connection, user_id) => {
+  const selectPlannerListUploadQuery = `
+  SELECT planner.id, title, DATE_FORMAT(planner.updated_at, '%Y.%m.%d') AS 'updated_at', nickname 
+    FROM planner JOIN user ON planner.user_id = user.id
+    WHERE user_id = ? AND planner.report_count < 5 AND is_uploaded = 1
+    ORDER BY planner.updated_at DESC;`;
+
+  const selectPlannerListUploadRows = await connection.query(
+    selectPlannerListUploadQuery,
+    user_id
+  );
+  return selectPlannerListUploadRows;
+};
