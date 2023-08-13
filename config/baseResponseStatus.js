@@ -261,6 +261,36 @@ const baseResponse = {
     code: 2412,
     message: '다이어리 상태를 비공개로 바꾸려고 하지만, 이미 비공개 상태입니다.'
   },
+  DIARY_DAIRY_ID_INVALID: {
+    isSuccess: false,
+    code: 2413,
+    message: 'diary_id의 값이 숫자가 아닙니다.'
+  },
+  DAIRY_NOT_EXIST_SHOWN_DIARY: {
+    isSuccess: false,
+    code: 2414,
+    message: '더 이상 보여줄 다이어리가 없습니다.'
+  },
+  REPLY_REPLYID_EMPTY: {
+    isSuccess: false,
+    code: 2415,
+    message: 'replyId를 입력해주세요.'
+  },
+  REPLY_REPLYID_NOT_EXIST: {
+    isSuccess: false,
+    code: 2416,
+    message: '해당 답글이 존재하지 않습니다.'
+  },
+  USER_USERID_NOT_MATCH_COMMENTOWNER: {
+    isSuccess: false,
+    code: 2417,
+    message: '댓글 작성자가 아닙니다.'
+  },
+  USER_USERID_NOT_MATCH_REPLYOWNER: {
+    isSuccess: false,
+    code: 2418,
+    message: '답글 작성자가 아닙니다.'
+  },
 
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {

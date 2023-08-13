@@ -6,7 +6,8 @@ import {
   selectCommentbyId,
   selectCommentListbyId,
   selectReplyListbyId,
-  showReplyCountbyId
+  showReplyCountbyId,
+  selectReplybyId
 } from './commentDao';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration'
@@ -22,6 +23,13 @@ export const commentIdCheck = async (comment_id) => {
   return commentIdCheckResult;
 };
 
+export const replyIdCheck = async (reply_id) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const replyIdCheckResult = selectReplybyId(connection, reply_id);
+
+  connection.release();
+  return replyIdCheckResult;
+};
 
 
 export const dateDivider = async (datevalue) => {
@@ -49,7 +57,7 @@ export const dateDivider = async (datevalue) => {
   return datevalue;
 };
 
-export const retrieveCommentList = async (diary_id, user_id) => {
+export const retrieveCommentListAll = async(diary_id, user_id) => {
   // user가 존재하는지 체크
   const userExist = await userIdCheck(user_id);
   if (!userExist[0][0]) {
@@ -65,51 +73,44 @@ export const retrieveCommentList = async (diary_id, user_id) => {
     diary_id,
     user_id,
   ]);
-  if(retrieveCommentListResult[0][0]) {
+  for (let i = 0; i < retrieveCommentListResult[0].length; i++) {
     // 답글 수 표시
-    for (let p = 0; p < retrieveCommentListResult[0].length; p++) {
-      const countValue = await showReplyCountbyId(connection, retrieveCommentListResult[0][p].id);
-      retrieveCommentListResult[0][p].reply_count = countValue[0][0].count;
-    }
-  // is_updated의 boolean 치환
-  for(let i = 0; i < retrieveCommentListResult[0].length; i ++) {
+    const countValue = await showReplyCountbyId(connection, retrieveCommentListResult[0][i].id);
+    retrieveCommentListResult[0][i].reply_count = countValue[0][0].count;
+
+    //댓글 is_updated의 boolean 치환
     if (retrieveCommentListResult[0][i].is_updated === 'true') retrieveCommentListResult[0][i].is_updated = true;
     else if (retrieveCommentListResult[0][i].is_updated === 'false') retrieveCommentListResult[0][i].is_updated = false;
     else return errResponse(baseResponse.COMMENT_IS_UPDATED_DATETYPE_EXCEPTION);
+
+    //댓글 updated_at 표시 변화
     retrieveCommentListResult[0][i].updated_at = await dateDivider(retrieveCommentListResult[0][i].updated_at);
-    if(retrieveCommentListResult[0][i].updated_at === -1) retrieveCommentListResult[0][i] = errResponse(baseResponse.TIME_ERROR);
-  }
-  }
-  connection.release();
-  return response(baseResponse.SUCCESS, retrieveCommentListResult[0]);
-};
+    if (retrieveCommentListResult[0][i].updated_at === -1) retrieveCommentListResult[0][i] = errResponse(baseResponse.TIME_ERROR);
 
-export const retrieveReplyList = async (comment_id, user_id) => {
-  // user가 존재하는지 체크
-  const userExist = await userIdCheck(user_id);
-  if (!userExist[0][0]) {
-    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
-  }
-  // comment가 존재하는지 체크
-  const commentExist = await commentIdCheck(comment_id);
-  if (!commentExist[0][0]) {
-    return errResponse(baseResponse.COMMENT_COMMENTID_NOT_EXIST);
-  }
-  console.log(commentExist[0][0]);
-  const connection = await pool.getConnection(async (conn) => conn);
-  const retrieveReplyListResult = await selectReplyListbyId(connection, [
-    comment_id,
-    user_id,
-  ]);
 
-  // is_updated의 boolean 치환
-  for(let j = 0; j < retrieveReplyListResult[0].length; j++) {
-    if (retrieveReplyListResult[0][j].is_updated === 'true') retrieveReplyListResult[0][j].is_updated = true;
-    else if (retrieveReplyListResult[0][j].is_updated === 'false') retrieveReplyListResult[0][j].is_updated = false;
-    else return errResponse(baseResponse.REPLY_IS_UPDATED_DATETYPE_EXCEPTION);
-    retrieveReplyListResult[0][j].updated_at = await dateDivider(retrieveReplyListResult[0][j].updated_at);
-    if(retrieveReplyListResult[0][j].updated_at === -1) retrieveReplyListResult[0][j] = errResponse(baseResponse.TIME_ERROR);
+    // 답글 리스트 불러오기
+    // comment가 존재하는지 체크
+    const commentExist = await commentIdCheck(retrieveCommentListResult[0][i].id);
+    if (!commentExist[0][0]) {
+      return errResponse(baseResponse.COMMENT_COMMENTID_NOT_EXIST);
+    }
+    const retrieveReplyListResult = await selectReplyListbyId(connection, [
+      retrieveCommentListResult[0][i].id,
+      user_id
+    ]);
+
+    for (let j = 0; j < retrieveReplyListResult[0].length; j++) {
+      //댓글 is_updated의 boolean 치환
+      if (retrieveReplyListResult[0][j].is_updated === 'true') retrieveReplyListResult[0][j].is_updated = true;
+      else if (retrieveReplyListResult[0][j].is_updated === 'false') retrieveReplyListResult[0][j].is_updated = false;
+      else return errResponse(baseResponse.REPLY_IS_UPDATED_DATETYPE_EXCEPTION);
+      // 답글의 updated_at 표시 변화
+      retrieveReplyListResult[0][j].updated_at = await dateDivider(retrieveReplyListResult[0][j].updated_at);
+      if (retrieveReplyListResult[0][j].updated_at === -1) retrieveReplyListResult[0][j] = errResponse(baseResponse.TIME_ERROR);
+    }
+    retrieveCommentListResult[0][i].reply_List = retrieveReplyListResult[0];
   }
-  connection.release();
-  return response(baseResponse.SUCCESS, retrieveReplyListResult[0]);
+
+    connection.release();
+    return response(baseResponse.SUCCESS, retrieveCommentListResult[0]);
 };

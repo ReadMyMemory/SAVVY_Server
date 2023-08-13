@@ -2,7 +2,9 @@ import { errResponse, response } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import {
     retrieveDiaryList,
-    retrieveDiaryDetail
+    retrieveDiaryDetail,
+    retrieveHomeListdefault,
+    retrieveHomeListbyId
 } from './diaryProvider';
 import {
     createDiary,
@@ -120,12 +122,11 @@ export const postDiaryImage = async(req, res) => {
     }
     if (!fileResponse) return res.send(errResponse(baseResponse.S3_ERROR));
     return res.send(response(baseResponse.SUCCESS, fileResponse));
-}
+};
 
 export const ModifyStatus = async(req, res) => {
     const user_id = req.verifiedToken.id;
-    const diary_id = req.body.diary_id;
-    const { type, value } = req.query;
+    const { diary_id, type, value } = req.query;
 
     // 빈 아이디 체크
     if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
@@ -146,11 +147,22 @@ export const ModifyStatus = async(req, res) => {
         const modifyPublicStatusResponse = await updatedPublicStatus(user_id, diary_id, value);
         return res.send(modifyPublicStatusResponse);
     }
+};
 
-
-
-
-
-
-}
+export const getHomeList = async(req, res) => {
+    const user_id = req.verifiedToken.id;
+    const { diary_id } = req.query;
+    // 빈 아이디 체크
+    if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    //처음 홈에서 글을 불러오는 경우, 쿼리가 비어있어야 한다.
+    if (!diary_id) {
+        const getHomeListResponse = await retrieveHomeListdefault(user_id);
+        return res.send(getHomeListResponse);
+    } else {    // 다이어리 아이디가 비어있지 않지만, 숫자가 아닌 경우
+        if (isNaN(diary_id) === true) return res.send(errResponse(baseResponse.DIARY_DAIRY_ID_INVALID));
+        // diary_id에 정상적으로 마지막 조회한 글의 id가 담긴다.
+        const getHomeListResponse = await retrieveHomeListbyId(user_id, diary_id);
+        return res.send(getHomeListResponse);
+    }
+};
 

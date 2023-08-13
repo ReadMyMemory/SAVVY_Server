@@ -3,16 +3,19 @@ import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import { selectUserbyId } from '../User/userDao';
 import {
-  selectDiaryListById,
-  selectDiaryId,
-  selectDiarybyId,
-  selectUserbyDiaryId,
-  selectDiaryDefault,
-  selectDiaryContent,
-  selectDiaryHashtag,
-  selectIsLiked,
-  selectDiaryListPublic,
-} from './diaryDao';
+    selectDiaryListById,
+    selectDiaryId,
+    selectDiarybyId,
+    selectUserbyDiaryId,
+    selectDiaryDefault,
+    selectDiaryContent,
+    selectDiaryHashtag,
+    selectIsLiked,
+    selectDiaryListPublic,
+    selectHomeListdefault,
+    selectHomeListbyId,
+    findUserNickname
+} from "./diaryDao";
 
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
@@ -182,3 +185,73 @@ export const retrieveDairyListPublic = async (user_id, type) => {
       }
   }
 };
+
+export const retrieveHomeListdefault = async (user_id) => {
+    // user가 존재하는지 체크
+    const userExist = await userIdCheck(user_id);
+    if (!userExist[0][0]) {
+        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+    }
+    const connection = await pool.getConnection(async (conn) => conn);
+    const retrieveHomeListdefaultResult = await selectHomeListdefault(connection, user_id);
+    if(!retrieveHomeListdefaultResult[0][0]) {
+        const emptyBox = errResponse(baseResponse.DAIRY_NOT_EXIST_SHOWN_DIARY);
+        emptyBox.result = new Array();
+        return emptyBox;
+    }
+    for(let i = 0; i < retrieveHomeListdefaultResult[0].length; i++) {
+        //작성자 닉네임 받아오기
+        const findNickname = await findUserNickname(connection, retrieveHomeListdefaultResult[0][i].user_id);
+        retrieveHomeListdefaultResult[0][i].nickname = findNickname[0][0].nickname;
+        //작성한 다이어리 해시태그 받아오기
+        const hashtagInfo = await selectDiaryHashtag(connection, retrieveHomeListdefaultResult[0][i].id);
+        retrieveHomeListdefaultResult[0][i].hashtag = hashtagInfo[0];
+        //dayjs를 사용, 시간을 한국 시간대로 변경해 YYYY-MM-DD 형식으로 변환하는 과정.
+        const updatedTimeUTC = dayjs(retrieveHomeListdefaultResult[0][i].updated_at).utc();
+        const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
+        retrieveHomeListdefaultResult[0][i].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
+    }
+    connection.release();
+    return response(baseResponse.SUCCESS, retrieveHomeListdefaultResult[0]);
+
+}
+
+export const retrieveHomeListbyId = async (user_id, diary_id) => {
+    // user가 존재하는지 체크
+    const userExist = await userIdCheck(user_id);
+    if (!userExist[0][0]) {
+        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+    }
+    // diary가 존재하는지 체크
+    const diaryExist = await diaryIdCheck(diary_id);
+    if (!diaryExist[0][0]) {
+        return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+    }
+    const connection = await pool.getConnection(async (conn) => conn);
+    const retrieveHomeListbyIdResult = await selectHomeListbyId(connection, [
+        diary_id,
+        user_id
+    ]);
+    if (!retrieveHomeListbyIdResult[0][0]) {
+        const emptyBox = errResponse(baseResponse.DAIRY_NOT_EXIST_SHOWN_DIARY);
+        emptyBox.result = new Array();
+        return emptyBox;
+    }
+    for(let i = 0; i < retrieveHomeListbyIdResult[0].length; i++) {
+        //작성자 닉네임 받아오기
+        const findNickname = await findUserNickname(connection, retrieveHomeListbyIdResult[0][i].user_id);
+        retrieveHomeListbyIdResult[0][i].nickname = findNickname[0][0].nickname;
+        //작성한 다이어리 해시태그 받아오기
+        const hashtagInfo = await selectDiaryHashtag(connection, retrieveHomeListbyIdResult[0][i].id);
+        retrieveHomeListbyIdResult[0][i].hashtag = hashtagInfo[0];
+        //dayjs를 사용, 시간을 한국 시간대로 변경해 YYYY-MM-DD 형식으로 변환하는 과정.
+        const updatedTimeUTC = dayjs(retrieveHomeListbyIdResult[0][i].updated_at).utc();
+        const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
+        retrieveHomeListbyIdResult[0][i].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
+    }
+
+    connection.release();
+    return response(baseResponse.SUCCESS, retrieveHomeListbyIdResult[0]);
+
+}
+
