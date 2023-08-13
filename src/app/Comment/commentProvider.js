@@ -7,7 +7,9 @@ import {
   selectCommentListbyId,
   selectReplyListbyId,
   showReplyCountbyId,
-  selectReplybyId
+  selectReplybyId,
+  selectCommentReported,
+  selectReplyReported
 } from './commentDao';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration'
@@ -113,4 +115,23 @@ export const retrieveCommentListAll = async(diary_id, user_id) => {
 
     connection.release();
     return response(baseResponse.SUCCESS, retrieveCommentListResult[0]);
+};
+
+export const reportCheck = async (user_id, value, type) => {
+  const connection = await pool.getConnection(async (conn) => conn);
+  if(type === 1) {
+    const selectCommentReportedResult = await selectCommentReported(connection, [
+        user_id,
+        value
+    ]);
+    connection.release();
+    return selectCommentReportedResult;
+  } else if(type === 2) {
+    const selectReplyReportedResult = await selectReplyReported(connection, [
+        user_id,
+        value
+    ]);
+    connection.release();
+    return selectReplyReportedResult;
+  }
 };

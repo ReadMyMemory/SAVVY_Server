@@ -11,10 +11,13 @@ import {
     putDiary,
     postDiaryImage,
     ModifyStatus,
-    getHomeList
+    getHomeList,
+    postDiaryReport
 } from './diaryController';
 
 const diaryRouter = express.Router();
+
+
 
 diaryRouter.get('/list', jwtMiddleware, wrapAsync(getDiaryListAll));
 diaryRouter.get('/home', jwtMiddleware, wrapAsync(getHomeList));
@@ -30,6 +33,7 @@ diaryRouter.post(
   wrapAsync(postDiaryImage)
 );
 diaryRouter.post('/status', jwtMiddleware, wrapAsync(ModifyStatus));
+diaryRouter.post('/report', jwtMiddleware, postDiaryReport);
 
 
 export default diaryRouter;

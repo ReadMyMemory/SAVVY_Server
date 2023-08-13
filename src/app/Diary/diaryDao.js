@@ -325,7 +325,6 @@ export const selectDiaryListPublic = async (connection, user_id) => {
   return selectDiaryListPublicRows;
 };
     
-
 export const selectHomeListdefault = async (connection, user_id) => {
     const selectHomeListdefaultQuery = `
     SELECT id, title, user_id, updated_at, likes_count, comments_count, thumbnail,
@@ -363,4 +362,36 @@ export const findUserNickname = async (connection, user_id) => {
 
     const findUserNicknameRows = await connection.query(findUserNicknameQuery, user_id);
     return findUserNicknameRows;
-}
+};
+
+export const selectDiaryReported = async(connection, params) => {
+    const selectDiaryReportedQuery = `
+    SELECT * FROM diary_report 
+    WHERE user_id = ? AND diary_id = ? ;`;
+
+    const selectDiaryReportedRows = await connection.query(selectDiaryReportedQuery, params);
+    return selectDiaryReportedRows;
+};
+
+export const insertDiaryReport = async (connection, params) => {
+    const insertDiaryReportQuery = `
+        INSERT INTO diary_report
+            (diary_id, user_id, reason_1, reason_2, reason_3, reason_4, contents)
+        VALUES (?, ?, ?, ?, ?, ?, ?);`;
+
+    const insertDiaryReportRows = await connection.query(insertDiaryReportQuery, params);
+    return insertDiaryReportRows;
+};
+
+export const updateDiaryReportCount = async (connection, diary_id) => {
+    const updateDiaryReportCountQuery = `
+    UPDATE diary SET report_count = report_count + 1
+    WHERE id = ? ;`;
+
+    const updateDiaryReportCountRows = await connection.query(
+        updateDiaryReportCountQuery,
+        diary_id
+    );
+    return updateDiaryReportCountRows;
+};
+

@@ -14,7 +14,8 @@ import {
     selectDiaryListPublic,
     selectHomeListdefault,
     selectHomeListbyId,
-    findUserNickname
+    findUserNickname,
+    selectDiaryReported
 } from "./diaryDao";
 
 const dayjs = require('dayjs');
@@ -253,5 +254,17 @@ export const retrieveHomeListbyId = async (user_id, diary_id) => {
     connection.release();
     return response(baseResponse.SUCCESS, retrieveHomeListbyIdResult[0]);
 
-}
+};
+
+export const reportCheck = async (user_id, diary_id) => {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const selectDiaryReportedResult = await selectDiaryReported(connection, [
+        user_id,
+        diary_id
+    ]);
+
+    connection.release();
+    return selectDiaryReportedResult;
+};
+
 

@@ -4,7 +4,8 @@ import { response, errResponse } from '../../../config/response';
 import {
     userIdCheck,
     diaryIdCheck,
-    diaryOwnerMatchCheck
+    diaryOwnerMatchCheck,
+    reportCheck
 } from "./diaryProvider";
 import {
     insertDiary,
@@ -24,8 +25,11 @@ import {
     updatePublicIsTrue,
     updatePublicIsFalse,
     checkIsLiked,
-    checkPublicStatus
+    checkPublicStatus,
+    insertDiaryReport,
+    updateDiaryReportCount
 } from "./diaryDao";
+import {createUserBlock} from "../Planner/plannerService";
 
 
 export const deleteDiaryCheck = async (user_id, diary_id) => {
@@ -243,5 +247,45 @@ export const updatedPublicStatus = async(user_id, diary_id, value) => {
         return errResponse(baseResponse.DAIRY_STATUS_VALUE_IS_INVALID);
     }
     connection.release();
+    return response(baseResponse.SUCCESS);
+};
+
+
+export const createDiaryReport = async (user_id, defaultInfo, reason) => {
+    // user가 존재하는지 체크
+    const userExist = await userIdCheck(user_id);
+    if (!userExist[0][0]) {
+        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+    }
+    // diary가 존재하는지 체크
+    const diaryExist = await diaryIdCheck(defaultInfo.diary_id);
+    if (!diaryExist[0][0]) {
+        return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+    }
+    // 본인이 본인을 신고하는 경우를 체크
+    if(user_id === diaryExist[0][0].user_id)
+        return errResponse(baseResponse.REPORT_NOT_REPORT_OWNSELF);
+    // 이미 신고 한 적이 있는지 체크
+    const beforeReport = await reportCheck(user_id, defaultInfo.diary_id);
+    if (beforeReport[0][0]) return errResponse(baseResponse.REPORT_DAIRY_ALREADY_EXIST);
+
+    const connection = await pool.getConnection(async (conn) => conn);
+    await insertDiaryReport(connection, [
+        defaultInfo.diary_id,
+        user_id,
+        reason[0],
+        reason[1],
+        reason[2],
+        reason[3],
+        defaultInfo.contents,
+    ]);
+    await updateDiaryReportCount(connection, defaultInfo.diary_id);
+    connection.release();
+
+    if (defaultInfo.is_blocked === 1) {
+        await createUserBlock(diaryExist[0][0].user_id, user_id);
+        return response(baseResponse.SUCCESS);
+    }
+
     return response(baseResponse.SUCCESS);
 };

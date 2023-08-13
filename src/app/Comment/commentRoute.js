@@ -10,11 +10,13 @@ import {
   putReply,
   deleteComment,
   deleteReply,
-  getCommentListAll
+  getCommentListAll,
+  postCommentReport
 } from './commentController';
 
 const commentRouter = express.Router();
 
+commentRouter.post('/report', jwtMiddleware, wrapAsync(postCommentReport));
 commentRouter.get('/:diary_id', jwtMiddleware, wrapAsync(getCommentListAll)); // 댓글 보기
 //commentRouter.get('/reply/:comment_id', jwtMiddleware, wrapAsync(getReplyList)); // 답글 보기
 commentRouter.post('/', jwtMiddleware, wrapAsync(postComment)); // 댓글 작성

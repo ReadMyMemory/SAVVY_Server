@@ -393,6 +393,36 @@ const baseResponse = {
     code: 3300,
     message: '이미 신고한 여행계획서입니다.',
   },
+  REPORT_DAIRY_ALREADY_EXIST: {
+    isSuccess: false,
+    code: 3301,
+    message: '이미 신고한 다이어리입니다.',
+  },
+  REPORT_COMMENT_ALREADY_EXIST: {
+    isSuccess: false,
+    code: 3302,
+    message: '이미 신고한 댓글입니다.',
+  },
+  REPORT_REPLY_ALREADY_EXIST: {
+    isSuccess: false,
+    code: 3303,
+    message: '이미 신고한 답글입니다.',
+  },
+  REPORT_NOT_REPORT_OWNSELF: {
+    isSuccess: false,
+    code: 3304,
+    message: '자기 자신을 신고할 수 없습니다.',
+  },
+  REPORT_COMMENT_METHOD_TYPE_EMPTY: {
+    isSuccess: false,
+    code: 3305,
+    message: '신고 타입을 담는 VALUE가 comment 또는 reply가 아닙니다.',
+  },
+  REPORT_COMMENT_OTHER_EXCEPTION: {
+    isSuccess: false,
+    code: 3306,
+    message: '댓글/답글 신고 과정에서 알 수 없는 예외가 발생했습니다.',
+  },
 
   //Connection, Transaction 등의 서버 오류
   DB_ERROR: { isSuccess: false, code: 4000, message: '데이터 베이스 에러' },
