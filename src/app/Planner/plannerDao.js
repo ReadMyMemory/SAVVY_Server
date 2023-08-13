@@ -232,7 +232,7 @@ export const updateChecklist = async (connection, params) => {
 
 export const selectPlannerDetail = async (connection, planner_id) => {
   const selectPlannerDetailQuery = `
-  SELECT planner.id, title, nickname, DATE_FORMAT(planner.updated_at, '%Y.%m.%d') AS 'updated_at', memo
+  SELECT planner.id, title, user.pic_url, nickname, DATE_FORMAT(planner.updated_at, '%Y.%m.%d') AS 'updated_at', memo
   FROM planner JOIN user ON planner.user_id = user.id
   WHERE planner.id = ? AND planner.report_count < 5;`;
 
