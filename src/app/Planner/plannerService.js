@@ -203,7 +203,9 @@ export const createPlannerReport = async (user_id, defaultInfo, reason) => {
   // 업로드 된 여행계획서인지 체크
   if (plannerExist[0][0].is_uploaded === 0)
     return errResponse(baseResponse.PLANNER_PLANNER_IS_NOT_UPLOADED);
-
+  // 본인이 본인을 신고하는 경우를 체크
+  if(user_id === plannerExist[0][0].user_id)
+    return errResponse(baseResponse.REPORT_NOT_REPORT_OWNSELF);
   // 이미 신고 한 적이 있는지 체크
   const beforeReport = await reportCheck(user_id, defaultInfo.planner_id);
   if (beforeReport[0][0]) return errResponse(baseResponse.REPORT_ALREADY_EXIST);

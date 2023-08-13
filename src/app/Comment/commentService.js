@@ -7,15 +7,22 @@ import {
     updateComment,
     updateReply,
     deleteComment,
-    deleteReply
+    deleteReply,
+    insertCommentReport,
+    insertReplyReport,
+    updateCommentReportCount,
+    updateReplyReportCount
 } from './commentDao';
 import {
     diaryIdCheck
 } from "../Diary/diaryProvider";
 import {
     commentIdCheck,
-    replyIdCheck
+    replyIdCheck,
+    reportCheck
 } from "./commentProvider";
+import {createUserBlock} from "../Planner/plannerService";
+import {userIdCheck} from "../User/userProvider";
 
 export const createComment = async(diary_id, user_id, content) => {
     // diary가 존재하는지 체크
@@ -116,3 +123,74 @@ export const deleteReplyCheck = async(user_id, reply_id) => {
     connection.release();
     return response(baseResponse.SUCCESS);
 }
+
+export const createCommentReport = async(user_id, defaultInfo, reason) => {
+    // user가 존재하는지 체크
+    const userExist = await userIdCheck(user_id);
+    if (!userExist[0][0]) {
+        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+    }
+    // comment가 존재하는지 체크
+    const commentExist = await commentIdCheck(defaultInfo.comment_id);
+    if (!commentExist[0][0]) {
+        return errResponse(baseResponse.COMMENT_COMMENTID_NOT_EXIST);
+    }
+    // 본인이 본인을 신고하는 경우를 체크
+    if(user_id === commentExist[0][0].user_id)
+        return errResponse(baseResponse.REPORT_NOT_REPORT_OWNSELF);
+    // 이미 신고 한 적이 있는지 체크
+    const beforeReport = await reportCheck(user_id, defaultInfo.comment_id, 1);
+    if (beforeReport[0][0]) return errResponse(baseResponse.REPORT_COMMENT_ALREADY_EXIST);
+    const connection = await pool.getConnection(async (conn) => conn);
+    await insertCommentReport(connection, [
+        defaultInfo.comment_id,
+        user_id,
+        reason[0],
+        reason[1],
+        reason[2],
+        reason[3],
+        defaultInfo.contents,
+    ]);
+    await updateCommentReportCount(connection, defaultInfo.comment_id);
+    connection.release();
+
+    if (defaultInfo.is_blocked === 1) {
+        await createUserBlock(commentExist[0][0].user_id, user_id);
+        return response(baseResponse.SUCCESS);
+    }
+};
+export const createReplyReport = async(user_id, defaultInfo, reason) => {
+    // user가 존재하는지 체크
+    const userExist = await userIdCheck(user_id);
+    if (!userExist[0][0]) {
+        return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+    }
+    // reply가 존재하는지 체크
+    const replyExist = await replyIdCheck(defaultInfo.reply_id);
+    if (!replyExist[0][0]) {
+        return errResponse(baseResponse.REPLY_REPLYID_NOT_EXIST);
+    }
+    // 본인이 본인을 신고하는 경우를 체크
+    if(user_id === replyExist[0][0].user_id)
+        return errResponse(baseResponse.REPORT_NOT_REPORT_OWNSELF);
+    // 이미 신고 한 적이 있는지 체크
+    const beforeReport = await reportCheck(user_id, defaultInfo.reply_id, 2);
+    if (beforeReport[0][0]) return errResponse(baseResponse.REPORT_REPLY_ALREADY_EXIST);
+    const connection = await pool.getConnection(async (conn) => conn);
+    await insertReplyReport(connection, [
+        defaultInfo.reply_id,
+        user_id,
+        reason[0],
+        reason[1],
+        reason[2],
+        reason[3],
+        defaultInfo.contents,
+    ]);
+    await updateReplyReportCount(connection, defaultInfo.reply_id);
+    connection.release();
+
+    if (defaultInfo.is_blocked === 1) {
+        await createUserBlock(replyExist[0][0].user_id, user_id);
+        return response(baseResponse.SUCCESS);
+    }
+};

@@ -11,8 +11,10 @@ import {
     modifyDiary,
     deleteDiaryCheck,
     updateLikeCount,
-    updatedPublicStatus
+    updatedPublicStatus,
+    createDiaryReport
 } from "./diaryService";
+import {create} from "axios";
 
 
 export const getDiaryListAll = async (req, res) => {
@@ -164,5 +166,49 @@ export const getHomeList = async(req, res) => {
         const getHomeListResponse = await retrieveHomeListbyId(user_id, diary_id);
         return res.send(getHomeListResponse);
     }
+};
+
+export const postDiaryReport = async (req, res) => {
+    const reason = [
+        req.body.reason_1,
+        req.body.reason_2,
+        req.body.reason_3,
+        req.body.reason_4,
+    ];
+    const defaultInfo = {
+        diary_id: req.body.diary_id,
+        contents: req.body.contents,
+        is_blocked: req.body.is_blocked,
+    };
+    const user_id = req.verifiedToken.id;
+
+    // 빈 아이디 체크
+    if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    // 빈 다이어리 아이디 체크
+    if (!defaultInfo.diary_id) return res.send(errResponse(baseResponse.DIARY_DIARYID_EMPTY));
+    // reason 유무 체크
+    let cnt = 0;
+    for (let i = 0; i < 4; i++) {
+        if (reason[i] !== 0 && reason[i] !== 1) {
+            return res.send(errResponse(baseResponse.REPORT_REASON_IS_INVALID));
+        }
+        if (reason[i] === 0) cnt++;
+    }
+    // reason이 모두 0일 때
+    if (cnt === 4)
+        return res.send(errResponse(baseResponse.REPORT_REASON_NOT_CHECKED));
+    // content만 입력되었을 때
+    if (reason[3] === 0 && defaultInfo.contents)
+        return res.send(errResponse(baseResponse.REPORT_CONTENTS_CANT_BE_WRITTEN));
+    // is_blocked 체크
+    if (defaultInfo.is_blocked !== 0 && defaultInfo.is_blocked !== 1)
+        return res.send(errResponse(baseResponse.REPORT_BLOCK_INVALID));
+
+    const createDiaryReportResult = await createDiaryReport(
+        user_id,
+        defaultInfo,
+        reason
+    );
+    return res.send(createDiaryReportResult);
 };
 

@@ -133,3 +133,59 @@ export const deleteReply = async (connection, reply_id) => {
   const deleteReplyRows = await connection.query(deleteReplyQuery, reply_id);
   return deleteReplyRows;
 }
+
+export const selectCommentReported = async(connection, params) => {
+  const selectCommentReportedQuery = `
+  SELECT * FROM diary_comment_report
+  WHERE user_id = ? AND comment_id = ? ;`;
+
+  const selectCommentReportedRows = await connection.query(selectCommentReportedQuery, params);
+  return selectCommentReportedRows;
+};
+
+export const selectReplyReported = async(connection, params) => {
+  const selectReplyReportedQuery = `
+  SELECT * FROM diary_reply_report
+  WHERE user_id = ? AND reply_id = ? ;`;
+
+  const selectReplyReportedRows = await connection.query(selectReplyReportedQuery, params);
+  return selectReplyReportedRows;
+};
+
+export const insertCommentReport = async(connection, params) => {
+  const insertCommentReportQuery = `
+  INSERT INTO diary_comment_report
+  (comment_id, user_id, reason_1, reason_2, reason_3, reason_4, contents)
+  VALUES (?, ?, ?, ?, ?, ?, ?) ;`;
+
+  const insertCommentReportRows = await connection.query(insertCommentReportQuery, params);
+  return insertCommentReportRows;
+};
+
+export const insertReplyReport = async(connection, params) => {
+  const insertReplyReportQuery = `
+  INSERT INTO diary_reply_report
+  (reply_id, user_id, reason_1, reason_2, reason_3, reason_4, contents)
+  VALUES (?, ?, ?, ?, ?, ?, ?) ;`;
+
+  const insertReplyReportRows = await connection.query(insertReplyReportQuery, params);
+  return insertReplyReportRows;
+}
+
+export const updateCommentReportCount = async (connection, comment_id) => {
+  const updateCommentReportCountQuery = `
+  UPDATE diary_comment SET report_count = report_count + 1
+  WHERE id = ? ;`;
+
+  const updateCommentReportCountRows = await connection.query(updateCommentReportCountQuery, comment_id);
+  return updateCommentReportCountRows;
+};
+
+export const updateReplyReportCount = async(connection, reply_id) => {
+  const updateReplyReportCountQuery = `
+  UPDATE diary_reply SET report_count = report_count + 1
+  WHERE id = ? ;`;
+
+  const updateReplyReportCountRows = await connection.query(updateReplyReportCountQuery, reply_id);
+  return updateReplyReportCountRows;
+};
