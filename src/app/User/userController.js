@@ -4,6 +4,7 @@ import {
   retrieveKakaoLogin,
   userIdCheck,
   retrieveMypage,
+  retrieveUserPage,
 } from './userProvider';
 import { createUser } from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
@@ -85,4 +86,16 @@ export const getMypage = async (req, res) => {
 
   const getMypageResponse = await retrieveMypage(user_id);
   return res.send(getMypageResponse);
+};
+
+export const getUserPage = async (req, res) => {
+  const { userId, searching } = req.query;
+  const my_id = req.verifiedToken.id;
+
+  // 빈 아이디 체크
+  if (!userId) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  if (!my_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+
+  const getUserPageResponse = await retrieveUserPage(userId, my_id, searching);
+  return res.send(getUserPageResponse);
 };

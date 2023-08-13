@@ -8,6 +8,7 @@ import {
   postProfileImage,
   alarmTest,
   getMypage,
+  getUserPage,
 } from './userController';
 import { wrapAsync } from '../../../config/errorHandler';
 
@@ -22,6 +23,7 @@ userRouter.post(
   wrapAsync(postProfileImage)
 );
 userRouter.get('/mypage', jwtMiddleware, wrapAsync(getMypage));
+userRouter.get('/others', jwtMiddleware, wrapAsync(getUserPage));
 userRouter.get('/push/:user_alarmed', jwtMiddleware, wrapAsync(alarmTest));
 userRouter.get(
   '/error',
