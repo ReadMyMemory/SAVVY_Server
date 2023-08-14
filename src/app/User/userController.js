@@ -9,6 +9,7 @@ import {
   retrieveMypagePlanner,
   retrieveUserPageDiary,
   retrieveUserPagePlanner,
+  retrieveUserNickname,
 } from './userProvider';
 import { createUser } from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
@@ -148,4 +149,15 @@ export const getUserPagePlanner = async (req, res) => {
 
   const getUserPagePlannerResponse = await retrieveUserPagePlanner(userId);
   return res.send(getUserPagePlannerResponse);
+};
+
+export const getNicknameCheck = async (req, res) => {
+  const { nickname } = req.query;
+
+  // 빈 닉네임 체크
+  if (!nickname)
+    return res.send(errResponse(baseResponse.SIGNUP_NICKNAME_EMPTY));
+
+  const getNicknameCheckResponse = await retrieveUserNickname(nickname);
+  return res.send(getNicknameCheckResponse);
 };

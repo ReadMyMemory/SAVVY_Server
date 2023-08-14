@@ -13,6 +13,7 @@ import {
   getMypagePlanner,
   getUserPageDiary,
   getUserPagePlanner,
+  getNicknameCheck,
 } from './userController';
 import { wrapAsync } from '../../../config/errorHandler';
 
@@ -32,6 +33,7 @@ userRouter.get('/mypage/planner', jwtMiddleware, wrapAsync(getMypagePlanner));
 userRouter.get('/others', jwtMiddleware, wrapAsync(getUserPage));
 userRouter.get('/others/diary', jwtMiddleware, wrapAsync(getUserPageDiary));
 userRouter.get('/others/planner', jwtMiddleware, wrapAsync(getUserPagePlanner));
+userRouter.get('/duplication', wrapAsync(getNicknameCheck));
 userRouter.get('/push/:user_alarmed', jwtMiddleware, wrapAsync(alarmTest));
 userRouter.get(
   '/error',
