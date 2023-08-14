@@ -1,3 +1,5 @@
+import { connect } from 'pm2';
+
 export const selectUserbyId = async (connetion, id) => {
   const selectUserbyIdQuery = `
   SELECT * FROM user WHERE id = ?;`;
@@ -34,4 +36,17 @@ export const updateUserDiaryCount = async (connection, params) => {
     params
   );
   return updateUserDiaryCountRow;
+};
+
+export const updateUserPlannerCount = async (connection, params) => {
+  const updateUserPlannerCountQuery = `
+  UPDATE user
+  SET amount_planner = ?
+  WHERE id = ?;`;
+
+  const updateUserPlannerCountRow = await connection.query(
+    updateUserPlannerCountQuery,
+    params
+  );
+  return updateUserPlannerCountRow;
 };

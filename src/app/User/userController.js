@@ -6,6 +6,7 @@ import {
   retrieveMypage,
   retrieveUserPage,
   retrieveMypageDiary,
+  retrieveMypagePlanner,
 } from './userProvider';
 import { createUser } from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
@@ -98,6 +99,17 @@ export const getMypageDiary = async (req, res) => {
 
   const getMypageDiaryResponse = await retrieveMypageDiary(user_id);
   return res.send(getMypageDiaryResponse);
+};
+
+export const getMypagePlanner = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0])
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+
+  const getMypagePlannerResponse = await retrieveMypagePlanner(user_id);
+  return res.send(getMypagePlannerResponse);
 };
 
 export const getUserPage = async (req, res) => {

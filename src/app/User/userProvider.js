@@ -8,6 +8,7 @@ import {
   selectUserKakaoId,
   selectUserbyId,
   updateUserDiaryCount,
+  updateUserPlannerCount,
 } from './userDao';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
@@ -86,19 +87,6 @@ export const retrieveMypage = async (user_id) => {
     amount_planner: userInfo[0][0].amount_planner,
   };
 
-  const connection = await pool.getConnection(async (conn) => conn);
-
-  // 여행계획서 목록
-  const plannerList = await selectPlannerListUpload(connection, user_id);
-  if (!plannerList[0][0]) {
-    mypageResult.planner = null;
-    mypageResult.amount_planner = 0;
-  } else {
-    mypageResult.planner = plannerList[0];
-    mypageResult.amount_planner = plannerList[0].length;
-  }
-
-  connection.release();
   return response(baseResponse.SUCCESS, mypageResult);
 };
 
@@ -130,6 +118,7 @@ export const retrieveMypageDiary = async (user_id) => {
     diaryResult.likes = likesCnt;
     diaryResult.amount_diary = diaryList[0].length;
   }
+  // 유저 정보 갱신
   await updateUserDiaryCount(connection, [
     diaryResult.likes,
     diaryResult.amount_diary,
@@ -138,6 +127,32 @@ export const retrieveMypageDiary = async (user_id) => {
 
   connection.release();
   return response(baseResponse.SUCCESS, diaryResult);
+};
+
+export const retrieveMypagePlanner = async (user_id) => {
+  // 유저 기본 정보
+  const userInfo = await userIdCheck(user_id);
+  if (!userInfo[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+  // 여행계획서 목록
+  const plannerResult = {};
+  const plannerList = await selectPlannerListUpload(connection, user_id);
+  if (!plannerList[0][0]) {
+    plannerResult.planner = null;
+    plannerResult.amount_planner = 0;
+  } else {
+    plannerResult.planner = plannerList[0];
+    plannerResult.amount_planner = plannerList[0].length;
+  }
+  // 유저 정보 갱신
+  await updateUserPlannerCount(connection, [
+    plannerResult.amount_planner,
+    user_id,
+  ]);
+
+  connection.release();
+  return response(baseResponse.SUCCESS, plannerResult);
 };
 
 export const retrieveUserPage = async (user_id, my_id, searching) => {
