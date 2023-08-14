@@ -63,3 +63,27 @@ export const selectUserbyNickname = async (connection, nickname) => {
   );
   return selectUserbyNicknameRows;
 };
+
+export const updatePlannerCountUp = async (connection, user_id) => {
+  const updatePlannerCountUpQuery = `
+  UPDATE user SET amount_planner = amount_planner + 1
+  WHERE id = ?;`;
+
+  const updatePlannerCountUpRow = await connection.query(
+    updatePlannerCountUpQuery,
+    user_id
+  );
+  return updatePlannerCountUpRow;
+};
+
+export const updatePlannerCountDown = async (connection, user_id) => {
+  const updatePlannerCountDownQuery = `
+  UPDATE user SET amount_planner = amount_planner - 1
+  WHERE id = ?;`;
+
+  const updatePlannerCountDownRow = await connection.query(
+    updatePlannerCountDownQuery,
+    user_id
+  );
+  return updatePlannerCountDownRow;
+};

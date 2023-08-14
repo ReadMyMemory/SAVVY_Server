@@ -345,7 +345,8 @@ export const selectPlannerListUpload = async (connection, user_id) => {
   const selectPlannerListUploadQuery = `
   SELECT planner.id, title, DATE_FORMAT(planner.updated_at, '%Y.%m.%d') AS 'updated_at', nickname 
     FROM planner JOIN user ON planner.user_id = user.id
-    WHERE user_id = ? AND planner.report_count < 5 AND is_uploaded = 1
+    WHERE user_id = ? AND planner.report_count < 5 
+    AND is_uploaded = 1 AND planner.is_deleted = 0
     ORDER BY planner.updated_at DESC;`;
 
   const selectPlannerListUploadRows = await connection.query(
@@ -353,4 +354,16 @@ export const selectPlannerListUpload = async (connection, user_id) => {
     user_id
   );
   return selectPlannerListUploadRows;
+};
+
+export const deletePlannerUploaded = async (connection, planner_id) => {
+  const deletePlannerUploadedQuery = `
+  UPDATE planner SET is_deleted = 1
+  WHERE id = ?;`;
+
+  const deletePlannerUploadedRow = await connection.query(
+    deletePlannerUploadedQuery,
+    planner_id
+  );
+  return deletePlannerUploadedRow;
 };
