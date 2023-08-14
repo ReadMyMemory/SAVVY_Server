@@ -8,7 +8,7 @@ export const selectPlannerListById = async (connection, user_id, type) => {
       const selectPlannerListAllByIdQuery = `
       (SELECT planner.id, title, planner.updated_at, nickname 
         FROM planner JOIN user ON planner.user_id = user.id
-        WHERE user_id = ?)
+        WHERE user_id = ? AND is_uploaded = 0)
         UNION ALL
         (SELECT planner.id, title, planner_scrap.updated_at, nickname
         FROM planner_scrap JOIN planner
@@ -25,7 +25,7 @@ export const selectPlannerListById = async (connection, user_id, type) => {
       const selectPlannerListByIdQuery = `
       SELECT id, title, DATE_FORMAT(updated_at, '%Y.%m.%d') AS 'updated_at' 
       FROM planner 
-      WHERE user_id = ?
+      WHERE user_id = ? AND is_uploaded = 0
       ORDER BY planner.updated_at DESC;`;
       const plannerListRow = await connection.query(
         selectPlannerListByIdQuery,
