@@ -5,6 +5,10 @@ import {
   userIdCheck,
   retrieveMypage,
   retrieveUserPage,
+  retrieveMypageDiary,
+  retrieveMypagePlanner,
+  retrieveUserPageDiary,
+  retrieveUserPagePlanner,
 } from './userProvider';
 import { createUser } from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
@@ -88,6 +92,28 @@ export const getMypage = async (req, res) => {
   return res.send(getMypageResponse);
 };
 
+export const getMypageDiary = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0])
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+
+  const getMypageDiaryResponse = await retrieveMypageDiary(user_id);
+  return res.send(getMypageDiaryResponse);
+};
+
+export const getMypagePlanner = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0])
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+
+  const getMypagePlannerResponse = await retrieveMypagePlanner(user_id);
+  return res.send(getMypagePlannerResponse);
+};
+
 export const getUserPage = async (req, res) => {
   const { userId, searching } = req.query;
   const my_id = req.verifiedToken.id;
@@ -98,4 +124,28 @@ export const getUserPage = async (req, res) => {
 
   const getUserPageResponse = await retrieveUserPage(userId, my_id, searching);
   return res.send(getUserPageResponse);
+};
+
+export const getUserPageDiary = async (req, res) => {
+  const { userId } = req.query;
+  const my_id = req.verifiedToken.id;
+
+  // 빈 아이디 체크
+  if (!userId) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  if (!my_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+
+  const getUserPageDiaryResponse = await retrieveUserPageDiary(userId);
+  return res.send(getUserPageDiaryResponse);
+};
+
+export const getUserPagePlanner = async (req, res) => {
+  const { userId } = req.query;
+  const my_id = req.verifiedToken.id;
+
+  // 빈 아이디 체크
+  if (!userId) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  if (!my_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+
+  const getUserPagePlannerResponse = await retrieveUserPagePlanner(userId);
+  return res.send(getUserPagePlannerResponse);
 };
