@@ -4,7 +4,11 @@ import { generateToken } from '../../../config/jwtMiddleware';
 import { createSearchHistory } from '../Searching/searchingService';
 import { selectPlannerListUpload } from '../Planner/plannerDao';
 import { selectDiaryListPublic } from '../Diary/diaryDao';
-import { selectUserKakaoId, selectUserbyId } from './userDao';
+import {
+  selectUserKakaoId,
+  selectUserbyId,
+  updateUserDiaryCount,
+} from './userDao';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
 import dayjs, { Dayjs } from 'dayjs';
@@ -77,30 +81,12 @@ export const retrieveMypage = async (user_id) => {
     pic_url: userInfo[0][0].pic_url,
     nickname: userInfo[0][0].nickname,
     intro: userInfo[0][0].intro,
+    likes: userInfo[0][0].likes,
+    amount_diary: userInfo[0][0].amount_diary,
+    amount_planner: userInfo[0][0].amount_planner,
   };
 
   const connection = await pool.getConnection(async (conn) => conn);
-  // 다이어리 목록
-  const diaryList = await selectDiaryListPublic(connection, user_id);
-  let likesCnt = 0;
-  if (!diaryList[0][0]) {
-    mypageResult.diary = null;
-    mypageResult.likes = 0;
-    mypageResult.amount_diary = 0;
-  } else {
-    for (let i = 0; i < diaryList[0].length; i++) {
-      // updated_at 포맷 변경
-      const updatedTimeUTC = dayjs(diaryList[0][i].updated_at).utc();
-      const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
-      diaryList[0][i].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
-
-      // 좋아요 수 집계
-      likesCnt += diaryList[0][i].likes_count;
-    }
-    mypageResult.diary = diaryList[0];
-    mypageResult.likes = likesCnt;
-    mypageResult.amount_diary = diaryList[0].length;
-  }
 
   // 여행계획서 목록
   const plannerList = await selectPlannerListUpload(connection, user_id);
@@ -114,6 +100,44 @@ export const retrieveMypage = async (user_id) => {
 
   connection.release();
   return response(baseResponse.SUCCESS, mypageResult);
+};
+
+export const retrieveMypageDiary = async (user_id) => {
+  // 유저 기본 정보
+  const userInfo = await userIdCheck(user_id);
+  if (!userInfo[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+  // 다이어리 목록
+  const diaryResult = {};
+  const diaryList = await selectDiaryListPublic(connection, user_id);
+  let likesCnt = 0;
+  if (!diaryList[0][0]) {
+    diaryResult.diary = null;
+    diaryResult.likes = 0;
+    diaryResult.amount_diary = 0;
+  } else {
+    for (let i = 0; i < diaryList[0].length; i++) {
+      // updated_at 포맷 변경
+      const updatedTimeUTC = dayjs(diaryList[0][i].updated_at).utc();
+      const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
+      diaryList[0][i].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
+
+      // 좋아요 수 집계
+      likesCnt += diaryList[0][i].likes_count;
+    }
+    diaryResult.diary = diaryList[0];
+    diaryResult.likes = likesCnt;
+    diaryResult.amount_diary = diaryList[0].length;
+  }
+  await updateUserDiaryCount(connection, [
+    diaryResult.likes,
+    diaryResult.amount_diary,
+    user_id,
+  ]);
+
+  connection.release();
+  return response(baseResponse.SUCCESS, diaryResult);
 };
 
 export const retrieveUserPage = async (user_id, my_id, searching) => {

@@ -22,3 +22,16 @@ export const insertUserInfo = async (connection, params) => {
   const insertUserInfoRow = await connection.query(insertUserInfoQuery, params);
   return insertUserInfoRow;
 };
+
+export const updateUserDiaryCount = async (connection, params) => {
+  const updateUserDiaryCountQuery = `
+  UPDATE user 
+  SET likes = ?, amount_diary = ? 
+  WHERE id = ?;`;
+
+  const updateUserDiaryCountRow = await connection.query(
+    updateUserDiaryCountQuery,
+    params
+  );
+  return updateUserDiaryCountRow;
+};

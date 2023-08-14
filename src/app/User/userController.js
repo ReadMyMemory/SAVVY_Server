@@ -5,6 +5,7 @@ import {
   userIdCheck,
   retrieveMypage,
   retrieveUserPage,
+  retrieveMypageDiary,
 } from './userProvider';
 import { createUser } from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
@@ -86,6 +87,17 @@ export const getMypage = async (req, res) => {
 
   const getMypageResponse = await retrieveMypage(user_id);
   return res.send(getMypageResponse);
+};
+
+export const getMypageDiary = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0])
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+
+  const getMypageDiaryResponse = await retrieveMypageDiary(user_id);
+  return res.send(getMypageDiaryResponse);
 };
 
 export const getUserPage = async (req, res) => {
