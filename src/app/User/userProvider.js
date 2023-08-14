@@ -10,6 +10,7 @@ import {
   updateUserDiaryCount,
   updateUserPlannerCount,
   selectUserbyNickname,
+  selectUserBlockList,
 } from './userDao';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
@@ -264,4 +265,17 @@ export const retrieveUserPagePlanner = async (user_id) => {
 
   connection.release();
   return response(baseResponse.SUCCESS, plannerResult);
+};
+
+export const retrieveUserBlockList = async (user_id) => {
+  // 유저 기본 정보
+  const userInfo = await userIdCheck(user_id);
+  if (!userInfo[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+
+  const userBlockList = await selectUserBlockList(connection, user_id);
+  if (!userBlockList[0][0])
+    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+  return response(baseResponse.SUCCESS, userBlockList[0]);
 };

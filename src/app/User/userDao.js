@@ -87,3 +87,17 @@ export const updatePlannerCountDown = async (connection, user_id) => {
   );
   return updatePlannerCountDownRow;
 };
+
+export const selectUserBlockList = async (connection, user_id) => {
+  const selectUserBlockListQuery = `
+  SELECT blocked_user, nickname FROM user_blocked 
+  JOIN user ON user_blocked.blocked_user = user.id
+  WHERE user_id = ?
+  ORDER BY user_blocked.blocked_at;`;
+
+  const selectUserBlockListRows = await connection.query(
+    selectUserBlockListQuery,
+    user_id
+  );
+  return selectUserBlockListRows;
+};

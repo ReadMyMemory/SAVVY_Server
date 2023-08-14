@@ -14,6 +14,7 @@ import {
   getUserPageDiary,
   getUserPagePlanner,
   getNicknameCheck,
+  getUserBlockList,
 } from './userController';
 import { wrapAsync } from '../../../config/errorHandler';
 
@@ -34,6 +35,7 @@ userRouter.get('/others', jwtMiddleware, wrapAsync(getUserPage));
 userRouter.get('/others/diary', jwtMiddleware, wrapAsync(getUserPageDiary));
 userRouter.get('/others/planner', jwtMiddleware, wrapAsync(getUserPagePlanner));
 userRouter.get('/duplication', wrapAsync(getNicknameCheck));
+userRouter.get('/block', jwtMiddleware, wrapAsync(getUserBlockList));
 userRouter.get('/push/:user_alarmed', jwtMiddleware, wrapAsync(alarmTest));
 userRouter.get(
   '/error',

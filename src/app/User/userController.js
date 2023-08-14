@@ -10,6 +10,7 @@ import {
   retrieveUserPageDiary,
   retrieveUserPagePlanner,
   retrieveUserNickname,
+  retrieveUserBlockList,
 } from './userProvider';
 import { createUser } from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
@@ -160,4 +161,15 @@ export const getNicknameCheck = async (req, res) => {
 
   const getNicknameCheckResponse = await retrieveUserNickname(nickname);
   return res.send(getNicknameCheckResponse);
+};
+
+export const getUserBlockList = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0])
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+
+  const getUserBlockListResponse = await retrieveUserBlockList(user_id);
+  return res.send(getUserBlockListResponse);
 };
