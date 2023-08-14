@@ -412,3 +412,63 @@ export const selectDiarySearch = async(connection, params) => {
   const selectDiarySearchRows = await connection.query(selectDiarySearchQuery, new_params);
   return selectDiarySearchRows;
 };
+
+export const updateUserLikeCountup = async(connection, user_id) => {
+  const updateUserLikeCountupQuery = `
+  UPDATE user
+  SET likes = likes + 1
+  WHERE id = ? ;`;
+
+  const updateUserLikeCountupRows = await connection.query(updateUserLikeCountupQuery, user_id);
+  return updateUserLikeCountupRows;
+};
+
+export const updateUserLikeCountdown = async(connection, user_id) => {
+  const updateUserLikeCountdownQuery = `
+  UPDATE user
+  SET likes = likes - 1
+  WHERE id = ? ;`;
+
+  const updateUserLikeCountdownRows = await connection.query(updateUserLikeCountdownQuery, user_id);
+  return updateUserLikeCountdownRows;
+};
+
+export const updateUserdiaryCountup = async(connection, user_id) => {
+  const updateUserdiaryCountupQuery = `
+  UPDATE user
+  SET amount_diary = amount_diary + 1
+  WHERE id = ? ;`;
+
+  const updateUserdiaryCountupRows = await connection.query(updateUserdiaryCountupQuery, user_id);
+  return updateUserdiaryCountupRows;
+};
+
+export const updateUserdiaryCountdown = async(connection, params) => {
+  const updateUserdiaryCountdownQuery = `
+  UPDATE user
+  SET amount_diary = amount_diary - 1, likes = likes - ?
+  WHERE id = ? ;`;
+
+  const updateUserdiaryCountdownRows = await connection.query(updateUserdiaryCountdownQuery, params);
+  return updateUserdiaryCountdownRows;
+};
+
+export const updateUserdiaryStatustrue = async(connection, params) => {
+  const updateUserdiaryStatustrueQuery = `
+  UPDATE user
+  SET amount_diary = amount_diary + 1, likes = likes + ?
+  WHERE id = ? ;`;
+
+  const updateUserdiaryStatustrueRows = await connection.query(updateUserdiaryStatustrueQuery, params);
+  return updateUserdiaryStatustrueRows;
+};
+
+export const updateUserdiaryStatusfalse = async(connection, params) => {
+  const updateUserdiaryStatusfalseQuery = `
+  UPDATE user
+  SET amount_diary = amount_diary - 1, likes = likes - ?
+  WHERE id = ? ;`;
+
+  const updateUserdiaryStatusfalseRows = await connection.query(updateUserdiaryStatusfalseQuery, params);
+  return updateUserdiaryStatusfalseRows;
+};
