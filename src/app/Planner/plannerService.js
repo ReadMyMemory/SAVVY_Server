@@ -2,6 +2,7 @@ import baseResponse from '../../../config/baseResponseStatus';
 import pool from '../../../config/database';
 import { response, errResponse } from '../../../config/response';
 import { userIdCheck } from '../User/userProvider';
+import { updatePlannerCountUp, updatePlannerCountDown } from '../User/userDao';
 import {
   plannerIdCheck,
   scrapIdCheck,
@@ -109,8 +110,10 @@ export const createPlanner = async (defaultInfo, timetableInfo, type) => {
       }
     }
   }
+
   connection.release();
   if (type === 1) {
+    await updatePlannerCountUp(connection, defaultInfo.user_id);
     return response(baseResponse.SUCCESS, {
       planner_id: plannerId[0].insertId,
     });
@@ -205,7 +208,7 @@ export const createPlannerReport = async (user_id, defaultInfo, reason) => {
   if (plannerExist[0][0].is_uploaded === 0)
     return errResponse(baseResponse.PLANNER_PLANNER_IS_NOT_UPLOADED);
   // 본인이 본인을 신고하는 경우를 체크
-  if(user_id === plannerExist[0][0].user_id)
+  if (user_id === plannerExist[0][0].user_id)
     return errResponse(baseResponse.REPORT_NOT_REPORT_OWNSELF);
   // 이미 신고 한 적이 있는지 체크
   const beforeReport = await reportCheck(user_id, defaultInfo.planner_id);
@@ -222,6 +225,10 @@ export const createPlannerReport = async (user_id, defaultInfo, reason) => {
     defaultInfo.contents,
   ]);
   await updatePlannerReportCount(connection, defaultInfo.planner_id);
+  // block된 플래너 개수 차감
+  if (plannerExist[0][0].report_count >= 4) {
+    await updatePlannerCountDown(connection, plannerExist[0][0].user_id);
+  }
   connection.release();
 
   if (defaultInfo.is_blocked === 1) {
