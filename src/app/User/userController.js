@@ -11,6 +11,7 @@ import {
   retrieveUserPagePlanner,
   retrieveUserNickname,
   retrieveUserBlockList,
+  retrieveAlarmList,
 } from './userProvider';
 import { createUser } from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
@@ -172,4 +173,15 @@ export const getUserBlockList = async (req, res) => {
 
   const getUserBlockListResponse = await retrieveUserBlockList(user_id);
   return res.send(getUserBlockListResponse);
+};
+
+export const getAlarmList = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0])
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+
+  const getAlarmListResponse = await retrieveAlarmList(user_id);
+  return res.send(getAlarmListResponse);
 };

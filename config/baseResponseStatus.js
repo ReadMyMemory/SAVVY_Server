@@ -423,6 +423,16 @@ const baseResponse = {
     code: 3306,
     message: '댓글/답글 신고 과정에서 알 수 없는 예외가 발생했습니다.',
   },
+  ALARM_LIST_NOT_EXIST: {
+    isSuccess: false,
+    code: 3500,
+    message: '알림 내역이 존재하지 않습니다.',
+  },
+  ALARM_TYPE_INVALID: {
+    isSuccess: false,
+    code: 3501,
+    message: '알림 type값이 올바르지 않습니다.',
+  },
 
   //Connection, Transaction 등의 서버 오류
   DB_ERROR: { isSuccess: false, code: 4000, message: '데이터 베이스 에러' },
