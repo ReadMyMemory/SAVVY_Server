@@ -170,41 +170,10 @@ export const retrieveUserPage = async (user_id, my_id, searching) => {
     pic_url: userInfo[0][0].pic_url,
     nickname: userInfo[0][0].nickname,
     intro: userInfo[0][0].intro,
+    likes: userInfo[0][0].likes,
+    amount_diary: userInfo[0][0].amount_diary,
+    amount_planner: userInfo[0][0].amount_planner,
   };
-
-  const connection = await pool.getConnection(async (conn) => conn);
-  // 다이어리 목록
-  const diaryList = await selectDiaryListPublic(connection, user_id);
-  let likesCnt = 0;
-  if (!diaryList[0][0]) {
-    mypageResult.diary = null;
-    mypageResult.likes = 0;
-    mypageResult.amount_diary = 0;
-  } else {
-    for (let i = 0; i < diaryList[0].length; i++) {
-      const updatedTimeUTC = dayjs(diaryList[0][i].updated_at).utc();
-      const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
-      diaryList[0][i].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
-
-      // 좋아요 수 집계
-      likesCnt += diaryList[0][i].likes_count;
-    }
-    mypageResult.diary = diaryList[0];
-    mypageResult.likes = likesCnt;
-    mypageResult.amount_diary = diaryList[0].length;
-  }
-
-  // 여행계획서 목록
-  const plannerList = await selectPlannerListUpload(connection, user_id);
-  if (!plannerList[0][0]) {
-    mypageResult.planner = null;
-    mypageResult.amount_planner = 0;
-  } else {
-    mypageResult.planner = plannerList[0];
-    mypageResult.amount_planner = plannerList[0].length;
-  }
-
-  connection.release();
 
   if (searching === 'true') {
     // 검색기록 저장
@@ -218,4 +187,71 @@ export const retrieveUserPage = async (user_id, my_id, searching) => {
   }
 
   return response(baseResponse.SUCCESS, mypageResult);
+};
+
+export const retrieveUserPageDiary = async (user_id) => {
+  // 유저 기본 정보
+  const userInfo = await userIdCheck(user_id);
+  if (!userInfo[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+  // 다이어리 목록
+  const diaryResult = {};
+  const diaryList = await selectDiaryListPublic(connection, user_id);
+  let likesCnt = 0;
+  if (!diaryList[0][0]) {
+    diaryResult.diary = null;
+    diaryResult.likes = 0;
+    diaryResult.amount_diary = 0;
+  } else {
+    for (let i = 0; i < diaryList[0].length; i++) {
+      const updatedTimeUTC = dayjs(diaryList[0][i].updated_at).utc();
+      const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
+      diaryList[0][i].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
+
+      // 좋아요 수 집계
+      likesCnt += diaryList[0][i].likes_count;
+    }
+    diaryResult.diary = diaryList[0];
+    diaryResult.likes = likesCnt;
+    diaryResult.amount_diary = diaryList[0].length;
+  }
+
+  // 유저 정보 갱신
+  await updateUserDiaryCount(connection, [
+    diaryResult.likes,
+    diaryResult.amount_diary,
+    user_id,
+  ]);
+
+  connection.release();
+  return response(baseResponse.SUCCESS, diaryResult);
+};
+
+export const retrieveUserPagePlanner = async (user_id) => {
+  // 유저 기본 정보
+  const userInfo = await userIdCheck(user_id);
+  if (!userInfo[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+
+  // 여행계획서 목록
+  const plannerResult = {};
+  const plannerList = await selectPlannerListUpload(connection, user_id);
+  if (!plannerList[0][0]) {
+    plannerResult.planner = null;
+    plannerResult.amount_planner = 0;
+  } else {
+    plannerResult.planner = plannerList[0];
+    plannerResult.amount_planner = plannerList[0].length;
+  }
+
+  // 유저 정보 갱신
+  await updateUserPlannerCount(connection, [
+    plannerResult.amount_planner,
+    user_id,
+  ]);
+
+  connection.release();
+  return response(baseResponse.SUCCESS, plannerResult);
 };

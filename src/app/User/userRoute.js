@@ -11,6 +11,8 @@ import {
   getUserPage,
   getMypageDiary,
   getMypagePlanner,
+  getUserPageDiary,
+  getUserPagePlanner,
 } from './userController';
 import { wrapAsync } from '../../../config/errorHandler';
 
@@ -28,6 +30,8 @@ userRouter.get('/mypage', jwtMiddleware, wrapAsync(getMypage));
 userRouter.get('/mypage/diary', jwtMiddleware, wrapAsync(getMypageDiary));
 userRouter.get('/mypage/planner', jwtMiddleware, wrapAsync(getMypagePlanner));
 userRouter.get('/others', jwtMiddleware, wrapAsync(getUserPage));
+userRouter.get('/others/diary', jwtMiddleware, wrapAsync(getUserPageDiary));
+userRouter.get('/others/planner', jwtMiddleware, wrapAsync(getUserPagePlanner));
 userRouter.get('/push/:user_alarmed', jwtMiddleware, wrapAsync(alarmTest));
 userRouter.get(
   '/error',

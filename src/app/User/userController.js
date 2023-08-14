@@ -7,6 +7,8 @@ import {
   retrieveUserPage,
   retrieveMypageDiary,
   retrieveMypagePlanner,
+  retrieveUserPageDiary,
+  retrieveUserPagePlanner,
 } from './userProvider';
 import { createUser } from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
@@ -122,4 +124,28 @@ export const getUserPage = async (req, res) => {
 
   const getUserPageResponse = await retrieveUserPage(userId, my_id, searching);
   return res.send(getUserPageResponse);
+};
+
+export const getUserPageDiary = async (req, res) => {
+  const { userId } = req.query;
+  const my_id = req.verifiedToken.id;
+
+  // 빈 아이디 체크
+  if (!userId) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  if (!my_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+
+  const getUserPageDiaryResponse = await retrieveUserPageDiary(userId);
+  return res.send(getUserPageDiaryResponse);
+};
+
+export const getUserPagePlanner = async (req, res) => {
+  const { userId } = req.query;
+  const my_id = req.verifiedToken.id;
+
+  // 빈 아이디 체크
+  if (!userId) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  if (!my_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+
+  const getUserPagePlannerResponse = await retrieveUserPagePlanner(userId);
+  return res.send(getUserPagePlannerResponse);
 };
