@@ -2,6 +2,7 @@ import pool from '../../../config/database';
 import axios from 'axios';
 import { generateToken } from '../../../config/jwtMiddleware';
 import { createSearchHistory } from '../Searching/searchingService';
+import { dateDivider } from '../Comment/commentProvider';
 import { selectPlannerListUpload } from '../Planner/plannerDao';
 import { selectDiaryListPublic } from '../Diary/diaryDao';
 import {
@@ -11,6 +12,7 @@ import {
   updateUserPlannerCount,
   selectUserbyNickname,
   selectUserBlockList,
+  selectAlarmList,
 } from './userDao';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
@@ -278,4 +280,49 @@ export const retrieveUserBlockList = async (user_id) => {
   if (!userBlockList[0][0])
     return errResponse(baseResponse.USER_USERID_NOT_EXIST);
   return response(baseResponse.SUCCESS, userBlockList[0]);
+};
+
+export const retrieveAlarmList = async (user_id) => {
+  // 유저 기본 정보
+  const userInfo = await userIdCheck(user_id);
+  if (!userInfo[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+
+  const userAlarmList = await selectAlarmList(connection, user_id);
+  if (!userAlarmList[0][0])
+    return errResponse(baseResponse.ALARM_LIST_NOT_EXIST);
+
+  console.log(userAlarmList[0]);
+
+  // 알림 내용 생성
+  for (let i = 0; i < userAlarmList[0].length; i++) {
+    //댓글 updated_at 표시 변화
+    userAlarmList[0][i].updated_at = await dateDivider(
+      userAlarmList[0][i].updated_at
+    );
+    if (userAlarmList[0][i].updated_at === -1)
+      userAlarmList[0][i] = errResponse(baseResponse.TIME_ERROR);
+
+    switch (userAlarmList[0][i].type) {
+      case 'like':
+        userAlarmList[0][i].body =
+          userAlarmList[0][i].nickname + ' 님이 회원님의 게시글을 좋아합니다';
+        break;
+      case 'comment':
+        userAlarmList[0][i].body =
+          userAlarmList[0][i].nickname +
+          ' 님이 회원님의 게시글에 댓글을 남겼습니다';
+        break;
+      case 'reply':
+        userAlarmList[0][i].body =
+          userAlarmList[0][i].nickname +
+          ' 님이 회원님의 댓글에 답글을 남겼습니다';
+        break;
+      default:
+        return errResponse(baseResponse.ALARM_TYPE_INVALID);
+    }
+  }
+
+  return response(baseResponse.SUCCESS, userAlarmList[0]);
 };

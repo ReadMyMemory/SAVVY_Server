@@ -101,3 +101,17 @@ export const selectUserBlockList = async (connection, user_id) => {
   );
   return selectUserBlockListRows;
 };
+
+export const selectAlarmList = async (connection, user_id) => {
+  const selectAlarmListQuery = `
+  SELECT user_id, nickname, type, alarm_log.updated_at, read_status
+  FROM alarm_log JOIN user ON alarm_log.user_id = user.id
+  WHERE user_alarmed = ?
+  ORDER BY alarm_log.updated_at DESC;`;
+
+  const selectAlarmListRows = await connection.query(
+    selectAlarmListQuery,
+    user_id
+  );
+  return selectAlarmListRows;
+};
