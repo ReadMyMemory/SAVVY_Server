@@ -1,4 +1,5 @@
 import { connect } from 'pm2';
+import { getNicknameCheck } from './userController';
 
 export const selectUserbyId = async (connetion, id) => {
   const selectUserbyIdQuery = `
@@ -49,4 +50,16 @@ export const updateUserPlannerCount = async (connection, params) => {
     params
   );
   return updateUserPlannerCountRow;
+};
+
+export const selectUserbyNickname = async (connection, nickname) => {
+  const selectUserbyNicknameQuery = `
+  SELECT * FROM user
+  WHERE nickname = ?;`;
+
+  const selectUserbyNicknameRows = await connection.query(
+    selectUserbyNicknameQuery,
+    nickname
+  );
+  return selectUserbyNicknameRows;
 };
