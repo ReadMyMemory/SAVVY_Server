@@ -331,7 +331,7 @@ export const selectHomeListdefault = async (connection, user_id) => {
     likes_count, comments_count
     FROM diary
     WHERE user_id NOT IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?) AND 
-    is_public = 'true'
+    is_public = 'true' AND is_temporary = 'false'
     ORDER BY updated_at DESC LIMIT 20;`;
 
     const selectHomeListdefaultRows = await connection.query(selectHomeListdefaultQuery, user_id);
@@ -346,7 +346,7 @@ export const selectHomeListbyId = async (connection, params) => {
     FROM diary
     WHERE updated_at < (SELECT updated_at FROM diary WHERE id = ?) AND
           user_id NOT IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?) AND 
-          is_public = 'true'
+          is_public = 'true' AND is_temporary = 'false'
     ORDER BY updated_at DESC LIMIT 20;`;
 
     const selectHomeListbyIdRows = await connection.query(selectHomeListbyIdQuery, params);
