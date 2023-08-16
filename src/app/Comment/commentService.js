@@ -11,7 +11,9 @@ import {
     insertCommentReport,
     insertReplyReport,
     updateCommentReportCount,
-    updateReplyReportCount
+    updateReplyReportCount,
+    insertCommentCount,
+    deleteCommentCount
 } from './commentDao';
 import {
     diaryIdCheck
@@ -36,6 +38,7 @@ export const createComment = async(diary_id, user_id, content) => {
         user_id,
         content
     ]);
+    await insertCommentCount(connection, diary_id);
 
     connection.release();
     return response(baseResponse.SUCCESS);
@@ -104,6 +107,7 @@ export const deleteCommentCheck = async(user_id, comment_id) => {
     if(user_id !== commentExist[0][0].user_id) return errResponse(baseResponse.USER_USERID_NOT_MATCH_COMMENTOWNER);
     const connection = await pool.getConnection(async (conn) => conn);
     await deleteComment(connection, comment_id);
+    await deleteCommentCount(connection, commentExist[0][0].diary_id);
 
     connection.release();
     return response(baseResponse.SUCCESS);
