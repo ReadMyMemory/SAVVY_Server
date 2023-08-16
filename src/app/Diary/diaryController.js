@@ -53,23 +53,22 @@ export const getDiaryDetail = async (req, res) => {
 export const postDiary = async (req, res) => {
     // body를 "기본 정보, 내용(글과 이미지), 해시 태그로 나누려고 함.
     const defaultInfo = {
-        title: req.body.title,
         user_id: req.verifiedToken.id,
         planner_id: req.body.planner_id,
         is_public : req.body.is_public,
         is_temporary : req.body.is_temporary
     };
-
+    const title = req.body.title;
     const contentInfo = req.body.content;
     const hashtagInfo = req.body.hashtag;
     // 빈 아이디 체크
     if (!defaultInfo.user_id)
         return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
-    // 제목 길이 체크
-    if (defaultInfo.title.length > 75)
-        return res.send(errResponse(baseResponse.DIARY_DIARY_TITLE_LENGTH));
-    if (!defaultInfo.title) defaultInfo.title = '제목을 입력해주세요';
-
+    if(title) {
+        // 제목 길이 체크
+        if (title.length > 75)
+            return res.send(errResponse(baseResponse.DIARY_DIARY_TITLE_LENGTH));
+    }
     //공개 여부, 임시 저장 여부 데이터 치환
     if(defaultInfo.is_public === true) defaultInfo.is_public = 'true';
     else defaultInfo.is_public = 'false';
@@ -77,7 +76,7 @@ export const postDiary = async (req, res) => {
     else defaultInfo.is_temporary = 'false';
 
 
-    const postDiaryResponse = await createDiary(defaultInfo, contentInfo, hashtagInfo);
+    const postDiaryResponse = await createDiary(defaultInfo, title, contentInfo, hashtagInfo);
     return res.send(postDiaryResponse);
 };
 
@@ -93,11 +92,11 @@ export const putDiary = async (req, res) => {
 
     const modifyhashtagInfo = req.body.hashtag;
 
-    // 제목 길이 체크
-    if (modifydefaultInfo.title.length > 75)
-        return res.send(errResponse(baseResponse.DIARY_DIARY_TITLE_LENGTH));
-    if (!modifydefaultInfo.title) modifydefaultInfo.title = '제목을 입력해주세요';
-
+    if(modifydefaultInfo.title) {
+        // 제목 길이 체크
+        if (modifydefaultInfo.title.length > 75)
+            return res.send(errResponse(baseResponse.DIARY_DIARY_TITLE_LENGTH));
+    }
 
     const putDiaryResponse = await modifyDiary(diary_id, modifydefaultInfo, modifycontentInfo, modifyhashtagInfo);
     return res.send(putDiaryResponse);
