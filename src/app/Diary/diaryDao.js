@@ -47,8 +47,8 @@ export const selectDiaryId = async (connection, user_id) => {
 
 export const insertDiary = async (connection, params) => {
   const insertDiaryQuery = `
-        INSERT INTO diary (title, user_id, planner_id, is_public, is_temporary)
-        VALUES (?, ?, ?, ?, ?);`;
+        INSERT INTO diary (user_id, planner_id, is_public, is_temporary)
+        VALUES (?, ?, ?, ?);`;
 
   const insertDiaryRows = await connection.query(insertDiaryQuery, params);
   return insertDiaryRows;
@@ -471,4 +471,14 @@ export const updateUserdiaryStatusfalse = async(connection, params) => {
 
   const updateUserdiaryStatusfalseRows = await connection.query(updateUserdiaryStatusfalseQuery, params);
   return updateUserdiaryStatusfalseRows;
+};
+
+export const insertTitle = async(connection, params) => {
+  const insertTitleQuery = `
+  UPDATE diary
+  SET title = ?
+  WHERE id = ? ;`;
+
+  const insertTitleRows = await connection.query(insertTitleQuery, params);
+  return insertTitleRows;
 };
