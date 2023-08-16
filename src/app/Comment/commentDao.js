@@ -189,3 +189,23 @@ export const updateReplyReportCount = async(connection, reply_id) => {
   const updateReplyReportCountRows = await connection.query(updateReplyReportCountQuery, reply_id);
   return updateReplyReportCountRows;
 };
+
+export const insertCommentCount = async(connection, diary_id) => {
+  const insertCommentCountQuery = `
+  UPDATE diary
+  SET comments_count = comments_count + 1
+  WHERE id = ?  ;`;
+
+  const insertCommentCountRows = await connection.query(insertCommentCountQuery, diary_id);
+  return insertCommentCountRows;
+};
+
+export const deleteCommentCount = async(connection, diary_id) => {
+  const deleteCommentCountQuery = `
+  UPDATE diary
+  SET comments_count = comments_count - 1
+  WHERE id = ?  ;`;
+
+  const deleteCommentCountRows = await connection.query(deleteCommentCountQuery, diary_id);
+  return deleteCommentCountRows;
+};
