@@ -402,10 +402,8 @@ export const selectDiarySearch = async(connection, params) => {
     search_word
   ];
   const selectDiarySearchQuery = `
-  SELECT diary.id, title, diary.updated_at, nickname 
+  SELECT id, title, updated_at, likes_count, comments_count, thumbnail, img_count, is_public 
   FROM diary 
-  INNER JOIN user 
-  ON diary.user_id = user.id
   WHERE user_id = ? AND title LIKE ?
   ORDER BY updated_at DESC ;`;
 
