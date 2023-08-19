@@ -27,8 +27,10 @@ export const retrieveDiarySearch = async (user_id, search_word) => {
     user_id,
     search_word,
   ]);
-  if (!selectDiarySearchResult[0][0])
+  if (!selectDiarySearchResult[0][0]) {
+    connection.release();
     return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+  }
 
   // 해시태그 가져오기
   for (let i = 0; i < selectDiarySearchResult[0].length; i++) {

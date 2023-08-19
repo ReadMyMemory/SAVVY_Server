@@ -150,8 +150,10 @@ export const retrievePlannerdetail = async (user_id, planner_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
   const defaultInfo = await selectPlannerDetail(connection, planner_id);
   // planner가 없을 경우
-  if (!defaultInfo[0][0])
+  if (!defaultInfo[0][0]) {
+    connection.release();
     return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
+  }
 
   // timetable 정보
   const selectTimetableDetailResult = await selectTimetableDetail(
@@ -160,8 +162,10 @@ export const retrievePlannerdetail = async (user_id, planner_id) => {
   );
   const timetableInfo = selectTimetableDetailResult[0];
   // timetable이 없을 경우
-  if (!timetableInfo[0])
+  if (!timetableInfo[0]) {
+    connection.release();
     return errResponse(baseResponse.PLANNER_TIMETABLEID_NOT_EXIST);
+  }
 
   // checklist 정보
   for (let i = 0; i < timetableInfo.length; i++) {

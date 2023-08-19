@@ -58,7 +58,7 @@ export const deletePlannerCheck = async (user_id, planner_id, type) => {
       return errResponse(baseResponse.PLANNER_SCRAP_NOT_EXIST);
     }
     const connection = await pool.getConnection(async (conn) => conn);
-    const deleteScrapbyIdResult = deleteScrapbyId(connection, [
+    const deleteScrapbyIdResult = await deleteScrapbyId(connection, [
       user_id,
       planner_id,
     ]);
@@ -84,8 +84,12 @@ export const createPlanner = async (defaultInfo, timetableInfo, type) => {
   console.log(plannerId);
 
   // planner 생성중 에러 검증
-  if (plannerId === errResponse(baseResponse.DB_ERROR)) return plannerId;
+  if (plannerId === errResponse(baseResponse.DB_ERROR)) {
+    connection.release();
+    return plannerId;
+  }
   if (!plannerId[0].insertId) {
+    connection.release();
     return errResponse(baseResponse.PLANNER_PLANNERID_NOT_EXIST);
   }
   // 시간표 저장
@@ -111,13 +115,14 @@ export const createPlanner = async (defaultInfo, timetableInfo, type) => {
     }
   }
 
-  connection.release();
   if (type === 1) {
     await updatePlannerCountUp(connection, defaultInfo.user_id);
+    connection.release();
     return response(baseResponse.SUCCESS, {
       planner_id: plannerId[0].insertId,
     });
   }
+  connection.release();
   return response(baseResponse.SUCCESS);
 };
 

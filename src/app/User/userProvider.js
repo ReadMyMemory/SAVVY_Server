@@ -277,6 +277,8 @@ export const retrieveUserBlockList = async (user_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
 
   const userBlockList = await selectUserBlockList(connection, user_id);
+  connection.release();
+
   if (!userBlockList[0][0])
     return errResponse(baseResponse.USER_USERID_NOT_EXIST);
   return response(baseResponse.SUCCESS, userBlockList[0]);
@@ -290,8 +292,11 @@ export const retrieveAlarmList = async (user_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
 
   const userAlarmList = await selectAlarmList(connection, user_id);
-  if (!userAlarmList[0][0])
+
+  if (!userAlarmList[0][0]) {
+    connection.release();
     return errResponse(baseResponse.ALARM_LIST_NOT_EXIST);
+  }
 
   console.log(userAlarmList[0]);
 
@@ -320,9 +325,10 @@ export const retrieveAlarmList = async (user_id) => {
           ' 님이 회원님의 댓글에 답글을 남겼습니다';
         break;
       default:
+        connection.release();
         return errResponse(baseResponse.ALARM_TYPE_INVALID);
     }
   }
-
+  connection.release();
   return response(baseResponse.SUCCESS, userAlarmList[0]);
 };
