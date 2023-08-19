@@ -86,8 +86,10 @@ export const retrieveDiaryDetail = async (user_id, diary_id) => {
   const connection = await pool.getConnection(async (conn) => conn);
   const defaultInfo = await selectDiaryDefault(connection, diary_id);
   // dairy가 없을 경우
-  if (!defaultInfo[0][0])
-    return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+  if (!defaultInfo[0][0]) {
+      connection.release();
+      return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+  }
   // 시간 포맷 변경(YYYY.MM.DD)
   const updatedTimeUTC = dayjs(defaultInfo[0][0].updated_at).utc();
   const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
@@ -199,6 +201,7 @@ export const retrieveHomeListdefault = async (user_id) => {
     if(!retrieveHomeListdefaultResult[0][0]) {
         const emptyBox = errResponse(baseResponse.DAIRY_NOT_EXIST_SHOWN_DIARY);
         emptyBox.result = new Array();
+        connection.release();
         return emptyBox;
     }
     for(let i = 0; i < retrieveHomeListdefaultResult[0].length; i++) {
@@ -237,6 +240,7 @@ export const retrieveHomeListbyId = async (user_id, diary_id) => {
     if (!retrieveHomeListbyIdResult[0][0]) {
         const emptyBox = errResponse(baseResponse.DAIRY_NOT_EXIST_SHOWN_DIARY);
         emptyBox.result = new Array();
+        connection.release();
         return emptyBox;
     }
     for(let i = 0; i < retrieveHomeListbyIdResult[0].length; i++) {
