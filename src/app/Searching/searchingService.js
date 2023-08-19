@@ -32,6 +32,7 @@ export const deleteSearchList = async (user_id, search_word, is_user) => {
     is_user,
   ]);
 
+  connection.release();
   return response(baseResponse.SUCCESS);
 };
 
@@ -46,5 +47,6 @@ export const deleteSearchListAll = async (user_id, is_user) => {
     [user_id, is_user]
   );
 
+  connection.release();
   return response(baseResponse.SUCCESS);
 };
