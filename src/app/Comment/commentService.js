@@ -68,7 +68,8 @@ export const modifyComment = async(user_id, updateContent) => {
         return errResponse(baseResponse.COMMENT_COMMENTID_NOT_EXIST);
     }
     // 수정하려는 사람과 작성자가 동일한 지 확인
-    if(user_id !== commentExist[0][0].user_id) return errResponse(baseResponse.USER_USERID_NOT_MATCH_COMMENTOWNER);
+    if(user_id !== commentExist[0][0].user_id)
+        return errResponse(baseResponse.USER_USERID_NOT_MATCH_COMMENTOWNER);
     const connection = await pool.getConnection(async (conn) => conn);
     await updateComment(connection, [
         updateContent.content,
@@ -86,7 +87,8 @@ export const modifyReply = async(user_id, updateContent) => {
         return errResponse(baseResponse.REPLY_REPLYID_NOT_EXIST);
     }
     // 수정하려는 사람과 작성자가 동일한 지 확인
-    if(user_id !== replyExist[0][0].user_id) return errResponse(baseResponse.USER_USERID_NOT_MATCH_REPLYOWNER);
+    if(user_id !== replyExist[0][0].user_id)
+        return errResponse(baseResponse.USER_USERID_NOT_MATCH_REPLYOWNER);
     const connection = await pool.getConnection(async (conn) => conn);
     await updateReply(connection, [
         updateContent.content,
@@ -104,7 +106,8 @@ export const deleteCommentCheck = async(user_id, comment_id) => {
         return errResponse(baseResponse.COMMENT_COMMENTID_NOT_EXIST);
     }
     // 삭제하려는 사람과 작성자가 동일한 지 확인
-    if(user_id !== commentExist[0][0].user_id) return errResponse(baseResponse.USER_USERID_NOT_MATCH_COMMENTOWNER);
+    if(user_id !== commentExist[0][0].user_id)
+        return errResponse(baseResponse.USER_USERID_NOT_MATCH_COMMENTOWNER);
     const connection = await pool.getConnection(async (conn) => conn);
     await deleteComment(connection, comment_id);
     await deleteCommentCount(connection, commentExist[0][0].diary_id);
@@ -120,7 +123,8 @@ export const deleteReplyCheck = async(user_id, reply_id) => {
         return errResponse(baseResponse.REPLY_REPLYID_NOT_EXIST);
     }
     // 삭제하려는 사람과 작성자가 동일한 지 확인
-    if(user_id !== replyExist[0][0].user_id) return errResponse(baseResponse.USER_USERID_NOT_MATCH_REPLYOWNER);
+    if(user_id !== replyExist[0][0].user_id)
+        return errResponse(baseResponse.USER_USERID_NOT_MATCH_REPLYOWNER);
     const connection = await pool.getConnection(async (conn) => conn);
     await deleteReply(connection, reply_id);
 
@@ -144,7 +148,8 @@ export const createCommentReport = async(user_id, defaultInfo, reason) => {
         return errResponse(baseResponse.REPORT_NOT_REPORT_OWNSELF);
     // 이미 신고 한 적이 있는지 체크
     const beforeReport = await reportCheck(user_id, defaultInfo.comment_id, 1);
-    if (beforeReport[0][0]) return errResponse(baseResponse.REPORT_COMMENT_ALREADY_EXIST);
+    if (beforeReport[0][0])
+        return errResponse(baseResponse.REPORT_COMMENT_ALREADY_EXIST);
     const connection = await pool.getConnection(async (conn) => conn);
     await insertCommentReport(connection, [
         defaultInfo.comment_id,
@@ -156,12 +161,12 @@ export const createCommentReport = async(user_id, defaultInfo, reason) => {
         defaultInfo.contents,
     ]);
     await updateCommentReportCount(connection, defaultInfo.comment_id);
-    connection.release();
 
     if (defaultInfo.is_blocked === 1) {
         await createUserBlock(commentExist[0][0].user_id, user_id);
-        return response(baseResponse.SUCCESS);
     }
+    connection.release();
+    return response(baseResponse.SUCCESS);
 };
 export const createReplyReport = async(user_id, defaultInfo, reason) => {
     // user가 존재하는지 체크
@@ -179,7 +184,8 @@ export const createReplyReport = async(user_id, defaultInfo, reason) => {
         return errResponse(baseResponse.REPORT_NOT_REPORT_OWNSELF);
     // 이미 신고 한 적이 있는지 체크
     const beforeReport = await reportCheck(user_id, defaultInfo.reply_id, 2);
-    if (beforeReport[0][0]) return errResponse(baseResponse.REPORT_REPLY_ALREADY_EXIST);
+    if (beforeReport[0][0])
+        return errResponse(baseResponse.REPORT_REPLY_ALREADY_EXIST);
     const connection = await pool.getConnection(async (conn) => conn);
     await insertReplyReport(connection, [
         defaultInfo.reply_id,
@@ -191,10 +197,11 @@ export const createReplyReport = async(user_id, defaultInfo, reason) => {
         defaultInfo.contents,
     ]);
     await updateReplyReportCount(connection, defaultInfo.reply_id);
-    connection.release();
+
 
     if (defaultInfo.is_blocked === 1) {
         await createUserBlock(replyExist[0][0].user_id, user_id);
-        return response(baseResponse.SUCCESS);
     }
+    connection.release();
+    return response(baseResponse.SUCCESS);
 };

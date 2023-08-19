@@ -84,6 +84,7 @@ export const createDiary = async (defaultInfo, title, contentInfo, hashtagInfo) 
     ]);
     // diary 생성중 에러 검증
     if (!diaryId[0].insertId) {
+        connection.release();
         return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
     }
     // 제목 여부 검증
@@ -222,28 +223,36 @@ export const updateLikeCount = async (user_id, diary_id, value) => {
   const connection = await pool.getConnection(async (conn) => conn);
   //좋아요 수가 음수인지 확인
   const likeNum = await checkLikeCount(connection, diary_id);
-  if (likeNum[0][0].likes_count < 0)
-    return errResponse(baseResponse.DAIRY_DIARY_LIKE_COUNT_IS_INVALID);
+  if (likeNum[0][0].likes_count < 0) {
+      connection.release();
+      return errResponse(baseResponse.DAIRY_DIARY_LIKE_COUNT_IS_INVALID);
+  }
+
 
   //이미 좋아요 눌렀는지 확인하는 과정.
   const checkIsLike = await checkIsLiked(connection, [diary_id, user_id]);
 
   if (value === 'up') {
-    if (checkIsLike[0][0])
-      return errResponse(baseResponse.DAIRY_USER_ALREADY_DIARY_LIKED);
-    else {
+    if (checkIsLike[0][0]) {
+        connection.release();
+        return errResponse(baseResponse.DAIRY_USER_ALREADY_DIARY_LIKED);
+    } else {
       await updateUserLikeCountup(connection, diaryExist[0][0].user_id);
       await upLikeCount(connection, diary_id);
       await insertLikeLog(connection, [diary_id, user_id]);
     }
   } else if (value === 'down') {
-    if (!checkIsLike[0][0])
-      return errResponse(baseResponse.DAIRY_USER_NOT_DIARY_LIKED);
-    await updateUserLikeCountdown(connection, diaryExist[0][0].user_id);
-    await downLikeCount(connection, diary_id);
-    await deleteLikeLog(connection, [diary_id, user_id]);
+    if (!checkIsLike[0][0]) {
+        connection.release();
+        return errResponse(baseResponse.DAIRY_USER_NOT_DIARY_LIKED);
+    } else {
+        await updateUserLikeCountdown(connection, diaryExist[0][0].user_id);
+        await downLikeCount(connection, diary_id);
+        await deleteLikeLog(connection, [diary_id, user_id]);
+    }
   } else {
-    return errResponse(baseResponse.DAIRY_STATUS_VALUE_IS_INVALID);
+      connection.release();
+      return errResponse(baseResponse.DAIRY_STATUS_VALUE_IS_INVALID);
   }
 
   connection.release();
@@ -268,9 +277,10 @@ export const updatedPublicStatus = async (user_id, diary_id, value) => {
   // 다이어리 공개 상태 체크
   const checkIsPublic = await checkPublicStatus(connection, diary_id);
   if (value === 'true') {
-    if (checkIsPublic[0][0].is_public === 'true')
-      return errResponse(baseResponse.DAIRY_DAIRY_PUBLIC_STATUS_ALREADY_TRUE);
-    else {
+    if (checkIsPublic[0][0].is_public === 'true') {
+        connection.release();
+        return errResponse(baseResponse.DAIRY_DAIRY_PUBLIC_STATUS_ALREADY_TRUE);
+    } else {
       await updatePublicIsTrue(connection, diary_id);
       await updateUserdiaryStatustrue(connection, [
         diaryExist[0][0].likes_count,
@@ -278,9 +288,10 @@ export const updatedPublicStatus = async (user_id, diary_id, value) => {
       ]);
     }
   } else if (value === 'false') {
-    if (checkIsPublic[0][0].is_public === 'false')
-      return errResponse(baseResponse.DAIRY_DAIRY_PUBLIC_STATUS_ALREADY_FALSE);
-    else {
+    if (checkIsPublic[0][0].is_public === 'false') {
+        connection.release();
+        return errResponse(baseResponse.DAIRY_DAIRY_PUBLIC_STATUS_ALREADY_FALSE);
+    } else {
       await updatePublicIsFalse(connection, diary_id);
       await updateUserdiaryStatusfalse(connection, [
         diaryExist[0][0].likes_count,
@@ -288,7 +299,8 @@ export const updatedPublicStatus = async (user_id, diary_id, value) => {
       ]);
     }
   } else {
-    return errResponse(baseResponse.DAIRY_STATUS_VALUE_IS_INVALID);
+      connection.release();
+      return errResponse(baseResponse.DAIRY_STATUS_VALUE_IS_INVALID);
   }
   connection.release();
   return response(baseResponse.SUCCESS);
