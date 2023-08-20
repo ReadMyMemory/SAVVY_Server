@@ -13,7 +13,10 @@ import {
   retrieveUserBlockList,
   retrieveAlarmList,
 } from './userProvider';
-import { createUser } from './userService';
+import {
+  createUser,
+  modifyProfile
+} from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
 
 export const loginUser = async (req, res) => {
@@ -184,4 +187,23 @@ export const getAlarmList = async (req, res) => {
 
   const getAlarmListResponse = await retrieveAlarmList(user_id);
   return res.send(getAlarmListResponse);
+};
+
+export const putProfile = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+  const pic_url = req.body.pic_url;
+  const nickname = req.body.nickname;
+  const intro = req.body.intro;
+
+  // 빈 아이디 체크
+  if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  // 빈 닉네임 체크
+  if (!nickname)
+    return res.send(errResponse(baseResponse.SIGNUP_NICKNAME_EMPTY));
+  // 소개글 길이 체크
+  if (intro.length > 300)
+    return res.send(response(baseResponse.SIGNUP_INTRO_LENGTH));
+
+  const putProfileResponse = await modifyProfile(user_id, pic_url, nickname, intro);
+  return res.send(putProfileResponse);
 };
