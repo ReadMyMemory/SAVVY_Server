@@ -18,6 +18,7 @@ import {
   getAlarmList,
   putProfile,
   getMyLikeList,
+  deleteUser,
 } from './userController';
 import { wrapAsync } from '../../../config/errorHandler';
 
@@ -26,6 +27,7 @@ const userRouter = express.Router();
 userRouter.post('/login', wrapAsync(loginUser));
 userRouter.post('/signup', wrapAsync(postUser));
 userRouter.get('/login', jwtMiddleware, wrapAsync(loginTest));
+userRouter.get('/delete', jwtMiddleware, deleteUser);
 userRouter.post('/profile/edit', jwtMiddleware, wrapAsync(putProfile));
 userRouter.post(
   '/image/profile',
@@ -33,10 +35,10 @@ userRouter.post(
   wrapAsync(postProfileImage)
 );
 userRouter.post(
-    '/image/profile/edit',
-    jwtMiddleware,
-    uploadImage.single('image'),
-    wrapAsync(postProfileImage)
+  '/image/profile/edit',
+  jwtMiddleware,
+  uploadImage.single('image'),
+  wrapAsync(postProfileImage)
 );
 userRouter.get('/mypage', jwtMiddleware, wrapAsync(getMypage));
 userRouter.get('/mypage/diary', jwtMiddleware, wrapAsync(getMypageDiary));

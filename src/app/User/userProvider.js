@@ -13,7 +13,8 @@ import {
   selectUserbyNickname,
   selectUserBlockList,
   selectAlarmList,
-  selectUserLikeList
+  selectUserLikeList,
+  updateUserStatusOff,
 } from './userDao';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
@@ -44,6 +45,11 @@ export const retrieveKakaoLogin = async (accessToken) => {
   // 회원정보 있는지 검증
   const userKakaoCheck = await loginIdCheck(kakaoData.id);
   if (!userKakaoCheck[0][0]) return errResponse(baseResponse.USER_NEED_SIGNUP);
+  if (userKakaoCheck[0][0].is_deleted === '1') {
+    const connection = await pool.getConnection(async (conn) => conn);
+    await updateUserStatusOff(connection, userKakaoCheck[0][0].id);
+    connection.release();
+  }
   const generateTokenResult = await generateToken({
     id: userKakaoCheck[0][0].id,
   })
@@ -334,28 +340,24 @@ export const retrieveAlarmList = async (user_id) => {
   return response(baseResponse.SUCCESS, userAlarmList[0]);
 };
 
-export const retrieveLikeList = async(user_id) => {
+export const retrieveLikeList = async (user_id) => {
   //유저 존재 확인
   const userExist = await userIdCheck(user_id);
-  if(!userExist[0][0])
-    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+  if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
 
   const connection = await pool.getConnection(async (conn) => conn);
 
   const userLikeList = await selectUserLikeList(connection, user_id);
   connection.release();
-if(userLikeList[0][0]) {
-  //시간을 YYYY-MM-DD 형식으로 변환하는 과정
-  for (let i = 0; i < userLikeList[0].length; i++) {
-    const updatedTimeUTC = dayjs(
-        userLikeList[0][i].updated_at
-    ).utc();
-    const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
-    userLikeList[0][i].updated_at =
-        updatedTimeKorea.format('YYYY.MM.DD');
+  if (userLikeList[0][0]) {
+    //시간을 YYYY-MM-DD 형식으로 변환하는 과정
+    for (let i = 0; i < userLikeList[0].length; i++) {
+      const updatedTimeUTC = dayjs(userLikeList[0][i].updated_at).utc();
+      const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
+      userLikeList[0][i].updated_at = updatedTimeKorea.format('YYYY.MM.DD');
+    }
+    return response(baseResponse.SUCCESS, userLikeList[0]);
+  } else {
+    return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
   }
-  return response(baseResponse.SUCCESS, userLikeList[0]);
-} else {
-  return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
-}
-}
+};
