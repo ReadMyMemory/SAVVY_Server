@@ -12,12 +12,9 @@ import {
   retrieveUserNickname,
   retrieveUserBlockList,
   retrieveAlarmList,
-  retrieveLikeList
+  retrieveLikeList,
 } from './userProvider';
-import {
-  createUser,
-  modifyProfile
-} from './userService';
+import { createUser, modifyProfile, modifyUserStatus } from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
 
 export const loginUser = async (req, res) => {
@@ -205,11 +202,16 @@ export const putProfile = async (req, res) => {
   if (intro.length > 300)
     return res.send(response(baseResponse.SIGNUP_INTRO_LENGTH));
 
-  const putProfileResponse = await modifyProfile(user_id, pic_url, nickname, intro);
+  const putProfileResponse = await modifyProfile(
+    user_id,
+    pic_url,
+    nickname,
+    intro
+  );
   return res.send(putProfileResponse);
 };
 
-export const getMyLikeList = async(req, res) => {
+export const getMyLikeList = async (req, res) => {
   const user_id = req.verifiedToken.id;
 
   // 빈 아이디 체크
@@ -217,4 +219,14 @@ export const getMyLikeList = async(req, res) => {
 
   const getMyLikeListResponse = await retrieveLikeList(user_id);
   return res.send(getMyLikeListResponse);
+};
+
+export const deleteUser = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+
+  // 빈 아이디 체크
+  if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+
+  const deleteUserResponse = await modifyUserStatus(user_id);
+  return res.send(deleteUserResponse);
 };

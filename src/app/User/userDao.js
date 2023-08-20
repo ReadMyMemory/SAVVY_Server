@@ -123,26 +123,26 @@ export const modifyUserProfileImgEmpty = async (connection, params) => {
   WHERE id = ? ;`;
 
   const modifyUserProfileImgEmptyRows = await connection.query(
-      modifyUserProfileImgEmptyQuery,
-      params
+    modifyUserProfileImgEmptyQuery,
+    params
   );
   return modifyUserProfileImgEmptyRows;
 };
 
-export const modifyUserProfileImgExist = async(connection, params) => {
+export const modifyUserProfileImgExist = async (connection, params) => {
   const modifyUserProfileImgExistQuery = `
   UPDATE user
   SET pic_url = ?, nickname = ?, intro = ?
   WHERE id = ? ;`;
 
   const modifyUserProfileImgExistRows = await connection.query(
-      modifyUserProfileImgExistQuery,
-      params
+    modifyUserProfileImgExistQuery,
+    params
   );
   return modifyUserProfileImgExistRows;
 };
 
-export const selectUserLikeList = async(connection, user_id) => {
+export const selectUserLikeList = async (connection, user_id) => {
   const selectUserLikeListQuery = `
   SELECT diary.id, title, diary.updated_at, likes_count, comments_count, thumbnail, img_count
   FROM diary 
@@ -153,8 +153,34 @@ export const selectUserLikeList = async(connection, user_id) => {
   ORDER BY diary_likes.updated_at DESC ;`;
 
   const selectUserLikeListRows = await connection.query(
-      selectUserLikeListQuery,
-      user_id
+    selectUserLikeListQuery,
+    user_id
   );
   return selectUserLikeListRows;
-}
+};
+
+export const updateUserStatusOn = async (connection, user_id) => {
+  const updateUserStatusOnQuery = `
+  UPDATE user 
+  SET is_deleted = 1, deleted_at = current_timestamp(6)
+  WHERE id = ?;`;
+
+  const updateUserStatusOnRow = await connection.query(
+    updateUserStatusOnQuery,
+    user_id
+  );
+  return updateUserStatusOnRow;
+};
+
+export const updateUserStatusOff = async (connection, user_id) => {
+  const updateUserStatusOffQuery = `
+  UPDATE user
+  SET is_deleted = 0, deleted_at = null
+  WHERE id = ?;`;
+
+  const updateUserStatusOffRow = await connection.query(
+    updateUserStatusOffQuery,
+    user_id
+  );
+  return updateUserStatusOffRow;
+};
