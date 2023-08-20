@@ -144,10 +144,13 @@ export const modifyUserProfileImgExist = async(connection, params) => {
 
 export const selectUserLikeList = async(connection, user_id) => {
   const selectUserLikeListQuery = `
-  SELECT id, title, updated_at, likes_count, comments_count, thumbnail, img_count 
-  FROM diary
+  SELECT diary.id, title, diary.updated_at, likes_count, comments_count, thumbnail, img_count
+  FROM diary 
+  JOIN diary_likes 
+  ON diary.id = diary_likes.diary_id
   WHERE is_public = 'true'
-  AND id IN (SELECT diary_id FROM diary_likes WHERE user_id = ?) ;`;
+  AND diary.id IN (SELECT diary_id FROM diary_likes WHERE user_id = ?)
+  ORDER BY diary_likes.updated_at DESC ;`;
 
   const selectUserLikeListRows = await connection.query(
       selectUserLikeListQuery,
