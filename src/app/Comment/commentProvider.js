@@ -80,6 +80,10 @@ export const retrieveCommentListAll = async(diary_id, user_id) => {
     const countValue = await showReplyCountbyId(connection, retrieveCommentListResult[0][i].id);
     retrieveCommentListResult[0][i].reply_count = countValue[0][0].count;
 
+    //숨김 처리된 댓글이라면,
+    const commentExist = await commentIdCheck(retrieveCommentListResult[0][i].id);
+    if(commentExist[0][0].is_hide === 1)
+      retrieveCommentListResult[0][i].content = "신고 누적으로 숨김 처리된 댓글입니다.";
     //댓글 is_updated의 boolean 치환
     if (retrieveCommentListResult[0][i].is_updated === 'true')
       retrieveCommentListResult[0][i].is_updated = true;
@@ -98,7 +102,6 @@ export const retrieveCommentListAll = async(diary_id, user_id) => {
 
     // 답글 리스트 불러오기
     // comment가 존재하는지 체크
-    const commentExist = await commentIdCheck(retrieveCommentListResult[0][i].id);
     if (!commentExist[0][0]) {
       connection.release();
       return errResponse(baseResponse.COMMENT_COMMENTID_NOT_EXIST);
@@ -109,6 +112,9 @@ export const retrieveCommentListAll = async(diary_id, user_id) => {
     ]);
 
     for (let j = 0; j < retrieveReplyListResult[0].length; j++) {
+      const replyIsHide = await replyIdCheck(retrieveReplyListResult[0][j].id);
+      if(replyIsHide[0][0].is_hide === 1)
+        retrieveReplyListResult[0][j].content = "신고 누적으로 숨김 처리된 답글입니다.";
       //댓글 is_updated의 boolean 치환
       if (retrieveReplyListResult[0][j].is_updated === 'true')
         retrieveReplyListResult[0][j].is_updated = true;

@@ -35,10 +35,12 @@ import {
   updateUserdiaryCountup,
   updateUserdiaryCountdown,
   insertTitle,
+  updateDiaryStatusHide
 } from './diaryDao';
 import { createUserBlock } from '../Planner/plannerService';
 import { updatePlannerCountDown } from '../User/userDao';
 import { deletePlannerUploaded } from '../Planner/plannerDao';
+
 
 export const deleteDiaryCheck = async (user_id, diary_id) => {
   // user가 존재하는지 체크
@@ -279,11 +281,15 @@ export const updatedPublicStatus = async (user_id, diary_id, value) => {
       connection.release();
       return errResponse(baseResponse.DAIRY_DAIRY_PUBLIC_STATUS_ALREADY_TRUE);
     } else {
-      await updatePublicIsTrue(connection, diary_id);
-      await updateUserdiaryStatustrue(connection, [
-        diaryExist[0][0].likes_count,
-        user_id,
-      ]);
+        if(diaryExist[0][0].is_hide === 1) {
+            connection.release();
+            return errResponse(baseResponse.DAIRY_DAIRY_STATUS_IS_HIDED);
+        }
+        await updatePublicIsTrue(connection, diary_id);
+        await updateUserdiaryStatustrue(connection, [
+            diaryExist[0][0].likes_count,
+            user_id,
+        ]);
     }
   } else if (value === 'false') {
     if (checkIsPublic[0][0].is_public === 'false') {
@@ -334,6 +340,9 @@ export const createDiaryReport = async (user_id, defaultInfo, reason) => {
     defaultInfo.contents,
   ]);
   await updateDiaryReportCount(connection, defaultInfo.diary_id);
+  //신고 5회 이상시 숨김 처리
+    if(diaryExist[0][0].report_count >= 4)
+        await updateDiaryStatusHide(connection, defaultInfo.diary_id);
   connection.release();
 
   if (defaultInfo.is_blocked === 1) {
