@@ -141,3 +141,17 @@ export const modifyUserProfileImgExist = async(connection, params) => {
   );
   return modifyUserProfileImgExistRows;
 };
+
+export const selectUserLikeList = async(connection, user_id) => {
+  const selectUserLikeListQuery = `
+  SELECT id, title, updated_at, likes_count, comments_count, thumbnail, img_count 
+  FROM diary
+  WHERE is_public = 'true'
+  AND id IN (SELECT diary_id FROM diary_likes WHERE user_id = ?) ;`;
+
+  const selectUserLikeListRows = await connection.query(
+      selectUserLikeListQuery,
+      user_id
+  );
+  return selectUserLikeListRows;
+}

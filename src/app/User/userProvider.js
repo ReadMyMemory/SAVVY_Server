@@ -13,6 +13,7 @@ import {
   selectUserbyNickname,
   selectUserBlockList,
   selectAlarmList,
+  selectUserLikeList
 } from './userDao';
 import { response, errResponse } from '../../../config/response';
 import baseResponse from '../../../config/baseResponseStatus';
@@ -332,3 +333,29 @@ export const retrieveAlarmList = async (user_id) => {
   connection.release();
   return response(baseResponse.SUCCESS, userAlarmList[0]);
 };
+
+export const retrieveLikeList = async(user_id) => {
+  //유저 존재 확인
+  const userExist = await userIdCheck(user_id);
+  if(!userExist[0][0])
+    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+
+  const userLikeList = await selectUserLikeList(connection, user_id);
+  connection.release();
+if(userLikeList[0][0]) {
+  //시간을 YYYY-MM-DD 형식으로 변환하는 과정
+  for (let i = 0; i < userLikeList[0].length; i++) {
+    const updatedTimeUTC = dayjs(
+        userLikeList[0][i].updated_at
+    ).utc();
+    const updatedTimeKorea = updatedTimeUTC.tz('Asia/Seoul');
+    userLikeList[0][i].updated_at =
+        updatedTimeKorea.format('YYYY.MM.DD');
+  }
+  return response(baseResponse.SUCCESS, userLikeList[0]);
+} else {
+  return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+}
+}

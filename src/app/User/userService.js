@@ -63,7 +63,8 @@ export const createUser = async (accessToken, pic_url, nickname, intro) => {
 export const modifyProfile = async (user_id, pic_url, nickname, intro) => {
   //유저 존재 확인
   const userExist = await userIdCheck(user_id);
-  if(!userExist) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+  if(!userExist[0][0])
+    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
 
   const connection = await pool.getConnection(async (conn) => conn);
   if(!pic_url) {
