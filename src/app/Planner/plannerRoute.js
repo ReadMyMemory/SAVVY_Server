@@ -14,6 +14,7 @@ import {
   postScrap,
   postPlannerReport,
   putChecklist,
+  deleteUpload,
 } from './plannerController';
 
 const plannerRouter = express.Router();
@@ -30,5 +31,6 @@ plannerRouter.post('/upload', jwtMiddleware, wrapAsync(postPlannerUpload));
 plannerRouter.post('/scrap', jwtMiddleware, wrapAsync(postScrap));
 plannerRouter.post('/report', jwtMiddleware, wrapAsync(postPlannerReport));
 plannerRouter.put('/checklist', jwtMiddleware, wrapAsync(putChecklist));
+plannerRouter.delete('/upload', jwtMiddleware, wrapAsync(deleteUpload));
 
 export default plannerRouter;
