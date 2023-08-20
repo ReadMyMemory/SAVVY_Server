@@ -367,3 +367,15 @@ export const deletePlannerUploaded = async (connection, planner_id) => {
   );
   return deletePlannerUploadedRow;
 };
+
+export const deletePlannerIdOnDiary = async (connection, diary_id) => {
+  const deletePlannerIdOnDiaryQuery = `
+  UPDATE diary SET planner_id = null
+  WHERE id = ?;`;
+
+  const deletePlannerIdOnDiaryRow = await connection.query(
+    deletePlannerIdOnDiaryQuery,
+    diary_id
+  );
+  return deletePlannerIdOnDiaryRow;
+};

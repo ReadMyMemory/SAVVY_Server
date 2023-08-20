@@ -3,14 +3,12 @@ import pool from '../../../config/database';
 import axios from 'axios';
 import { generateToken } from '../../../config/jwtMiddleware';
 import { response, errResponse } from '../../../config/response';
-import {
-  loginIdCheck,
-  userIdCheck
-} from './userProvider';
+import { loginIdCheck, userIdCheck } from './userProvider';
 import {
   insertUserInfo,
   modifyUserProfileImgEmpty,
-  modifyUserProfileImgExist
+  modifyUserProfileImgExist,
+  updateUserStatusOn,
 } from './userDao';
 
 export const createUser = async (accessToken, pic_url, nickname, intro) => {
@@ -63,24 +61,32 @@ export const createUser = async (accessToken, pic_url, nickname, intro) => {
 export const modifyProfile = async (user_id, pic_url, nickname, intro) => {
   //유저 존재 확인
   const userExist = await userIdCheck(user_id);
-  if(!userExist[0][0])
-    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+  if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
 
   const connection = await pool.getConnection(async (conn) => conn);
-  if(!pic_url) {
-    await modifyUserProfileImgEmpty(connection, [
-        nickname,
-        intro,
-        user_id
-    ]);
+  if (!pic_url) {
+    await modifyUserProfileImgEmpty(connection, [nickname, intro, user_id]);
   } else {
     await modifyUserProfileImgExist(connection, [
-        pic_url,
-        nickname,
-        intro,
-        user_id
+      pic_url,
+      nickname,
+      intro,
+      user_id,
     ]);
   }
+  connection.release();
+  return response(baseResponse.SUCCESS);
+};
+
+export const modifyUserStatus = async (user_id) => {
+  //유저 존재 확인
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  // 유저 상태 수정
+  const connection = await pool.getConnection(async (conn) => conn);
+  await updateUserStatusOn(connection, user_id);
+
   connection.release();
   return response(baseResponse.SUCCESS);
 };
