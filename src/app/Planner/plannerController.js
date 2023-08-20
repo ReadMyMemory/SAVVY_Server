@@ -12,6 +12,7 @@ import {
   createScrap,
   createPlannerReport,
   modifyChecklist,
+  deleteUploadPlanner,
 } from './plannerService';
 
 export const getPlannerListAll = async (req, res) => {
@@ -269,4 +270,17 @@ export const putChecklist = async (req, res) => {
 
   const putChecklistResponse = await modifyChecklist(checklist);
   return res.send(putChecklistResponse);
+};
+
+export const deleteUpload = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+  const { diaryId } = req.query;
+
+  // 유저 아이디 체크
+  if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  // 다이어리 아이디 체크
+  if (!diaryId) return res.send(errResponse(baseResponse.DIARY_DIARYID_EMPTY));
+
+  const deleteUploadResponse = await deleteUploadPlanner(user_id, diaryId);
+  return res.send(deleteUploadResponse);
 };

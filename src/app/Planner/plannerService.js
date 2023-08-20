@@ -26,7 +26,10 @@ import {
   insertUserBlock,
   updatePlannerReportCount,
   selectChecklistDetail,
+  deletePlannerUploaded,
+  deletePlannerIdOnDiary,
 } from './plannerDao';
+import { diaryIdCheck } from '../Diary/diaryProvider';
 
 export const deletePlannerCheck = async (user_id, planner_id, type) => {
   // 삭제하려는 유저가 여행계획서 소유자인지 판별
@@ -265,6 +268,31 @@ export const modifyChecklist = async (checklist) => {
       checklist[i].id,
     ]);
   }
+  connection.release();
+  return response(baseResponse.SUCCESS);
+};
+
+export const deleteUploadPlanner = async (user_id, diary_id) => {
+  // user가 존재하는지 체크
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) {
+    return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+  }
+  // diary가 존재하는지 체크
+  const diaryExist = await diaryIdCheck(diary_id);
+  if (!diaryExist[0][0]) {
+    return errResponse(baseResponse.DAIRY_DIARYID_NOT_EXIST);
+  }
+  // 다이어리 작성자 user_id와 삭제를 시도하는 user_id가 같은지 체크
+  if (user_id != diaryExist[0][0].user_id) {
+    return errResponse(baseResponse.USER_USERID_NOT_MATCH_DIARYOWNER);
+  }
+
+  // 업로드된 여행계획서 내리기
+  const connection = await pool.getConnection(async (conn) => conn);
+  await deletePlannerUploaded(connection, diaryExist[0][0].planner_id);
+  await deletePlannerIdOnDiary(connection, diary_id);
+
   connection.release();
   return response(baseResponse.SUCCESS);
 };
