@@ -12,6 +12,7 @@ import {
   retrieveUserNickname,
   retrieveUserBlockList,
   retrieveAlarmList,
+  retrieveLikeList
 } from './userProvider';
 import {
   createUser,
@@ -206,4 +207,14 @@ export const putProfile = async (req, res) => {
 
   const putProfileResponse = await modifyProfile(user_id, pic_url, nickname, intro);
   return res.send(putProfileResponse);
+};
+
+export const getMyLikeList = async(req, res) => {
+  const user_id = req.verifiedToken.id;
+
+  // 빈 아이디 체크
+  if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+
+  const getMyLikeListResponse = await retrieveLikeList(user_id);
+  return res.send(getMyLikeListResponse);
 };

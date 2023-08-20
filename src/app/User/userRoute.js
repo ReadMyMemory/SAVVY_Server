@@ -16,7 +16,8 @@ import {
   getNicknameCheck,
   getUserBlockList,
   getAlarmList,
-  putProfile
+  putProfile,
+  getMyLikeList,
 } from './userController';
 import { wrapAsync } from '../../../config/errorHandler';
 
@@ -40,6 +41,7 @@ userRouter.post(
 userRouter.get('/mypage', jwtMiddleware, wrapAsync(getMypage));
 userRouter.get('/mypage/diary', jwtMiddleware, wrapAsync(getMypageDiary));
 userRouter.get('/mypage/planner', jwtMiddleware, wrapAsync(getMypagePlanner));
+userRouter.get('/mypage/like', jwtMiddleware, wrapAsync(getMyLikeList));
 userRouter.get('/others', jwtMiddleware, wrapAsync(getUserPage));
 userRouter.get('/others/diary', jwtMiddleware, wrapAsync(getUserPageDiary));
 userRouter.get('/others/planner', jwtMiddleware, wrapAsync(getUserPagePlanner));
