@@ -480,3 +480,13 @@ export const insertTitle = async(connection, params) => {
   const insertTitleRows = await connection.query(insertTitleQuery, params);
   return insertTitleRows;
 };
+
+export const updateDiaryStatusHide = async(connection, diary_id) => {
+  const updateDiaryStatusHide = `
+  UPDATE diary
+  SET is_public = 'false', is_hide = 1
+  WHERE id = ? ;`;
+
+  const updateDiaryStatusHideRows = await connection.query(updateDiaryStatusHide, diary_id);
+  return updateDiaryStatusHideRows;
+};

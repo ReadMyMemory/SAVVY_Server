@@ -305,6 +305,11 @@ const baseResponse = {
     code: 2418,
     message: '답글 작성자가 아닙니다.',
   },
+  DAIRY_DAIRY_STATUS_IS_HIDED: {
+    isSuccess: false,
+    code: 2419,
+    message: '신고 횟수가 5회 이상으로 블러 처리된 다이어리입니다.',
+  },
 
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
