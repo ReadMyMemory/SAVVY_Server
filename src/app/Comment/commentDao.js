@@ -36,12 +36,12 @@ export const selectCommentListbyId = async (connection, params) => {
     SELECT diary_comment.id, user.nickname, user.pic_url, 
     diary_comment.content,
     diary_comment.updated_at,
-    is_updated
+    is_updated 
     FROM diary_comment
     INNER JOIN user
     ON diary_comment.user_id = user.id
     WHERE diary_id = ? AND 
-    NOT diary_comment.user_id IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?)
+          NOT diary_comment.user_id IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?)
     ORDER BY diary_comment.updated_at DESC
     ;`;
 
@@ -62,7 +62,7 @@ export const selectReplyListbyId = async (connection, params) => {
     INNER JOIN user
     ON diary_reply.user_id = user.id
     WHERE comment_id = ? AND
-    NOT diary_reply.user_id IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?)
+          NOT diary_reply.user_id IN (SELECT blocked_user FROM user_blocked WHERE user_id = ?)
     ORDER BY diary_reply.updated_at DESC
     ;`;
 
@@ -78,7 +78,7 @@ export const showReplyCountbyId = async (connection, value) => {
   const showReplyCountbyIdQuery = `
   SELECT COUNT(id) AS count
   FROM diary_reply
-  WHERE comment_id = ? ;`;
+  WHERE comment_id = ? AND is_hide = 0 ;`;
 
   const showReplyCountbyIdRows = await connection.query(showReplyCountbyIdQuery, value);
   return showReplyCountbyIdRows;

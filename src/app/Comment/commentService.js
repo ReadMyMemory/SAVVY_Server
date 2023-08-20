@@ -13,7 +13,9 @@ import {
     updateCommentReportCount,
     updateReplyReportCount,
     insertCommentCount,
-    deleteCommentCount
+    deleteCommentCount,
+    updateCommentStatusHide,
+    updateReplyStatusHide
 } from './commentDao';
 import {
     diaryIdCheck
@@ -162,10 +164,13 @@ export const createCommentReport = async(user_id, defaultInfo, reason) => {
     ]);
     await updateCommentReportCount(connection, defaultInfo.comment_id);
 
+    if(commentExist[0][0].report_count >= 4)
+        await updateCommentStatusHide(connection, defaultInfo.comment_id);
+    connection.release();
+
     if (defaultInfo.is_blocked === 1) {
         await createUserBlock(commentExist[0][0].user_id, user_id);
     }
-    connection.release();
     return response(baseResponse.SUCCESS);
 };
 export const createReplyReport = async(user_id, defaultInfo, reason) => {
@@ -197,11 +202,14 @@ export const createReplyReport = async(user_id, defaultInfo, reason) => {
         defaultInfo.contents,
     ]);
     await updateReplyReportCount(connection, defaultInfo.reply_id);
+    if(replyExist[0][0].report_count >= 4)
+        await updateReplyStatusHide(connection, defaultInfo.reply_id);
+    connection.release();
 
-
+    connection.release();
     if (defaultInfo.is_blocked === 1) {
         await createUserBlock(replyExist[0][0].user_id, user_id);
     }
-    connection.release();
+
     return response(baseResponse.SUCCESS);
 };
