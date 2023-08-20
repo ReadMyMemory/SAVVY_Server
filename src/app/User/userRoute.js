@@ -16,6 +16,7 @@ import {
   getNicknameCheck,
   getUserBlockList,
   getAlarmList,
+  putProfile
 } from './userController';
 import { wrapAsync } from '../../../config/errorHandler';
 
@@ -24,10 +25,17 @@ const userRouter = express.Router();
 userRouter.post('/login', wrapAsync(loginUser));
 userRouter.post('/signup', wrapAsync(postUser));
 userRouter.get('/login', jwtMiddleware, wrapAsync(loginTest));
+userRouter.post('/profile/edit', jwtMiddleware, wrapAsync(putProfile));
 userRouter.post(
   '/image/profile',
   uploadImage.single('image'),
   wrapAsync(postProfileImage)
+);
+userRouter.post(
+    '/image/profile/edit',
+    jwtMiddleware,
+    uploadImage.single('image'),
+    wrapAsync(postProfileImage)
 );
 userRouter.get('/mypage', jwtMiddleware, wrapAsync(getMypage));
 userRouter.get('/mypage/diary', jwtMiddleware, wrapAsync(getMypageDiary));

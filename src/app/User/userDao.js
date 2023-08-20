@@ -115,3 +115,29 @@ export const selectAlarmList = async (connection, user_id) => {
   );
   return selectAlarmListRows;
 };
+
+export const modifyUserProfileImgEmpty = async (connection, params) => {
+  const modifyUserProfileImgEmptyQuery = `
+  UPDATE user
+  SET pic_url = NULL, nickname = ?, intro = ?
+  WHERE id = ? ;`;
+
+  const modifyUserProfileImgEmptyRows = await connection.query(
+      modifyUserProfileImgEmptyQuery,
+      params
+  );
+  return modifyUserProfileImgEmptyRows;
+};
+
+export const modifyUserProfileImgExist = async(connection, params) => {
+  const modifyUserProfileImgExistQuery = `
+  UPDATE user
+  SET pic_url = ?, nickname = ?, intro = ?
+  WHERE id = ? ;`;
+
+  const modifyUserProfileImgExistRows = await connection.query(
+      modifyUserProfileImgExistQuery,
+      params
+  );
+  return modifyUserProfileImgExistRows;
+};

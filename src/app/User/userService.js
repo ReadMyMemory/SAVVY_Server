@@ -3,8 +3,15 @@ import pool from '../../../config/database';
 import axios from 'axios';
 import { generateToken } from '../../../config/jwtMiddleware';
 import { response, errResponse } from '../../../config/response';
-import { loginIdCheck } from './userProvider';
-import { insertUserInfo } from './userDao';
+import {
+  loginIdCheck,
+  userIdCheck
+} from './userProvider';
+import {
+  insertUserInfo,
+  modifyUserProfileImgEmpty,
+  modifyUserProfileImgExist
+} from './userDao';
 
 export const createUser = async (accessToken, pic_url, nickname, intro) => {
   const kakaoId = await axios({
@@ -51,4 +58,28 @@ export const createUser = async (accessToken, pic_url, nickname, intro) => {
   if (generateTokenResult === 'error')
     return errResponse(baseResponse.TOKEN_GENERATE_ERROR);
   return response(baseResponse.SUCCESS, generateTokenResult);
+};
+
+export const modifyProfile = async (user_id, pic_url, nickname, intro) => {
+  //유저 존재 확인
+  const userExist = await userIdCheck(user_id);
+  if(!userExist) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  const connection = await pool.getConnection(async (conn) => conn);
+  if(!pic_url) {
+    await modifyUserProfileImgEmpty(connection, [
+        nickname,
+        intro,
+        user_id
+    ]);
+  } else {
+    await modifyUserProfileImgExist(connection, [
+        pic_url,
+        nickname,
+        intro,
+        user_id
+    ]);
+  }
+  connection.release();
+  return response(baseResponse.SUCCESS);
 };
