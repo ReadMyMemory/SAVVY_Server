@@ -59,8 +59,9 @@ export const deleteDiaryCheck = async (user_id, diary_id) => {
   }
   const connection = await pool.getConnection(async (conn) => conn);
   const deleteDiarybyIdResult = await deleteDiarybyId(connection, diary_id);
-  await deletePlannerUploaded(connection, diaryExist[0][0].planner_id);
-
+  if(diaryExist[0][0].planner_id) {
+    await deletePlannerUploaded(connection, diaryExist[0][0].planner_id);
+  }
   //다이어리가 비공개 중이라면 패스, 공개 중이라면 실행
   if (diaryExist[0][0].is_public === 'true') {
     // 다이어리 성공적으로 삭제 시 유저 마이페이지에서 보여지는 다이어리 카운트 수 - 1
