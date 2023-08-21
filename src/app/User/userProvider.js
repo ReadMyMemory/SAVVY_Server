@@ -45,7 +45,8 @@ export const retrieveKakaoLogin = async (accessToken) => {
   // 회원정보 있는지 검증
   const userKakaoCheck = await loginIdCheck(kakaoData.id);
   if (!userKakaoCheck[0][0]) return errResponse(baseResponse.USER_NEED_SIGNUP);
-  if (userKakaoCheck[0][0].is_deleted === '1') {
+  if (userKakaoCheck[0][0].is_deleted === 1) {
+    console.log('if문 접근');
     const connection = await pool.getConnection(async (conn) => conn);
     await updateUserStatusOff(connection, userKakaoCheck[0][0].id);
     connection.release();
