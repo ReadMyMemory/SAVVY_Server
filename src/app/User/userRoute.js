@@ -19,6 +19,7 @@ import {
   putProfile,
   getMyLikeList,
   deleteUser,
+  postUserBlock,
 } from './userController';
 import { wrapAsync } from '../../../config/errorHandler';
 
@@ -49,6 +50,7 @@ userRouter.get('/others/diary', jwtMiddleware, wrapAsync(getUserPageDiary));
 userRouter.get('/others/planner', jwtMiddleware, wrapAsync(getUserPagePlanner));
 userRouter.get('/duplication', wrapAsync(getNicknameCheck));
 userRouter.get('/block', jwtMiddleware, wrapAsync(getUserBlockList));
+userRouter.delete('/block', jwtMiddleware, wrapAsync(postUserBlock));
 userRouter.get('/push/:user_alarmed', jwtMiddleware, wrapAsync(alarmTest));
 userRouter.get('/alarm/list', jwtMiddleware, wrapAsync(getAlarmList));
 userRouter.get(
