@@ -187,3 +187,15 @@ export const updateUserStatusOff = async (connection, user_id) => {
   );
   return updateUserStatusOffRow;
 };
+
+export const deleteUserBlocked = async (connection, params) => {
+  const deleteUserBlockedQuery = `
+  DELETE FROM user_blocked
+  WHERE blocked_user = ? AND user_id = ?;`;
+
+  const deleteUserBlockedRow = await connection.query(
+    deleteUserBlockedQuery,
+    params
+  );
+  return deleteUserBlockedRow;
+};

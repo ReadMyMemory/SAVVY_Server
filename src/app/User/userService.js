@@ -9,6 +9,7 @@ import {
   modifyUserProfileImgEmpty,
   modifyUserProfileImgExist,
   updateUserStatusOn,
+  deleteUserBlocked,
 } from './userDao';
 
 export const createUser = async (accessToken, pic_url, nickname, intro) => {
@@ -86,6 +87,19 @@ export const modifyUserStatus = async (user_id) => {
   // 유저 상태 수정
   const connection = await pool.getConnection(async (conn) => conn);
   await updateUserStatusOn(connection, user_id);
+
+  connection.release();
+  return response(baseResponse.SUCCESS);
+};
+
+export const modifyUserBlock = async (blocked_user, user_id) => {
+  //유저 존재 확인
+  const userExist = await userIdCheck(user_id);
+  if (!userExist[0][0]) return errResponse(baseResponse.USER_USERID_NOT_EXIST);
+
+  // 유저 차단 삭제
+  const connection = await pool.getConnection(async (conn) => conn);
+  await deleteUserBlocked(connection, [blocked_user, user_id]);
 
   connection.release();
   return response(baseResponse.SUCCESS);
