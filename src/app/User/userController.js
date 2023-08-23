@@ -14,7 +14,12 @@ import {
   retrieveAlarmList,
   retrieveLikeList,
 } from './userProvider';
-import { createUser, modifyProfile, modifyUserStatus } from './userService';
+import {
+  createUser,
+  modifyProfile,
+  modifyUserStatus,
+  modifyUserBlock,
+} from './userService';
 import { pushAlarm } from '../../../config/firebaseAlarm';
 
 export const loginUser = async (req, res) => {
@@ -229,4 +234,18 @@ export const deleteUser = async (req, res) => {
 
   const deleteUserResponse = await modifyUserStatus(user_id);
   return res.send(deleteUserResponse);
+};
+
+export const postUserBlock = async (req, res) => {
+  const user_id = req.verifiedToken.id;
+  const { blockedUser } = req.query;
+
+  // 빈 내 아이디 체크
+  if (!user_id) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+  // 빈 상대 아이디 체크
+  if (!blockedUser)
+    return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+
+  const postUserBlockResponse = await modifyUserBlock(blockedUser, user_id);
+  return res.send(postUserBlockResponse);
 };
