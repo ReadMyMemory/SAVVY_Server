@@ -178,7 +178,7 @@ export const selectPlannerSearch = async (connection, params) => {
   ];
   const selectPlannerSearchQuery = `
   (SELECT planner.id, title, planner.updated_at, nickname FROM planner JOIN user ON planner.user_id = user.id
-    WHERE user_id = ? AND title LIKE ?)
+    WHERE user_id = ? AND is_uploaded = 0 AND title LIKE ?)
     UNION ALL
     (SELECT planner.id, title, planner_scrap.updated_at, nickname
     FROM planner_scrap JOIN planner
